@@ -1,9 +1,27 @@
 \documentclass{article}
+\usepackage{qtree}
 \begin{document}
 \begin{enumerate}
 \item \textbf{Decision Trees and ID3}
   \begin{enumerate}
-  \item 
+  \item The result of splitting on $A$:
+    \begin{center}
+      \Tree [.3:4 1:2 2:2 ]
+    \end{center}
+    The associated entropy:
+    \[-\left(\frac17\ln\frac13+\frac27\ln\frac23+\frac27\ln\frac24+\frac27\ln\frac24\right)\approx.669\]
+
+    And for splitting on $B$:
+    \begin{center}
+      \Tree [.3:4 2:3 1:1 ]
+    \end{center}
+    \[-\left(\frac27\ln\frac25+\frac37\ln\frac35+\frac17\ln\frac12+\frac17\ln\frac12\right)\approx.679\]
+
+    So splitting on $B$ provides a slightly higher information gain.
+
+    Splitting on $A$ might be more useful because it provides a more
+    even separation of the data into the true and false branches;
+    splitting on $B$ might be more useful because TODO.
   \item 
   \item 
   \end{enumerate}
