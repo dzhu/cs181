@@ -39,7 +39,8 @@ def compute_entropy(dblWeightTrue,dblWeightFalse):
     -0.0
     >>> compute_entropy(10.0,10.0)
     1.0"""
-    raise NotImplementedError
+    p = dblWeightTrue / (dblWeightTrue + dblWeightFalse)
+    return -(p * log2(p) + (1-p) * log2(1-p))
 
 def separate_by_attribute(listInst, ixAttr):
     """Build a dictionary mapping attribute values to lists of instances.
