@@ -224,7 +224,23 @@ def build_tree_rec(setIxAttr, listInst, dblMinGain, cRemainingLevels):
     When building tree nodes, the function specifies the majority label across
     listInst as the node's default label (fDefaultLabel argument to DTree's
     __init__). This will be useful in pruning."""
-    raise NotImplementedError
+    commonLabel = check_for_common_label(listInst)
+    majLabel = majority_label(listInst)
+
+    if commonLabel is not None:
+        return DTree(commonLabel)
+
+    ixAttr, split = choose_split_attribute(setIxAttr, listInst, dblMinGain)
+
+    if len(setIxAttr) == 0 or cRemainingLevels == 0 or ixAttr is None:
+        return DTree(majLabel)
+
+    tree = DTree(ixAttr=ixAttr, fDefaultLabel=majLabel)
+    subset = setIxAttr.difference(set([ixAttr]))
+    for attrVal, subList in split.iteritems():
+        child = build_tree_rec(subset, subList, dblMinGain, cRemainingLevels-1)
+        tree.add(child, attrVal)
+    return tree
 
 def count_instance_attributes(listInst):
     """Return the number of attributes across all instances, or None if the
@@ -235,7 +251,13 @@ def count_instance_attributes(listInst):
     3
     >>> count_instance_attributes([Instance([1,2],True),Instance([3],False)])
     """
-    raise NotImplementedError
+    if not listInst: return None
+
+    n = len(listInst[0].listAttrs)
+    for inst in listInst[1:]:
+        if n != len(inst.listAttrs):
+            return None
+    return n
 
 def build_tree(listInst, dblMinGain=0.0, cMaxLevel=-1):
     """Build a decision tree with the ID3 algorithm from a list of
@@ -249,7 +271,15 @@ def build_tree(listInst, dblMinGain=0.0, cMaxLevel=-1):
 
 def classify(dt, inst):
     """Using decision tree dt, return the label for instance inst."""
-    raise NotImplementedError
+    if dt.is_leaf():
+        return dt.fLabel
+    else:
+        try:
+            attrVal = inst.listAttrs[dt.ixAttr]
+            child = dt.dictChildren[attrVal]
+            return classify(child, inst)
+        except KeyError: # attribute value that was not seen
+            return dt.fDefaultLabel
 
 class EvaluationResult(object):
     def __init__(self, listInstCorrect, listInstIncorrect, oClassifier):
