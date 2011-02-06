@@ -69,10 +69,12 @@ def compute_entropy_of_split(dictInst):
     weight = 0.
     for listInst in dictInst.itervalues():
         dblWeightTrue = sum(inst.dblWeight for inst in listInst if inst.fLabel)
-        dblWeightFalse = sum(inst.dblWeight for inst in listInst if not inst.fLabel)
+        dblWeightFalse = sum(inst.dblWeight for inst in listInst
+                             if not inst.fLabel)
 
-        entropy += (dblWeightTrue + dblWeightFalse) * compute_entropy(dblWeightTrue, dblWeightFalse)
-        weight += (dblWeightTrue + dblWeightFalse)
+        wt = dblWeightTrue + dblWeightFalse
+        entropy += wt * compute_entropy(dblWeightTrue, dblWeightFalse)
+        weight += wt
     return entropy / weight
 
 def compute_list_entropy(listInst):
@@ -91,7 +93,22 @@ def choose_split_attribute(iterableIxAttr, listInst, dblMinGain=0.0):
     >>> choose_split_attribute([0,1], listInst)
     (1, {0: [Instance([0, 0], False)], 1: [Instance([0, 1], True)]})
     """
-    raise NotImplementedError
+    initialEntropy = compute_list_entropy(listInst)
+    bestGain = -1.
+    bestAttr = None
+    bestSplit = None
+
+    for ixAttr in iterableIxAttr:
+        split = separate_by_attribute(listInst, ixAttr)
+        afterEntropy = compute_entropy_of_split(split)
+        gain = initialEntropy - afterEntropy
+        if gain > bestGain:
+            bestGain = gain
+            bestAttr = ixAttr
+            bestSplit = split
+    if bestGain >= dblMinGain:
+        return bestAttr, bestSplit
+    return None, None
 
 def check_for_common_label(listInst):
     """Return the boolean label shared by all instances in the given list of
@@ -103,7 +120,14 @@ def check_for_common_label(listInst):
     False
     >>> check_for_common_label([Instance([],True), Instance([],False)])
     """
-    raise NotImplementedError
+    if len(listInst) == 0:
+        return None
+    labels = [inst.fLabel for inst in listInst]
+    if all(labels):
+        return True
+    if not any(labels):
+        return False
+    return None
 
 def majority_label(listInst):
     """Return the boolean label with the most weight in the given list of
@@ -115,7 +139,10 @@ def majority_label(listInst):
     >>> majority_label(listInst)
     False
     """
-    raise NotImplementedError
+    trueWeight = sum(inst.dblWeight for inst in listInst if inst.fLabel)
+    falseWeight = sum(inst.dblWeight for inst in listInst if not inst.fLabel)
+
+    return trueWeight > falseWeight
 
 class DTree(object):
     def __init__(self, fLabel=None, ixAttr=None, fDefaultLabel=None):
