@@ -48,7 +48,10 @@ def separate_by_attribute(listInst, ixAttr):
     >>> separate_by_attribute([Instance([0,0],True),Instance([1,0],True)], 0)
     {0: [Instance([0, 0], True)], 1: [Instance([1, 0], True)]}
     """
-    raise NotImplementedError
+    res = {}
+    for inst in listInst:
+        res.setdefault(inst.listAttrs[ixAttr], []).append(inst)
+    return res
 
 def compute_entropy_of_split(dictInst):
     """Compute the average entropy of a mapping of attribute values to lists
@@ -61,7 +64,16 @@ def compute_entropy_of_split(dictInst):
     >>> compute_entropy_of_split(dictInst)
     0.25
     """
-    raise NotImplementedError
+    print >>open('/tmp/foo', 'w'), dictInst
+    entropy = 0.
+    weight = 0.
+    for listInst in dictInst.itervalues():
+        dblWeightTrue = sum(inst.dblWeight for inst in listInst if inst.fLabel)
+        dblWeightFalse = sum(inst.dblWeight for inst in listInst if not inst.fLabel)
+
+        entropy += (dblWeightTrue + dblWeightFalse) * compute_entropy(dblWeightTrue, dblWeightFalse)
+        weight += (dblWeightTrue + dblWeightFalse)
+    return entropy / weight
 
 def compute_list_entropy(listInst):
     return compute_entropy_of_split({None:listInst})
