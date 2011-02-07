@@ -278,7 +278,7 @@ def classify(dt, inst):
             attrVal = inst.listAttrs[dt.ixAttr]
             child = dt.dictChildren[attrVal]
             return classify(child, inst)
-        except KeyError: # attribute value that was not seen
+        except KeyError: # attribute value that was not seen before
             return dt.fDefaultLabel
 
 class EvaluationResult(object):
@@ -297,7 +297,9 @@ def weight_correct_incorrect(rslt):
     >>> weight_correct_incorrect(rslt)
     (0.25, 0.5)
     """
-    raise NotImplementedError
+    correctSum = sum(inst.dblWeight for inst in rslt.listInstCorrect)
+    incorrectSum = sum(inst.dblWeight for inst in rslt.listInstIncorrect)
+    return correctSum, incorrectSum
 
 class CrossValidationFold(object):
     def build(self):
@@ -333,7 +335,16 @@ def evaluate_classification(cvf):
     EvaluationResult(listInstCorrect,listInstIncorrect,dt)
     where dt is the classifier built with cvf.build().
     """
-    raise NotImplementedError
+    classifier = cvf.build()
+    listInstCorrect = []
+    listInstIncorrect = []
+    for inst in cvf.listInstTest:
+        if cvf.classify(classifier, inst) == inst.fLabel:
+            listInstCorrect.append(inst)
+        else:
+            listInstIncorrect.append(inst)
+
+    return EvaluationResult(listInstCorrect, listInstIncorrect, classifier)
 
 def check_folds(listInst, cFold, cMinFold):
     """Raise a ValueError if cFold is greater than the number of instances, or
@@ -349,7 +360,10 @@ def check_folds(listInst, cFold, cMinFold):
     ...
     ValueError: Need at least 2 folds.
     """
-    raise NotImplementedError
+    if cFold > len(listInst):
+        raise ValueError('Cannot have more folds than instances')
+    if cFold < cMinFold:
+        raise ValueError('Need at least 2 folds.')
 
 def yield_cv_folds(listInst, cFold):
     """Yield a series of TreeFolds, which represent a partition of listInst
@@ -358,13 +372,26 @@ def yield_cv_folds(listInst, cFold):
     You may either return a list, or `yield` (http://goo.gl/gwOfM)
     TreeFolds one at a time.
     """
-    raise NotImplementedError
+    n = len(listInst)
+    for i in range(cFold):
+        ind1 = n * i / cFold
+        ind2 = n * (i+1) / cFold
+        listInstTest = listInst[ind1:ind2]
+        listInstTraining = listInst[:ind1] + listInst[ind2:]
+        yield TreeFold(listInstTraining, listInstTest)
 
 def cv_score(iterableFolds):
     """Determine the fraction (by weight) of correct instances across a number
     of cross-validation folds.
     """
-    raise NotImplementedError
+    dblWeightCorrect = 0.
+    dblWeightIncorrect = 0.
+    for fold in iterableFolds:
+        evalResult = evaluate_classification(fold)
+        dblCorrect, dblIncorrect = weight_correct_incorrect(evalResult)
+        dblWeightCorrect += dblCorrect
+        dblWeightIncorrect += dblIncorrect
+    return dblWeightCorrect / (dblWeightCorrect + dblWeightIncorrect)
 
 def prune_tree(dt, listInst):
     """Recursively prune a decision tree.
