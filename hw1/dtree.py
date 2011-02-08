@@ -403,19 +403,21 @@ def prune_tree(dt, listInst):
     The function does not return anything, and instead modifies the tree
     in-place.
     """
+    if dt.is_leaf(): return
+
     separated = separate_by_attribute(listInst, dt.ixAttr)
     for val, subList in separated.iteritems():
-        child = dt.dictChildren[val]
-        prune_tree(child, subList)
+        try:
+            child = dt.dictChildren[val]
+            prune_tree(child, subList)
+        except KeyError: #TODO
+            pass
 
-    # # The most common label found in the data set. Could use
-    # # dt.fDefaultLabel? But there doesn't seem to be any particular
-    # # guarantee that the data here are the same as what dt was
-    # # constructed with.
-    # majLabel = majority_label(listInst)
-
-    # actually, since convert_to_leaf just uses fDefaultLabel, I
-    # suppose I'll use that.
+    # The most common label found in the data set. Could use
+    # dt.fDefaultLabel's original value? But it doesn't look like the
+    # data here are the same as what dt was constructed with. TODO ask
+    # about this
+    #majLabel = majority_label(listInst)
     majLabel = dt.fDefaultLabel
 
     # the sum of weights of instances with the majority label
@@ -427,6 +429,7 @@ def prune_tree(dt, listInst):
                         if inst.fLabel == classify(dt, inst))
 
     if majWeight > correctWeight:
+        dt.fDefaultLabel = majLabel
         dt.convert_to_leaf()
 
 def build_pruned_tree(listInstTrain, listInstValidate):
@@ -435,7 +438,9 @@ def build_pruned_tree(listInstTrain, listInstValidate):
 
     Return the pruned decision tree.
     """
-    raise NotImplementedError
+    dt = build_tree(listInstTrain)
+    prune_tree(dt, listInstValidate)
+    return dt
 
 class PrunedFold(TreeFold):
     def __init__(self, *args, **kwargs):
@@ -451,7 +456,23 @@ def yield_cv_folds_with_validation(listInst, cFold):
     the list of instances listInst.
 
     You may either return a list or yield successive values."""
-    raise NotImplementedError
+    n = len(listInst)
+    for i in range(cFold - 1):
+        ind1 = n * i / cFold
+        ind2 = n * (i+1) / cFold
+        ind3 = n * (i+2) / cFold
+        listInstTest = listInst[ind1:ind2]
+        listInstValidate = listInst[ind2:ind3]
+        listInstTraining = listInst[:ind1] + listInst[ind3:]
+
+        yield PrunedFold(listInstTraining, listInstTest, listInstValidate)
+
+    ind1 = n * (cFold - 1) / cFold
+    ind2 = n / cFold
+    listInstTest = listInst[ind1:]
+    listInstValidate = listInst[:ind2]
+    listInstTraining = listInst[ind2:ind1]
+    yield PrunedFold(listInstTraining, listInstTest, listInstValidate)
 
 def normalize_weights(listInst):
     """Normalize the weights of all the instances in listInst so that the sum
