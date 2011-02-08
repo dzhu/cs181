@@ -486,7 +486,9 @@ def normalize_weights(listInst):
     >>> print listInst
     [Instance([], True, 0.25), Instance([], False, 0.75)]
     """
-    raise NotImplementedError
+    total = sum(inst.dblWeight for inst in listInst)
+    for inst in listInst:
+        inst.dblWeight /= total
 
 def init_weights(listInst):
     """Initialize the weights of the instances in listInst so that each
@@ -498,7 +500,9 @@ def init_weights(listInst):
     >>> print listInst
     [Instance([], True, 0.50), Instance([], True, 0.50)]
     """
-    raise NotImplementedError
+    v = 1. / len(listInst)
+    for inst in listInst:
+        inst.dblWeight = v
 
 def classifier_error(rslt):
     """Given and evaluation result, return the (floating-point) fraction
@@ -510,12 +514,13 @@ def classifier_error(rslt):
     >>> classifier_error(rslt)
     0.75
     """
-    raise NotImplementedError
+    corr, inc = weight_correct_incorrect(rslt)
+    return inc / (corr + inc)
 
 def classifier_weight(dblError):
     """Return the classifier weight alpha from the classifier's training
     error."""
-    raise NotImplementedError
+    return .5 * math.log((1 - dblError) / dblError)
 
 def update_weight_unnormalized(inst, dblClassifierWeight, fClassifiedLabel):
     """Re-weight an instance given the classifier weight, and the label
