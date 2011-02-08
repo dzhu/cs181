@@ -403,7 +403,31 @@ def prune_tree(dt, listInst):
     The function does not return anything, and instead modifies the tree
     in-place.
     """
-    raise NotImplementedError
+    separated = separate_by_attribute(listInst, dt.ixAttr)
+    for val, subList in separated.iteritems():
+        child = dt.dictChildren[val]
+        prune_tree(child, subList)
+
+    # # The most common label found in the data set. Could use
+    # # dt.fDefaultLabel? But there doesn't seem to be any particular
+    # # guarantee that the data here are the same as what dt was
+    # # constructed with.
+    # majLabel = majority_label(listInst)
+
+    # actually, since convert_to_leaf just uses fDefaultLabel, I
+    # suppose I'll use that.
+    majLabel = dt.fDefaultLabel
+
+    # the sum of weights of instances with the majority label
+    majWeight = sum(inst.dblWeight for inst in listInst
+                    if inst.fLabel == majLabel)
+
+    # the sum of weights of correctly classified things
+    correctWeight = sum(inst.dblWeight for inst in listInst
+                        if inst.fLabel == classify(dt, inst))
+
+    if majWeight > correctWeight:
+        dt.convert_to_leaf()
 
 def build_pruned_tree(listInstTrain, listInstValidate):
     """Build a pruned decision tree from a list of training instances, then
