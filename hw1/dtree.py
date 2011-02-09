@@ -602,7 +602,13 @@ def boost(listInst, cMaxRounds=50, cMaxLevel=1):
 def classify_boosted(br,inst):
     """Given a BoostResult and an instance, return the (boolean) label
     predicted for the instance by the boosted classifier."""
-    raise NotImplementedError
+    weight = 0.
+    for wt, cfer in zip(br.listDblCferWeight, br.listCfer):
+        if classify(cfer, inst):
+            weight += wt
+        else:
+            weight -= wt
+    return weight > 0.
 
 class BoostedFold(TreeFold):
     def __init__(self, *args, **kwargs):
@@ -621,7 +627,9 @@ def yield_boosted_folds(listInst, cFold):
 
     Implementation suggestion: Generate TreeFolds, and yield BoostedFolds
     built from your TreeFolds."""
-    raise NotImplementedError
+    for treeFold in yield_cv_folds(listInst, cFold):
+        yield BoostedFold(treeFold.listInstTraining,
+                          treeFold.listInstTest)
 
 def read_csv_dataset(infile):
     listInst = []
