@@ -42,7 +42,14 @@
  
     6 of 7 are correctly identified by the tree. 
 
-  \item 
+  \item Consider the following tree, that also correctly identifies 6 out of 7.
+    Again, going left indicates True, and going right indicates False.
+
+    \Tree [ .B [ .C T F ] [ .C F T ] ]
+
+    We see that the ID3 algorithm does not have any preference for shorter or
+    simpler trees. 
+ 
   \end{enumerate}
 \item \textbf{ID3 with Pruning}
   \begin{enumerate}
