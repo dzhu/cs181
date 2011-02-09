@@ -592,10 +592,11 @@ def boost(listInst, cMaxRounds=50, cMaxLevel=1):
     for i in range(cMaxRounds):
         cFer, error, weight = one_round_boost(listInst,
                                               cMaxLevel)
-        listDblCferWeight.append(weight)
-        listCfer.append(cFer)
         if error == 0.:
             break
+
+        listDblCferWeight.append(weight)
+        listCfer.append(cFer)
 
     return BoostResult(listDblCferWeight, listCfer)
 
