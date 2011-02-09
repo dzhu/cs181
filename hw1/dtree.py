@@ -556,9 +556,6 @@ def one_round_boost(listInst, cMaxLevel):
       and the classifier weight in a 3-tuple
     - remember to return early if the error is zero.
     """
-    print '-'*50
-    print cMaxLevel
-    print '\n'.join(map(str, listInst))
 
     fold = StumpFold(listInst, cMaxLevel)
     evalRslt = evaluate_classification(fold)
@@ -589,12 +586,30 @@ class BoostResult(object):
 def boost(listInst, cMaxRounds=50, cMaxLevel=1):
     """Conduct up to cMaxRounds of boosting on training instances listInst
     and return a BoostResult containing the classifiers and their weights."""
-    raise NotImplementedError
+
+    listDblCferWeight = []
+    listCfer = []
+    for i in range(cMaxRounds):
+        cFer, error, weight = one_round_boost(listInst,
+                                              cMaxLevel)
+        if error == 0.:
+            break
+
+        listDblCferWeight.append(weight)
+        listCfer.append(cFer)
+
+    return BoostResult(listDblCferWeight, listCfer)
 
 def classify_boosted(br,inst):
     """Given a BoostResult and an instance, return the (boolean) label
     predicted for the instance by the boosted classifier."""
-    raise NotImplementedError
+    weight = 0.
+    for wt, cfer in zip(br.listDblCferWeight, br.listCfer):
+        if classify(cfer, inst):
+            weight += wt
+        else:
+            weight -= wt
+    return weight > 0.
 
 class BoostedFold(TreeFold):
     def __init__(self, *args, **kwargs):
@@ -613,7 +628,9 @@ def yield_boosted_folds(listInst, cFold):
 
     Implementation suggestion: Generate TreeFolds, and yield BoostedFolds
     built from your TreeFolds."""
-    raise NotImplementedError
+    for treeFold in yield_cv_folds(listInst, cFold):
+        yield BoostedFold(treeFold.listInstTraining,
+                          treeFold.listInstTest)
 
 def read_csv_dataset(infile):
     listInst = []
