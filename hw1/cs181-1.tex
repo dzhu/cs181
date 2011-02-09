@@ -24,6 +24,24 @@
     even separation of the data into the true and false branches;
     splitting on $B$ might be more useful because TODO.
   \item 
+    In the following tree, going left indicates a True, and going right indicates a False. 
+
+    \Tree [ .A [.B F [.C F T ] ] [ .B T T ] ]
+    
+    In the first stage, splitting on A generates the lowest remainder.
+    Then considering the other three attributes, if we have A as True, 
+    then attributes B and C are tied for lowest remainder; if A is False, 
+    again B and C are tied for lowest remainder. We split on B in both cases.
+    
+    If A is True and B is True, there is only one case, in which the classification
+    is False. Otherwise, there are two cases that are exactly dependent on C.
+
+    If A is False and B is True, there is one case, in which the classification is
+    True. Otherwise, there are two cases that cannot be separated, in which case
+    we arbitrarily pick True. 
+ 
+    6 of 7 are correctly identified by the tree. 
+
   \item 
   \end{enumerate}
 \item \textbf{ID3 with Pruning}
@@ -32,7 +50,8 @@
   \item  
   \item  
     \begin{enumerate}
-    \item [TODO: how implementation makes use of instance weight in splitting decisions]
+    \item TODO: how implementation makes use of instance weight in splitting decisions
+
       AdaBoost on ID3 would not work if splitting decisions were made by counting instances
       instead of summing weights, because AdaBoost is based on the idea that you update
       weights based on which data instances need better fitting. 
