@@ -505,8 +505,8 @@ def init_weights(listInst):
         inst.dblWeight = v
 
 def classifier_error(rslt):
-    """Given and evaluation result, return the (floating-point) fraction
-    of correct instances by weight.
+    """Given an evaluation result, return the (floating-point) fraction
+    of incorrect instances by weight.
 
     >>> listInstCorrect = [Instance([],True,0.15)]
     >>> listInstIncorrect = [Instance([],True,0.45)]
@@ -556,9 +556,30 @@ def one_round_boost(listInst, cMaxLevel):
       and the classifier weight in a 3-tuple
     - remember to return early if the error is zero.
     """
-    stumpFold = StumpFold(listInst, cMaxLevel)
-    raise NotImplemented
-    
+    print '-'*50
+    print cMaxLevel
+    print '\n'.join(map(str, listInst))
+
+    fold = StumpFold(listInst, cMaxLevel)
+    evalRslt = evaluate_classification(fold)
+    error = classifier_error(evalRslt)
+
+    if error == 0.: return None, 0., 0.
+
+    weight = classifier_weight(error)
+
+    # maybe we're supposed to use update_weight_unnormalized, but I
+    # couldn't bring myself to do that, thereby having to classify all
+    # of the things over again; we've already determined which
+    # instances are correct and which are not!
+    mult = math.exp(weight)
+    for inst in evalRslt.listInstCorrect:
+        inst.dblWeight /= mult
+    for inst in evalRslt.listInstIncorrect:
+        inst.dblWeight *= mult
+    normalize_weights(listInst)
+
+    return evalRslt.oClassifier, error, weight
 
 class BoostResult(object):
     def __init__(self, listDblCferWeight, listCfer):
