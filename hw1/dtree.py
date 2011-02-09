@@ -556,9 +556,6 @@ def one_round_boost(listInst, cMaxLevel):
       and the classifier weight in a 3-tuple
     - remember to return early if the error is zero.
     """
-    print '-'*50
-    print cMaxLevel
-    print '\n'.join(map(str, listInst))
 
     fold = StumpFold(listInst, cMaxLevel)
     evalRslt = evaluate_classification(fold)
@@ -589,7 +586,18 @@ class BoostResult(object):
 def boost(listInst, cMaxRounds=50, cMaxLevel=1):
     """Conduct up to cMaxRounds of boosting on training instances listInst
     and return a BoostResult containing the classifiers and their weights."""
-    raise NotImplementedError
+
+    listDblCferWeight = []
+    listCfer = []
+    for i in range(cMaxRounds):
+        cFer, error, weight = one_round_boost(listInst,
+                                              cMaxLevel)
+        listDblCferWeight.append(weight)
+        listCfer.append(cFer)
+        if error == 0.:
+            break
+
+    return BoostResult(listDblCferWeight, listCfer)
 
 def classify_boosted(br,inst):
     """Given a BoostResult and an instance, return the (boolean) label
