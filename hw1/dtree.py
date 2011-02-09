@@ -526,7 +526,8 @@ def update_weight_unnormalized(inst, dblClassifierWeight, fClassifiedLabel):
     """Re-weight an instance given the classifier weight, and the label
     assigned to the instance by the classifier. This function acts in place
     and does not return anything."""
-    raise NotImplementedError
+    expt = dblClassifierWeight * (-1 if fClassifiedLabel == inst.fLabel else 1)
+    inst.dblWeight *= math.exp(expt)
 
 class StumpFold(TreeFold):
     def __init__(self, listInstTraining, cMaxLevel=1):
@@ -555,7 +556,9 @@ def one_round_boost(listInst, cMaxLevel):
       and the classifier weight in a 3-tuple
     - remember to return early if the error is zero.
     """
-    raise NotImplementedError
+    stumpFold = StumpFold(listInst, cMaxLevel)
+    raise NotImplemented
+    
 
 class BoostResult(object):
     def __init__(self, listDblCferWeight, listCfer):
