@@ -29,11 +29,18 @@
 \item \textbf{ID3 with Pruning}
   \begin{enumerate}
     \setcounter{enumii}2
-  \item 
-  \item 
+  \item  
+  \item  
     \begin{enumerate}
-    \item 
-    \item 
+    \item [TODO: how implementation makes use of instance weight in splitting decisions]
+      AdaBoost on ID3 would not work if splitting decisions were made by counting instances
+      instead of summing weights, because AdaBoost is based on the idea that you update
+      weights based on which data instances need better fitting. 
+    \item Weighted entropy of $\{x_1,\ldots,x_n\}$ where $y_1=T$, $y_i=F$ else, $w_1=0.5$,
+      and other weights are $0.5/(n-1)$: by definition
+      $entropy(D)=-\sum_{y\in Y} \frac{W_y}{W} \log_2 \frac{W_y}{W}$
+      and $W_y=\sum_i w_k(i) I(y_i=y)$; we have $W_{T}=0.5$, $W_{F}=0.5(n-1)^{-1}(n-1)=0.5$, $W=1$,
+      and so $$entropy(D)=-\left[ \frac{1}{2}\log_2\frac{1}{2} + \frac{1}{2}\log_2\frac{1}{2} \right] = 1$$
     \end{enumerate}
     \begin{enumerate}
     \item 
