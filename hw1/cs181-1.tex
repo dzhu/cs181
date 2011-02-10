@@ -8,7 +8,7 @@
     \begin{center}
       \Tree [.3:4 1:2 2:2 ]
     \end{center}
-    The associated entropy:
+    The associated remainder (weighted entropy):
     \[-\left(\frac17\ln\frac13+\frac27\ln\frac23+\frac27\ln\frac24+\frac27\ln\frac24\right)\approx.669\]
 
     And for splitting on $B$:
@@ -18,13 +18,19 @@
     \[-\left(\frac27\ln\frac25+\frac37\ln\frac35+\frac17\ln\frac12+\frac17\ln\frac12\right)\approx.679\]
 
     So splitting on $A$ provides a result with a slightly lower
-    entropy, and hence slightly higher information gain.
+    remainder, and hence slightly higher information gain.
 
-    Splitting on $A$ might be more useful because it provides a more
-    even separation of the data into the true and false branches;
-    splitting on $B$ might be more useful because TODO.
+    Splitting on $A$ may be preferable because the entropy, i.e.
+    information required after the split, is lower. 
+    Intuitively, splitting on $A$ might be more useful because it provides a more
+    even separation of the data into the true and false branches, and hence
+    a shorter tree;
+    splitting on $B$ might also be useful because if $B$ is true, then that 
+    branch is completely decided. 
+
+    This shows that ID3 has inductive bias for shorter (more balanced) trees. 
   \item 
-    In the following tree, going left indicates a True, and going right indicates a False. 
+    In the following tree, going down a left branch left indicates True, and right indicates False. 
 
     \Tree [ .A [.B F [.C F T ] ] [ .B T T ] ]
      
@@ -47,17 +53,22 @@
 
     \Tree [ .B [ .C T F ] [ .C F T ] ]
 
-    We see that the ID3 algorithm does not have any preference for shorter or
-    simpler trees. 
+    We see that although the ID3 algorithm is designed to greedily try to
+    get the shortest / simplest tree by maximizing information gain at every
+    split, it does not always end up choosing the shortest or simplest tree,
+    probably due to the myopic nature of the greedy algorithm. 
  
   \end{enumerate}
 \item \textbf{ID3 with Pruning}
   \begin{enumerate}
     \setcounter{enumii}2
-  \item  
+  \item TODO: see resulting graphs.  
   \item  
     \begin{enumerate}
     \item TODO: how implementation makes use of instance weight in splitting decisions
+      Our implementation uses instance weight throughout. It is implemented already to calculate 
+      entropy of a split, find the majority label in a branch, evaluate correct / incorrect. 
+      Then it uses this information ***
  
       AdaBoost on ID3 would not work if splitting decisions were made by counting instances
       instead of summing weights, because AdaBoost is based on the idea that you update
