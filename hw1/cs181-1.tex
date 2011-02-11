@@ -1,5 +1,7 @@
 \documentclass{article}
 \usepackage{qtree}
+\usepackage{graphicx}
+\usepackage[left=1.25in,right=1.25in]{geometry}
 \begin{document}
 \begin{enumerate}
 \item \textbf{Decision Trees and ID3}
@@ -21,93 +23,130 @@
     remainder, and hence slightly higher information gain.
 
     Splitting on $A$ may be preferable because the entropy, i.e.
-    information required after the split, is lower. 
-    Intuitively, splitting on $A$ might be more useful because it provides a more
-    even separation of the data into the true and false branches, and hence
-    a shorter tree;
-    splitting on $B$ might also be useful because if $B$ is true, then that 
-    branch is completely decided. 
+    information required after the split, is lower.  Intuitively,
+    splitting on $A$ might be more useful because it provides a more
+    even separation of the data into the true and false branches, and
+    hence a shorter tree; splitting on $B$ might also be useful
+    because if $B$ is true, then that branch is completely decided.
 
-    This shows that ID3 has inductive bias for shorter (more balanced) trees. 
+    This shows that ID3 has inductive bias for shorter (more balanced)
+    trees.
   \item 
-    In the following tree, going down a left branch left indicates True, and right indicates False. 
+    In the following tree, going down a left branch left indicates
+    True, and right indicates False.
 
     \Tree [ .A [.B F [.C F T ] ] [ .B T T ] ]
      
     In the first stage, splitting on A generates the lowest remainder.
-    Then considering the other three attributes, if we have A as True, 
-    then attributes B and C are tied for lowest remainder; if A is False, 
-    again B and C are tied for lowest remainder. We split on B in both cases.
+    Then considering the other three attributes. Attributes B and C
+    are tied for lowest remainder for both values of A; we split on B
+    in both cases.
     
-    If A is True and B is True, there is only one case, in which the classification
-    is False. Otherwise, there are two cases that are exactly dependent on C.
+    If A is True and B is True, there is only one case, in which the
+    classification is False. Otherwise, there are two cases that are
+    exactly dependent on C.
 
-    If A is False and B is True, there is one case, in which the classification is
-    True. Otherwise, there are two cases that cannot be separated, in which case
-    we arbitrarily pick True. 
+    If A is False and B is True, there is one case, in which the
+    classification is True. Otherwise, there are two cases that cannot
+    be separated, in which case we arbitrarily pick True.
  
     6 of 7 are correctly identified by the tree. 
 
-  \item Consider the following tree, that also correctly identifies 6 out of 7.
-    Again, going left indicates True, and going right indicates False.
+  \item Consider the following tree, that also correctly identifies 6
+    out of 7.  Again, going left indicates True, and going right
+    indicates False.
 
     \Tree [ .B [ .C T F ] [ .C F T ] ]
 
-    We see that although the ID3 algorithm is designed to greedily try to
-    get the shortest / simplest tree by maximizing information gain at every
-    split, it does not always end up choosing the shortest or simplest tree,
-    probably due to the myopic nature of the greedy algorithm. 
+    We see that although the ID3 algorithm is designed to greedily try
+    to get the shortest / simplest tree by maximizing information gain
+    at every split, it does not always end up choosing the shortest or
+    simplest tree, probably due to the myopic nature of the greedy
+    algorithm.
  
   \end{enumerate}
 \item \textbf{ID3 with Pruning}
   \begin{enumerate}
     \setcounter{enumii}2
-  \item Relative ID3 performance for pruned vs unpruned versions seem to indicate
-    overfitting, as the pruned ID3 does slightly better than unpruned on
-    10-fold cross-validation (so that the training and testing sets are 
-    disjoint). Specifically, clean unpruned had success rate 0.87; 
-    clean pruned 0.89, noisy unpruned 0.78, noisy pruned 0.8. 
+  \item Since the pruned version does slightly better than the
+    unpruned on 10-fold cross-validation, there is probably some
+    overfitting: reducing complexity improves perfomrance.
+    (Specifically, clean unpruned had success rate 0.87; clean pruned
+    0.89, noisy unpruned 0.78, noisy pruned 0.80.)
 
-    However, it is interesting to note this difference (by about the same 
-    amount) for both clean and 
-    noisy data, which indicates that generalization to noisier data is not
-    affected by pruning, which indicates that ID3 is not overfitting to 
-    training data noise. 
-
-    TODO: verify???
+    However, it is interesting to note this difference (by about the
+    same amount) for both clean and noisy data, which indicates that
+    generalization to noisier data is not affected by pruning, which
+    indicates that ID3 is not overfitting to training data noise.
+    %TODO: verify???
   \item  
     \begin{enumerate}
-    \item TODO: how implementation makes use of instance weight in splitting decisions
-      Our implementation uses instance weight throughout. It is implemented already to calculate 
-      entropy of a split, find the majority label in a branch, evaluate correct / incorrect,
-      and so on. 
-      Then it uses this information ***
+    \item Our implementation uses instance weight throughout. It is
+      implemented already to calculate entropy of a split, find the
+      majority label in a branch, evaluate correct / incorrect, and so
+      on. Then it uses this information ***
 
-      However, when we're not boosting it just weights things evenly. 
+      If decisions were made only based on instance counts, there
+      would be no change between rounds of boosting, so nothing new
+      would happen and all the classifiers would be essentially the
+      same. The performance of AdaBoost is based on the idea that
+      later classifiers pay more attention to the instances that
+      earlier ones have missed, so as to make up for their mistakes.
+
+%      However, when we're not boosting it just weights things evenly. 
  
-      AdaBoost on ID3 would not work if splitting decisions were made by counting instances
-      instead of summing weights, because AdaBoost is based on the idea that you update
-      weights based on which data instances need better fitting. 
-    \item Weighted entropy of $\{x_1,\ldots,x_n\}$ where $y_1=T$, $y_i=F$ else, $w_1=0.5$,
-      and other weights are $0.5/(n-1)$: by definition
-      $entropy(D)=-\sum_{y\in Y} \frac{W_y}{W} \log_2 \frac{W_y}{W}$
-      and $W_y=\sum_i w_k(i) I(y_i=y)$; we have $W_{T}=0.5$, $W_{F}=0.5(n-1)^{-1}(n-1)=0.5$, $W=1$,
-      and so $$entropy(D)=-\left[ \frac{1}{2}\log_2\frac{1}{2} + \frac{1}{2}\log_2\frac{1}{2} \right] = 1$$
+%%       AdaBoost on ID3 would not work if splitting decisions were made
+%%       by counting instances instead of summing weights, because
+%%       AdaBoost is based on the idea that you update weights based on
+%%       which data instances need better fitting.
+    \item In that case, the total weight of true and false instances
+      are both .5, so the entropy is 1:
+      \[-\left(\frac12\log_2\frac12+\frac12\log_2\frac12\right)=1\]
+
+%%       Weighted entropy of $\{x_1,\ldots,x_n\}$ where $y_1=T$, $y_i=F$
+%%       else, $w_1=0.5$, and other weights are $0.5/(n-1)$: by
+%%       definition $entropy(D)=-\sum_{y\in Y} \frac{W_y}{W} \log_2
+%%       \frac{W_y}{W}$ and $W_y=\sum_i w_k(i) I(y_i=y)$; we have
+%%       $W_{T}=0.5$, $W_{F}=0.5(n-1)^{-1}(n-1)=0.5$, $W=1$, and
+%%       so $$entropy(D)=-\left[ \frac{1}{2}\log_2\frac{1}{2} +
+%%         \frac{1}{2}\log_2\frac{1}{2} \right] = 1$$
     \end{enumerate}
     \begin{enumerate}
-    \item ******TODO:WARNING:CAVEAT*****Why does boosting do so poorly?? on task compare boosting parameters*****
-      Boosting appears to work consistently better than the other methods on noisy data. 
-      In particular, this appears to indicate that boosting may be less sensitive to overfitting
-      by increasing the preference bias. ****???****
+    \item Boosting seems to do noticeably better on the other methods
+      for clean data, but not on noisy data (see figure).
 
+      \begin{center}
+        \includegraphics[scale=.4]{graph.png}
+      \end{center}
+
+      The drop that boosting suffers due to noisy data is much larger
+      than the drop that pruned trees suffer, indicating that boosting
+      is badly particularly affected by noisy data. Perhaps this means
+      that boosting is bad for inconsistent data; maybe the
+      inconsistent elements, since some of them will always be wrong,
+      tend to end up with very large weights, taking attention away
+      from the majority of the data.
+
+%%       ******TODO:WARNING:CAVEAT*****Why does boosting do so poorly??
+%%       on task compare boosting parameters***** Boosting appears to
+%%       work consistently better than the other methods on noisy data.
+%%       In particular, this appears to indicate that boosting may be
+%%       less sensitive to overfitting by increasing the preference
+%%       bias. ****???****
  
-    \item 
-    \item 
-    \item More rounds of boosting training (generally) increases accuracy in cross-validated test sets. 
-      It appears that sometimes an extra iteration of training decreases accuracy a bit, but the trend is
-      overall positive until the plateau, although the variation in accuracy can be pretty large 
-      (i.e. boosting 4 times is the same as boosting 10 times, though the peaks in between go up). 
-      TODO: add some reasons why this is true
+    \item Based on the figure above, we see that stumps do slightly
+      better than depth-2 trees, which looks like overfitting.
+    \item It might be surprising that the performance hardly increases
+      despite the many more rounds of boosting. Perhaps the
+      maximum-margin nature of AdaBoost means that it reaches peak
+      performance very quickly.
+    \item More rounds of boosting training generally increases
+      accuracy in cross-validated test sets. It appears that sometimes
+      an extra iteration of training decreases accuracy a bit, but the
+      trend is overall positive until the plateau, although the
+      variation in accuracy can be pretty large (i.e., boosting 4
+      times is the same as boosting 10 times, though the peaks in
+      between go up).
     \end{enumerate}
   \end{enumerate}
 \item 

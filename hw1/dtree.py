@@ -561,7 +561,7 @@ def one_round_boost(listInst, cMaxLevel):
     evalRslt = evaluate_classification(fold)
     error = classifier_error(evalRslt)
 
-    if error == 0.: return None, 0., 0.
+    if error == 0.: return evalRslt.oClassifier, 0., 1.
 
     weight = classifier_weight(error)
 
@@ -592,11 +592,12 @@ def boost(listInst, cMaxRounds=50, cMaxLevel=1):
     for i in range(cMaxRounds):
         cFer, error, weight = one_round_boost(listInst,
                                               cMaxLevel)
-        if error == 0.:
-            break
 
         listDblCferWeight.append(weight)
         listCfer.append(cFer)
+
+        if error == 0.:
+            break
 
     return BoostResult(listDblCferWeight, listCfer)
 
@@ -642,8 +643,8 @@ def read_csv_dataset(infile):
 
 def load_csv_dataset(oFile):
     if isinstance(oFile,basestring):
-        with open(oFile) as infile: return read_csv_dataset(infile)
-    return read_csv_dataset(infile)
+        #with open(oFile) as infile: return read_csv_dataset(infile)
+        return read_csv_dataset(open(oFile))
 
 def main(argv):
     import doctest
