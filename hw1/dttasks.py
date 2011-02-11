@@ -10,22 +10,31 @@ from tfutils import tftask
 import dtree
 
 def serialize_tree(dtRoot):
-    listPair = []
+    listSrcDestValue = []
     cNodes = 0
     def node_name(dt,ix):
         if dt.is_node():
-            return "Node %d (split on %d)" % (ix, dt.ixAttr)
+            return "Node %d (Split on %d)" % (ix,dt.ixAttr)
         return "Leaf %d (%s)" % (ix,str(dt.fLabel)[0])
     def down(dt,ixParent):
         if dt.is_leaf():
             return
         sParentName = node_name(dt,ixParent)
         for cValue,dtChild in dt.dictChildren.iteritems():
-            ixNode = len(listPair) + 1
-            listPair.append((sParentName,node_name(dtChild,ixNode)))
+            ixNode = len(listSrcDestValue) + 1
+            tplEdge = (sParentName,node_name(dtChild,ixNode),cValue)
+            listSrcDestValue.append(tplEdge)
             down(dtChild, ixNode)
     down(dtRoot,0)
-    return listPair
+
+    listColor = ["#FF0000", "#00FF00", "#0000FF", "#00FFFF", "#FF00FF",
+                 "#FFFF00", "#000000", "#FF8800", "#6600DD", "#000055"]
+    listEdge = []
+    cMinValue = min([tpl[2] for tpl in listSrcDestValue])
+    for src,dest,cValue in listSrcDestValue:
+        sColor = listColor[(cValue - cMinValue) % len(listColor)]
+        listEdge.append((src,dest,{"color":sColor}))
+    return listEdge
 
 def datadir(sPath):
     return path.join(path.dirname(__file__),sPath)
@@ -205,7 +214,7 @@ class BcwCompareBoostingParameters(tftask.ChartTask):
         for sName,cMaxLevel,cMaxRounds in [("Depth 1, 10 Rounds", 1, 10),
                                            ("Depth 2, 10 Rounds", 2, 10),
                                            ("Depth 1, 30 Rounds", 1, 30),
-                                           ("Depth 2, 10 Rounds", 2, 30)]:
+                                           ("Depth 2, 30 Rounds", 2, 30)]:
             fxnGen = self.build_fold_generator(cMaxLevel,cMaxRounds)
             fxnScore = lambda listInst: dtree.cv_score(fxnGen(listInst,cFold))
             listData = [fxnScore(listInstClean),fxnScore(listInstNoisy)]
@@ -241,14 +250,14 @@ class BcwBoostingTrainVsTest(tftask.ChartTask):
         listSeries = []
         for sNamePref,fUseTraining in [("Training", True), ("Test", False)]:
             listData = []
-            for cRounds in xrange(1,16):
+            for cRounds in xrange(1,32):
                 fxnGen = self.build_fold_gen(cRounds,fUseTraining)
                 listData.append(dtree.cv_score(fxnGen(listInst,cFold)))
             listSeries.append({"name": sNamePref + " Set Accuracy",
                                "data": listData})
         return {"chart": {"defaultSeriesType": "line"},
                 "title": {"text": "Training- vs. Test-Set Accuracy"},
-                "xAxis": {"min": 0, "max":16, "title": {"text":"Rounds"}},
+                "xAxis": {"min": 0, "max":32, "title": {"text":"Rounds"}},
                 "yAxis": {"title": {"text":"Accuracy"}},
                 "series": listSeries}
                 

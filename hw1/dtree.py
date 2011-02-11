@@ -8,6 +8,7 @@ adaptive boosting.
 """
 
 import math
+import sys
 
 def log2(dbl):
     return math.log(dbl)/math.log(2.0) if dbl > 0.0 else 0.0
@@ -173,6 +174,20 @@ class DTree(object):
         self.ixAttr = None
         self.fDefaultLabel = None
         self.dictChildren = {}
+
+    def disp(self, depth=0, val=None):
+        sys.stdout.write(' ' * (5*depth-2))
+        if val is not None:
+            sys.stdout.write('%2d ' % val)
+        elif depth > 0:
+            sys.stdout.write('  ')
+
+        if self.is_node():
+            print 'attr = %d' % (self.ixAttr+2)
+            for v, c in sorted(self.dictChildren.items()):
+                c.disp(depth + 1, v)
+        else:
+            print self.fLabel
     # the following methods are used in testing -- you should need
     # to worry about them
     def copy(self):
@@ -410,14 +425,11 @@ def prune_tree(dt, listInst):
         try:
             child = dt.dictChildren[val]
             prune_tree(child, subList)
-        except KeyError: #TODO
+        except KeyError:
+            # this value was never seen in the training data; just
+            # ignore it
             pass
 
-    # The most common label found in the data set. Could use
-    # dt.fDefaultLabel's original value? But it doesn't look like the
-    # data here are the same as what dt was constructed with. TODO ask
-    # about this
-    #majLabel = majority_label(listInst)
     majLabel = dt.fDefaultLabel
 
     # the sum of weights of instances with the majority label
@@ -429,7 +441,6 @@ def prune_tree(dt, listInst):
                         if inst.fLabel == classify(dt, inst))
 
     if majWeight > correctWeight:
-        dt.fDefaultLabel = majLabel
         dt.convert_to_leaf()
 
 def build_pruned_tree(listInstTrain, listInstValidate):
