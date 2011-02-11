@@ -62,13 +62,28 @@
 \item \textbf{ID3 with Pruning}
   \begin{enumerate}
     \setcounter{enumii}2
-  \item TODO: see resulting graphs.  
+  \item Relative ID3 performance for pruned vs unpruned versions seem to indicate
+    overfitting, as the pruned ID3 does slightly better than unpruned on
+    10-fold cross-validation (so that the training and testing sets are 
+    disjoint). Specifically, clean unpruned had success rate 0.87; 
+    clean pruned 0.89, noisy unpruned 0.78, noisy pruned 0.8. 
+
+    However, it is interesting to note this difference (by about the same 
+    amount) for both clean and 
+    noisy data, which indicates that generalization to noisier data is not
+    affected by pruning, which indicates that ID3 is not overfitting to 
+    training data noise. 
+
+    TODO: verify???
   \item  
     \begin{enumerate}
     \item TODO: how implementation makes use of instance weight in splitting decisions
       Our implementation uses instance weight throughout. It is implemented already to calculate 
-      entropy of a split, find the majority label in a branch, evaluate correct / incorrect. 
+      entropy of a split, find the majority label in a branch, evaluate correct / incorrect,
+      and so on. 
       Then it uses this information ***
+
+      However, when we're not boosting it just weights things evenly. 
  
       AdaBoost on ID3 would not work if splitting decisions were made by counting instances
       instead of summing weights, because AdaBoost is based on the idea that you update
@@ -80,7 +95,12 @@
       and so $$entropy(D)=-\left[ \frac{1}{2}\log_2\frac{1}{2} + \frac{1}{2}\log_2\frac{1}{2} \right] = 1$$
     \end{enumerate}
     \begin{enumerate}
-    \item 
+    \item ******TODO:WARNING:CAVEAT*****Why does boosting do so poorly?? on task compare boosting parameters*****
+      Boosting appears to work consistently better than the other methods on noisy data. 
+      In particular, this appears to indicate that boosting may be less sensitive to overfitting
+      by increasing the preference bias. ****???****
+
+ 
     \item 
     \item 
     \item More rounds of boosting training (generally) increases accuracy in cross-validated test sets. 
