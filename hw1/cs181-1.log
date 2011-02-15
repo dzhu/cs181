@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2010.6.4)  8 FEB 2011 23:33
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2010.6.4)  10 FEB 2011 23:31
 entering extended mode
  %&-line parsing enabled.
 **cs181-1.tex
@@ -173,26 +173,32 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] (./cs181-1.aux) ) 
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (15.81163pt too wide) in paragraph at lines 80--85
+\OT1/cmr/m/n/10 split-ting de-ci-sions Our im-ple-men-ta-tion uses in-stance we
+ight through-
+ []
+
+[2] [3] (./cs181-1.aux) ) 
 Here is how much of TeX's memory you used:
  665 strings out of 95086
  7965 string characters out of 933256
- 68030 words of memory out of 1500000
+ 67030 words of memory out of 1500000
  3899 multiletter control sequences out of 10000+50000
  3948 words of font info for 15 fonts, out of 1200000 for 2000
  28 hyphenation exceptions out of 8191
  25i,7n,19p,214b,448s stack positions out of 5000i,500n,6000p,200000b,5000s
-</usr
-/share/texmf-texlive/fonts/type1/bluesky/cm/cmbx10.pfb></usr/share/texmf-texliv
-e/fonts/type1/bluesky/cm/cmex10.pfb></usr/share/texmf-texlive/fonts/type1/blues
-ky/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmmi5.pfb></u
-sr/share/texmf-texlive/fonts/type1/bluesky/cm/cmmi7.pfb></usr/share/texmf-texli
-ve/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/blues
-ky/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmsy10.pfb></us
-r/share/texmf-texlive/fonts/type1/bluesky/cm/cmsy7.pfb>
-Output written on cs181-1.pdf (2 pages, 48526 bytes).
+</usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmbx1
+0.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmex10.pfb></usr/share/t
+exmf-texlive/fonts/type1/bluesky/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/
+type1/bluesky/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmm
+i7.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/t
+exmf-texlive/fonts/type1/bluesky/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/ty
+pe1/bluesky/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmsy
+7.pfb>
+Output written on cs181-1.pdf (3 pages, 53249 bytes).
 PDF statistics:
- 45 PDF objects out of 1000 (max. 8388607)
+ 48 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 131072)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
