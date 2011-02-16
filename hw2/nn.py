@@ -114,11 +114,11 @@ def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
     >>> layer = NeuralNetLayer(1, listPcpt)
     >>> hidden_error([1.0, 0.75], pcpt, layer)
     3.0"""
-    if len(listDblDownstreamDelta) != len(layerNext.listPcpt)
+    if len(listDblDownstreamDelta) != len(layerNext.listPcpt):
         raise TypeError("Input size mismatch")
-    err = 0
-#    for i in range(len(layerNext))
-#        err = err + listDblDownstreamDelta[i] * layerNext.listPcpt[i].
+    err = 0.
+    for i in range(len(layerNext.listPcpt)):
+        err = err + listDblDownstreamDelta[i] * layerNext.listPcpt[i].listDblW[pcpt.ix]
     return err
 
 def compute_delta(dblActivation, dblError):
@@ -128,7 +128,8 @@ def compute_delta(dblActivation, dblError):
     lecture notes.
     >>> compute_delta(0.5,0.5)
     0.125"""
-    raise NotImplementedError
+    return dblError*(dblActivation)*(1.-dblActivation)
+
 
 def update_weight(dblW, dblLearningRate, dblInput, dblDelta):
     """Compute the updated weight from the original weight `dblW`, the
@@ -137,7 +138,7 @@ def update_weight(dblW, dblLearningRate, dblInput, dblDelta):
 
     >>> update_weight(3.0, 0.1, 1.25, 2.0)
     3.25"""
-    raise NotImplementedError
+    return dblW + dblLearningRate * dblInput * dblDelta
 
 def update_pcpt(pcpt, listDblInputs, dblDelta, dblLearningRate):
     """Update the perceptron's weights according to the update rule
@@ -159,7 +160,14 @@ def update_pcpt(pcpt, listDblInputs, dblDelta, dblLearningRate):
     >>> update_pcpt(pcpt, [0.5,0.5,0.5], 0.25, 2.0)
     >>> print pcpt
     Perceptron([1.25, 2.25, 3.25], 4.5, 0)"""
-    raise NotImplementedError
+
+    if len(pcpt.listDblW) != len(listDblInputs):
+        raise TypeError("Input size mismatch")
+
+    newDblW0 = update_weight(pcpt.dblW0, dblLearningRate, 1., dblDelta)
+    newListDbl = [update_weight(pcpt.listDblW[i], dblLearningRate, listDblInputs[i], dblDelta) for i in range(len(listDblInputs))]
+    pcpt.dblW0 = newDblW0
+    pcpt.listDblW = newListDbl
 
 def pcpt_activation(pcpt, listDblInput):
     """Compute a perceptron's activation function.
@@ -167,7 +175,7 @@ def pcpt_activation(pcpt, listDblInput):
     >>> pcpt = Perceptron([0.5,0.5,-1.5], 0.75, 0)
     >>> pcpt_activation(pcpt, [0.5,1.0,1.0])
     0.5"""
-    raise NotImplementedError
+    return sigmoid(dot(pcpt.listDblW,listDblInput)+pcpt.dblW0)
 
 def feed_forward_layer(layer, listDblInput):
     """Build a list of activation levels for the perceptrons
@@ -179,7 +187,7 @@ def feed_forward_layer(layer, listDblInput):
     >>> listDblInput = [0.5, 0.25]
     >>> feed_forward_layer(layer, listDblInput)
     [0.5, 0.5]"""
-    raise NotImplementedError
+    return [pcpt_activation(pcpt,listDblInput) for pcpt in layer.listPcpt]
 
 class NeuralNet(object):
     """An artificial neural network."""
@@ -224,7 +232,13 @@ def build_layer_inputs_and_outputs(net, listDblInput):
     >>> net = init_net(listCLayerSize)
     >>> build_layer_inputs_and_outputs(net, [-1.0, 1.0]) # doctest: +ELLIPSIS
     ([[...], [...]], [[...], [...]])"""
-    raise NotImplementedError
+    layers = [listDblInput]
+    curLayer = feed_forward_layer(net.listLayer[0], listDblInput)
+    layers = layers + [curLayer]
+    for layer in net.listLayer[1:]:
+        curlayer = feed_forward_layer(layer, curLayer)
+        layers = layers + [curLayer]
+    return layers
 
 def feed_forward(net, listDblInput):
     """Compute the neural net's output on input listDblInput."""
@@ -236,7 +250,10 @@ def layer_deltas(listDblActivation, listDblError):
 
     >>> layer_deltas([0.5, 0.25], [0.125, 0.0625])
     [0.03125, 0.01171875]"""
-    raise NotImplementedError
+    if len(listDblActivation) != len(listDblError):
+        raise ValueError("Incompatible lengths")
+
+    return [compute_delta(dblActivation,dblError) for dblActivation,dblError in zip(listDblActivation, listDblError)]
 
 def update_layer(layer, listDblInputs, listDblDelta,  dblLearningRate):
     """Update all perceptrons in the neural net layer.
@@ -251,7 +268,8 @@ def update_layer(layer, listDblInputs, listDblDelta,  dblLearningRate):
     >>> update_layer(layer, [0.5,-0.5], [2.0,2.0], 0.5) # do the update
     >>> print layer.listPcpt
     [Perceptron([1.5, -1.5], 1.0, 0), Perceptron([-0.5, 0.5], 1.0, 1)]"""
-    raise NotImplementedError
+    for pcpt,dblDelta in zip(layer.listPcpt,listDblDelta):
+        update_pcpt(pcpt,listDblInputs,dblDelta,dblLearningRate)
 
 def hidden_layer_error(layer, listDblDownstreamDelta, layerDownstream):
     """Determine the error produced by each node in a hidden layer, given the
@@ -262,7 +280,7 @@ def hidden_layer_error(layer, listDblDownstreamDelta, layerDownstream):
     >>> layerDownstream = NeuralNetLayer(2, [Perceptron([0.75,0.25], 0.0, 0)])
     >>> hidden_layer_error(layer, [2.0], layerDownstream)
     [1.5, 0.5]"""
-    raise NotImplementedError
+    return [hidden_error(listDblDownstreamDelta, pcpt, layerDownstream) for pcpt in layer.listPcpt]
 
 class Instance(object):
     def __init__(self, iLabel, listDblFeatures):
