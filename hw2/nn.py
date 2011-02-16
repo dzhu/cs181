@@ -312,7 +312,9 @@ def distributed_encode_label(iLabel):
     [...]
     >>> print " ".join("%.2f" % dbl for dbl in listDblEncoding)
     0.05 0.05 0.95 0.05 0.05 0.05 0.05 0.05 0.05 0.05"""
-    raise NotImplementedError
+    res = [0.05]*10
+    res[iLabel] = res[iLabel]+0.9
+    return res
 
 def binary_encode_label(iLabel):
     """Generate a binary encoding of the integer label iLabel.
@@ -325,7 +327,12 @@ def binary_encode_label(iLabel):
 
     >>> print " ".join("%.2f" % dbl for dbl in binary_encode_label(6))
     0.05 0.95 0.95 0.05"""
-    raise NotImplementedError
+    res = [0.05]*10
+    for p in range(4):
+        if iLabel % 2 == 1 :
+            res[p] = 0.95
+        iLabel = iLabel/2
+    return res
 
 def distributed_decode_net_output(listDblOutput):
     """Decode the output of a neural network with distributed-encoded outputs.
@@ -333,7 +340,7 @@ def distributed_decode_net_output(listDblOutput):
     >>> listDblOutput = [0.23, 0.4, 0.01, 0.2, 0.3, 0.78, 0.51, 0.15, 0.2, 0.1]
     >>> distributed_decode_net_output(listDblOutput)
     5"""
-    raise NotImplementedError
+    return listDblOutput.index(max(listDblOutput))
 
 def binary_decode_net_output(listDblOutput):
     """Decode the output of a neural network with binary-encoded outputs.
@@ -344,7 +351,13 @@ def binary_decode_net_output(listDblOutput):
     >>> binary_decode_net_output([0.95, 0.44, 0.01, 0.51])
     9
     """
-    raise NotImplementedError
+    total = 0
+    two = 1
+    for p in range(4):
+        if listDblOutput[p] >= 0.5 :
+            total = total + two
+        two = two * 2
+    return total
 
 def update_net(net, inst, dblLearningRate, listTargetOutputs):
     """Update the weights of a neural network using the data in instance inst
