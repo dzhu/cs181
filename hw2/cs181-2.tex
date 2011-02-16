@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{qtree}
+\usepackage{graphicx}
+\usepackage[left=1.25in,right=1.25in]{geometry}
+\begin{document}
+
+\section*{Problem 1}
+
+Consider training a single perceptron with the perceptron activation rule.
+Assume that an image is a $3\times 3$ array of pixels, with each pixel 
+being on or off. For each of the following features, either present a 
+perceptron that recognizes the feature or prove none exists.
+\begin{enumerate}
+\item \textbf{bright or dark} - at least 75\% of the pixels are on, or 
+at least 75\% of the pixels are off: none exists.
+We can restate the condition as if 1, 2, 3, 7, 8, or 9 of the pixels are on,
+i.e. $\sum a_i<4$ or $\sum a_i>6$, where $a_1,\ldots,a_9$ are pixels with $a_i=0$ if a pixel
+is off and $a_i=1$ if it is on. We have a one-dimensional variable ($\sum a_i$)
+that is not linearly separable. 
+
+\item \textbf{top-bright} - a larger fraction of pixels is on in the top
+row than in the bottom two rows: we present one that exists. 
+Let $a_1,a_2,a_3$ be the first row and
+$a_4,\ldots,a_9$ be the bottom two rows. Our perceptron classifier can
+be as follows: letting $a_i=0$ denote off and $a_i=1$ denote on, 
+$$P(a_1,\ldots,a_9)=2(a_1+a_2+a_3)-(a_4+\ldots+a_9)$$
+is positive if a larger fraction of pixels are on in the top row than
+in the bottom two rows, and nonpositive otherwise. 
+
+\item \textbf{connected} - the set of pixels that are on is connected: 
+none exists. Minsky and Papert found that perceptrons can't distinguish
+XOR, so that they can't even distinguish a very narrow subproblem of
+connectedness, so that perceptrons cannot determine connectedness. 
+\end{enumerate}
+
+\section*{Problem 2}
+Consider four different possible learning algorithms for the digits
+classification problem and argue for or against each of them given that
+decision trees can be continuous: 
+\begin{itemize}
+\item decision trees - 
+ these trees would have to be massively complex. ????
+\item boosted decision stumps - ??????
+\item perceptrons - linear separation is very limited. They can't tell 
+connectedness or separation. In order for it to work we would need to
+feed it higher level features ahead of time.  
+
+\item multi-layer feed-forward neural networks - this appears most promising. 
+
+\end{itemize}
+
+
+
+\end{document}
