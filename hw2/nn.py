@@ -232,12 +232,12 @@ def build_layer_inputs_and_outputs(net, listDblInput):
     >>> net = init_net(listCLayerSize)
     >>> build_layer_inputs_and_outputs(net, [-1.0, 1.0]) # doctest: +ELLIPSIS
     ([[...], [...]], [[...], [...]])"""
-
-    layers = [listDblInput]
-    curLayer = feed_forward_layer(net.listLayer[0], listDblInput)
-    for layer in net.listLayer[1:]:
-        curlayer = feed_forward_layer(layer, curLayer)
-    return [listDblInput]+[curLayer]
+    allLayers = [listDblInput]
+    curLayer = listDblInput
+    for layer in net.listLayer:
+        curLayer = feed_forward_layer(layer, curLayer)
+        allLayers = allLayers + [curLayer]
+    return [allLayers[:-1]]+[allLayers[1::]]
 
 def feed_forward(net, listDblInput):
     """Compute the neural net's output on input listDblInput."""
