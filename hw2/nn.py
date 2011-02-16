@@ -20,7 +20,7 @@ def sigmoid(dblX):
     >>> sigmoid(-100.0) < 1.0e-10
     True
     """
-    raise NotImplementedError
+    return 1/(1+math.exp(-dblX))
 
 class Perceptron(object):
     """Implements a node in a feed-forward neural network."""
@@ -100,7 +100,7 @@ def output_error(dblActivation,dblTarget):
 
     >>> output_error(0.75, -1.0) # yes, it's this simple.
     -1.75"""
-    raise NotImplementedError
+    return -dblActivation+dblTarget
 
 def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
     """Determines the error on a hidden node from, its downstream deltas,
@@ -114,7 +114,12 @@ def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
     >>> layer = NeuralNetLayer(1, listPcpt)
     >>> hidden_error([1.0, 0.75], pcpt, layer)
     3.0"""
-    raise NotImplementedError
+    if len(listDblDownstreamDelta) != len(layerNext.listPcpt)
+        raise TypeError("Input size mismatch")
+    err = 0
+#    for i in range(len(layerNext))
+#        err = err + listDblDownstreamDelta[i] * layerNext.listPcpt[i].
+    return err
 
 def compute_delta(dblActivation, dblError):
     """Computes a delta value from activation and error.
