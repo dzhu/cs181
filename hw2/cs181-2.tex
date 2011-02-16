@@ -15,8 +15,7 @@ perceptron that recognizes the feature or prove none exists.
 at least 75\% of the pixels are off: none exists.
 We can restate the condition as if 1, 2, 3, 7, 8, or 9 of the pixels are on,
 i.e. $\sum a_i<4$ or $\sum a_i>6$, where $a_1,\ldots,a_9$ are pixels with $a_i=0$ if a pixel
-is off and $a_i=1$ if it is on. We have a one-dimensional variable ($\sum a_i$)
-that is not linearly separable. 
+is off and $a_i=1$ if it is on. This is not linearly separable. 
 
 \item \textbf{top-bright} - a larger fraction of pixels is on in the top
 row than in the bottom two rows: we present one that exists. 
@@ -40,13 +39,19 @@ decision trees can be continuous:
 \begin{itemize}
 \item decision trees - 
  these trees would have to be massively complex. ????
+ Decision trees are good when only a few features matter. ****
 \item boosted decision stumps - ??????
 \item perceptrons - linear separation is very limited. They can't tell 
 connectedness or separation. In order for it to work we would need to
 feed it higher level features ahead of time.  
 
 \item multi-layer feed-forward neural networks - this appears most promising. 
-
+  It is good when many features have to be taken into account simultaneously
+  but independently, which applies to our problem. It also can make complex 
+  decision boundaries to arbitrary precision given enough nodes in a single
+  hidden layer. One downside is that if we have a working neural network,
+  it would be difficult to look into it to figure out exactly how different
+  factors work together, as we would be able to in decision trees. 
 \end{itemize}
 
 
