@@ -7,7 +7,6 @@ work module for hw2.
 """
 
 import math
-
 import random
 
 def sigmoid(dblX):
@@ -31,7 +30,7 @@ class Perceptron(object):
         dblW0
             the constant-input weight referred to as w_0 in the notes.
         ix
-            the index of this perceptron in it's layer (for computing
+            the index of this perceptron in its layer (for computing
             the error of hidden nodes).
         """
         self.listDblW = map(float,listDblW)
@@ -100,7 +99,7 @@ def output_error(dblActivation,dblTarget):
 
     >>> output_error(0.75, -1.0) # yes, it's this simple.
     -1.75"""
-    return -dblActivation+dblTarget
+    return dblTarget - dblActivation
 
 def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
     """Determines the error on a hidden node from, its downstream deltas,
@@ -114,12 +113,9 @@ def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
     >>> layer = NeuralNetLayer(1, listPcpt)
     >>> hidden_error([1.0, 0.75], pcpt, layer)
     3.0"""
-    if len(listDblDownstreamDelta) != len(layerNext.listPcpt):
-        raise TypeError("Input size mismatch")
-    err = 0.
-    for i in range(len(layerNext.listPcpt)):
-        err = err + listDblDownstreamDelta[i] * layerNext.listPcpt[i].listDblW[pcpt.ix]
-    return err
+
+    return dot(listDblDownstreamDelta,
+               [nextPcpt.listDblW[pcpt.ix] for nextPcpt in layerNext.listPcpt])
 
 def compute_delta(dblActivation, dblError):
     """Computes a delta value from activation and error.
@@ -128,7 +124,7 @@ def compute_delta(dblActivation, dblError):
     lecture notes.
     >>> compute_delta(0.5,0.5)
     0.125"""
-    return dblError*(dblActivation)*(1.-dblActivation)
+    return dblError * dblActivation * (1 - dblActivation)
 
 
 def update_weight(dblW, dblLearningRate, dblInput, dblDelta):
@@ -145,7 +141,7 @@ def update_pcpt(pcpt, listDblInputs, dblDelta, dblLearningRate):
     given by equation 15 in the lecture notes.
 
     In this case, pcpt.listDblW correponds to the w_j's, dblLearningRate
-    corresponds to lpha, listDblInputs corresponds to the x_j's, and
+    corresponds to \alpha, listDblInputs corresponds to the x_j's, and
     dblDelta corresponds to \delta.
 
     Don't forget to update the perceptron's fixed-input weight (w_0 in
@@ -175,11 +171,11 @@ def pcpt_activation(pcpt, listDblInput):
     >>> pcpt = Perceptron([0.5,0.5,-1.5], 0.75, 0)
     >>> pcpt_activation(pcpt, [0.5,1.0,1.0])
     0.5"""
-    return sigmoid(dot(pcpt.listDblW,listDblInput)+pcpt.dblW0)
+    return sigmoid(dot(pcpt.listDblW, listDblInput) + pcpt.dblW0)
 
 def feed_forward_layer(layer, listDblInput):
     """Build a list of activation levels for the perceptrons
-    in the layer recieving input listDblInput.
+    in the layer receiving input listDblInput.
 
     >>> pcpt1 = Perceptron([-1.0,2.0], 0.0, 0)
     >>> pcpt2 = Perceptron([-2.0,4.0], 0.0, 1)
