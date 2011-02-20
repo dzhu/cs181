@@ -369,13 +369,12 @@ def update_net(net, inst, dblLearningRate, listTargetOutputs):
     ## compute output layer deltas
     output_errors = [output_error(out, target)
                      for out, target in zip(outputs[-1], listTargetOutputs)]
-    deltas = [layer_deltas(outputs[-1], listTargetOutputs)]
+    deltas = [layer_deltas(outputs[-1], output_errors)]
 
     ## compute hidden layer deltas
-    for layer, nextLayer, inp, outp in reversed(zip(net.listLayer[:-1],
-                                                    net.listLayer[1:],
-                                                    inputs,
-                                                    outputs)):
+    for layer, nextLayer, outp in reversed(zip(net.listLayer[:-1],
+                                               net.listLayer[1:],
+                                               outputs)):
         errors = hidden_layer_error(layer, deltas[0], nextLayer)
         deltas.insert(0, layer_deltas(outp, errors))
 
