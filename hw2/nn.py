@@ -8,6 +8,14 @@ work module for hw2.
 
 import math
 import random
+from itertools import imap
+from operator import mul
+
+try:
+    import psyco
+    psyco.full()
+except ImportError:
+    pass
 
 def sigmoid(dblX):
     """The sigmoid function.  Given input dblX, sigmoid(dblX).
@@ -85,7 +93,7 @@ def dot(listDbl1, listDbl2):
     11.5"""
     if len(listDbl1) != len(listDbl2):
         raise ValueError("Incompatible lengths")
-    return sum([dbl1*dbl2 for dbl1,dbl2 in zip(listDbl1,listDbl2)])
+    return sum(imap(mul, listDbl1, listDbl2))
 
 def output_error(dblActivation,dblTarget):
     """Computes the output error for perceptron activation level
