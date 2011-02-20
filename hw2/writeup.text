@@ -1,6 +1,6 @@
 Problem 1
 ---------
-We assume that an on pixel gives an input of 1 to the perceptron, and
+I assume that an on pixel gives an input of 1 to the perceptron, and
 that an off pixel gives 0.
 
 Note: for any perceptron and any particular input, there cannot be a
@@ -32,11 +32,44 @@ while the second requires that its weight be negative.
 
 Problem 2
 ---------
+TODO
+ideas:
+- input is likely to be very noisy
+- very high number of inputs; no one is very important
 
 Problem 3
 ---------
+2.i. Image included in submission as xor_net.png.
+
+     Weights resulting from a run:
+
+        (2.324, 2.727, -2.764)         (-3.896, 3.412, -3.563)
+
+                        (2.406, -5.169, 5.186)
+
+     In each tuple, the first value represents the bias w_0, and the
+     remaining values are the weights of its variable inputs. The left
+     node in the hidden layer corresponds to (x1 && ~x2), while the
+     right one corresponds to (x1 || ~x2), or ~(~x1 && x2).
+
+     The output node corresponds to (i1 || ~i2), where i1 and i2 are
+     its inputs. Thus the whole net represents ((x1 && ~x2) || (~x1 &&
+     x2)), which is exactly (x1 ^ x2).
+
+     As visual aids, the activation levels of the two hidden nodes and
+     the output node have been included in the submission as
+     hidden1.png, hidden2.png, and output.png, respectively.
+
+2.ii.
+
+3.a. 
+3.b.i. 
+3.b.ii. 
+3.b.iii. 
+3.c.
 
 Problem 4
 ---------
+1. 
 
-
+2. 
