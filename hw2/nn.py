@@ -7,7 +7,6 @@ work module for hw2.
 """
 
 import math
-
 import random
 
 def sigmoid(dblX):
@@ -31,7 +30,7 @@ class Perceptron(object):
         dblW0
             the constant-input weight referred to as w_0 in the notes.
         ix
-            the index of this perceptron in it's layer (for computing
+            the index of this perceptron in its layer (for computing
             the error of hidden nodes).
         """
         self.listDblW = map(float,listDblW)
@@ -100,10 +99,10 @@ def output_error(dblActivation,dblTarget):
 
     >>> output_error(0.75, -1.0) # yes, it's this simple.
     -1.75"""
-    return -dblActivation+dblTarget
+    return dblTarget - dblActivation
 
 def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
-    """Determines the error on a hidden node from, its downstream deltas,
+    """Determines the error on a hidden node from its downstream deltas
     and the weights of its out-edges.
 
     The output of this function corresponds to err_j in the lecture
@@ -114,12 +113,9 @@ def hidden_error(listDblDownstreamDelta, pcpt, layerNext):
     >>> layer = NeuralNetLayer(1, listPcpt)
     >>> hidden_error([1.0, 0.75], pcpt, layer)
     3.0"""
-    if len(listDblDownstreamDelta) != len(layerNext.listPcpt):
-        raise TypeError("Input size mismatch")
-    err = 0.
-    for i in range(len(layerNext.listPcpt)):
-        err = err + listDblDownstreamDelta[i] * layerNext.listPcpt[i].listDblW[pcpt.ix]
-    return err
+
+    return dot(listDblDownstreamDelta,
+               [nextPcpt.listDblW[pcpt.ix] for nextPcpt in layerNext.listPcpt])
 
 def compute_delta(dblActivation, dblError):
     """Computes a delta value from activation and error.
@@ -128,8 +124,7 @@ def compute_delta(dblActivation, dblError):
     lecture notes.
     >>> compute_delta(0.5,0.5)
     0.125"""
-    return dblError*(dblActivation)*(1.-dblActivation)
-
+    return dblError * dblActivation * (1 - dblActivation)
 
 def update_weight(dblW, dblLearningRate, dblInput, dblDelta):
     """Compute the updated weight from the original weight `dblW`, the
@@ -145,7 +140,7 @@ def update_pcpt(pcpt, listDblInputs, dblDelta, dblLearningRate):
     given by equation 15 in the lecture notes.
 
     In this case, pcpt.listDblW correponds to the w_j's, dblLearningRate
-    corresponds to lpha, listDblInputs corresponds to the x_j's, and
+    corresponds to \alpha, listDblInputs corresponds to the x_j's, and
     dblDelta corresponds to \delta.
 
     Don't forget to update the perceptron's fixed-input weight (w_0 in
@@ -164,10 +159,8 @@ def update_pcpt(pcpt, listDblInputs, dblDelta, dblLearningRate):
     if len(pcpt.listDblW) != len(listDblInputs):
         raise TypeError("Input size mismatch")
 
-    newDblW0 = update_weight(pcpt.dblW0, dblLearningRate, 1., dblDelta)
-    newListDbl = [update_weight(pcpt.listDblW[i], dblLearningRate, listDblInputs[i], dblDelta) for i in range(len(listDblInputs))]
-    pcpt.dblW0 = newDblW0
-    pcpt.listDblW = newListDbl
+    pcpt.dblW0 = update_weight(pcpt.dblW0, dblLearningRate, 1., dblDelta)
+    pcpt.listDblW = [update_weight(w, dblLearningRate, inp, dblDelta) for w, inp in zip(pcpt.listDblW, listDblInputs)]
 
 def pcpt_activation(pcpt, listDblInput):
     """Compute a perceptron's activation function.
@@ -175,11 +168,11 @@ def pcpt_activation(pcpt, listDblInput):
     >>> pcpt = Perceptron([0.5,0.5,-1.5], 0.75, 0)
     >>> pcpt_activation(pcpt, [0.5,1.0,1.0])
     0.5"""
-    return sigmoid(dot(pcpt.listDblW,listDblInput)+pcpt.dblW0)
+    return sigmoid(dot(pcpt.listDblW, listDblInput) + pcpt.dblW0)
 
 def feed_forward_layer(layer, listDblInput):
     """Build a list of activation levels for the perceptrons
-    in the layer recieving input listDblInput.
+    in the layer receiving input listDblInput.
 
     >>> pcpt1 = Perceptron([-1.0,2.0], 0.0, 0)
     >>> pcpt2 = Perceptron([-2.0,4.0], 0.0, 1)
@@ -232,12 +225,10 @@ def build_layer_inputs_and_outputs(net, listDblInput):
     >>> net = init_net(listCLayerSize)
     >>> build_layer_inputs_and_outputs(net, [-1.0, 1.0]) # doctest: +ELLIPSIS
     ([[...], [...]], [[...], [...]])"""
-    allLayers = [listDblInput]
-    curLayer = listDblInput
-    for layer in net.listLayer:
-        curLayer = feed_forward_layer(layer, curLayer)
-        allLayers = allLayers + [curLayer]
-    return [allLayers[:-1]]+[allLayers[1::]]
+
+    allLayers = reduce(lambda x,y: x + [feed_forward_layer(y, x[-1])],
+                       net.listLayer, [listDblInput])
+    return allLayers[:-1], allLayers[1:]
 
 def feed_forward(net, listDblInput):
     """Compute the neural net's output on input listDblInput."""
@@ -327,11 +318,11 @@ def binary_encode_label(iLabel):
 
     >>> print " ".join("%.2f" % dbl for dbl in binary_encode_label(6))
     0.05 0.95 0.95 0.05"""
-    res = [0.05]*10
+    res = [0.05] * 4
     for p in range(4):
-        if iLabel % 2 == 1 :
+        if iLabel % 2:
             res[p] = 0.95
-        iLabel = iLabel/2
+        iLabel /= 2
     return res
 
 def distributed_decode_net_output(listDblOutput):
@@ -352,11 +343,9 @@ def binary_decode_net_output(listDblOutput):
     9
     """
     total = 0
-    two = 1
     for p in range(4):
         if listDblOutput[p] >= 0.5 :
-            total = total + two
-        two = two * 2
+            total += 1 << p
     return total
 
 def update_net(net, inst, dblLearningRate, listTargetOutputs):
@@ -373,7 +362,25 @@ def update_net(net, inst, dblLearningRate, listTargetOutputs):
     This function returns the list of outputs after feeding forward.  Weight
     updates are done in place.
     """
-    raise NotImplementedError
+    # step 1: feed forward
+    inputs, outputs = build_layer_inputs_and_outputs(net, inst.listDblFeatures)
+
+    # step 2: compute deltas
+    ## compute output layer deltas
+    output_errors = [output_error(out, target)
+                     for out, target in zip(outputs[-1], listTargetOutputs)]
+    deltas = [layer_deltas(outputs[-1], output_errors)]
+
+    ## compute hidden layer deltas
+    for layer, nextLayer, outp in reversed(zip(net.listLayer[:-1],
+                                               net.listLayer[1:],
+                                               outputs)):
+        errors = hidden_layer_error(layer, deltas[0], nextLayer)
+        deltas.insert(0, layer_deltas(outp, errors))
+
+    # step 3: update weights
+    for layer, inp, delta in zip(net.listLayer, inputs, deltas):
+        update_layer(layer, inp, delta, dblLearningRate)
 
 def init_net(listCLayerSize, dblScale=0.01):
     """Build an artificial neural network and initialize its weights
@@ -389,7 +396,17 @@ def init_net(listCLayerSize, dblScale=0.01):
     connected to the next.
 
     This function should return the network."""
-    raise NotImplementedError
+
+    def rand(): return random.uniform(-dblScale, dblScale)
+
+    def make_layer(cInputs, cNodes):
+        listPcpt = [Perceptron([rand() for j in range(cInputs)], rand(), i)
+                    for i in range(cNodes)]
+        return NeuralNetLayer(cInputs, listPcpt)
+    layers = [make_layer(cInputs, cNodes) for cInputs, cNodes
+              in zip(listCLayerSize[:-1], listCLayerSize[1:])]
+
+    return NeuralNet(listCLayerSize[0], layers)
 
 def load_data(sFilename, cMaxInstances=None):
     """Load at most cMaxInstances instances from sFilename, or all instance

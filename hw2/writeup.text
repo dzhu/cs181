@@ -1,0 +1,42 @@
+Problem 1
+---------
+We assume that an on pixel gives an input of 1 to the perceptron, and
+that an off pixel gives 0.
+
+Note: for any perceptron and any particular input, there cannot be a
+situation in which turning the pixel from off to on changes the output
+from negative to positive, and also another situation in which it does
+the reverse, since the first requires that its weight be positive,
+while the second requires that its weight be negative.
+
+1. No -- The input condition requires that 0, 1, 2, 7, 8, or 9 pixels
+   are on. Consider one input with exactly 6 pixels on, not including
+   the top right pixel, and another one with exactly 2 on, not
+   including that pixel. Turning on the top right pixel proves
+   impossibility, by the note.
+
+2. Yes -- each pixel in the top row has a weight of 2, and all other
+   pixels have a weight of -1. The threshold is 0.
+
+3. No -- Consider the following inputs ("X" represents on, "-"
+   represents off).
+
+   X--  X-X  -X-  -XX
+   ---  ---  --X  --X
+   ---  ---  ---  ---
+
+   Considering the first two, we see that turning on the top right
+   pixel can change the state from connected to unconnected; but in
+   the other two, turning it on does the reverse. Impossible by the
+   note.
+
+Problem 2
+---------
+
+Problem 3
+---------
+
+Problem 4
+---------
+
+

@@ -11,14 +11,18 @@ from tfutils import tftask
 
 import nn
 
+XOR_INSTANCES = [nn.Instance(0.1, [-1.0,-1.0]), nn.Instance(0.9, [-1.0,1.0]),
+                 nn.Instance(0.9, [1.0,-1.0]), nn.Instance(0.1, [1.0,1.0])]
+
 def build_xor_net():
     HIDDEN_NODES = 2
     ROUNDS = 5000
     LEARNING_RATE = 0.35
+    assert XOR_INSTANCES
     net = nn.init_net([2, HIDDEN_NODES, 1], 0.001)
     for ixRound in xrange(ROUNDS):
         dblAlpha = 2.0*ROUNDS/(ixRound + ROUNDS)
-        for inst in nn.XOR_INSTANCES:
+        for inst in XOR_INSTANCES:
             nn.update_net(net, inst, dblAlpha, [inst.iLabel])
     return net
 
@@ -149,7 +153,7 @@ class XorClassifyTask(tftask.ChartTask):
         listFalse = []
         listSMarker = ["triangle-down", "triangle"]
         listSColor = ["#FF0000", "#000000"]
-        for inst in nn.XOR_INSTANCES:
+        for inst in XOR_INSTANCES:
             dblOut = nn.feed_forward(net, inst.listDblFeatures)[0]
             fLabel = inst.iLabel > 0.5
             iGuess = int(dblOut > 0.5)
