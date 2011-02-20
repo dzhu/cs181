@@ -60,7 +60,9 @@ Problem 3
      the output node have been included in the submission as
      hidden1.png, hidden2.png, and output.png, respectively.
 
-2.ii.
+2.ii. Every once in a while, the output is incorrect (so far, I've
+      seen the (-1,1) input get classified incorrectly, but nothing
+      else). TODO
 
 3.a. 
 3.b.i. 

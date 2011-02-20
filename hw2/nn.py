@@ -390,6 +390,8 @@ def update_net(net, inst, dblLearningRate, listTargetOutputs):
     for layer, inp, delta in zip(net.listLayer, inputs, deltas):
         update_layer(layer, inp, delta, dblLearningRate)
 
+    return outputs[-1]
+
 def init_net(listCLayerSize, dblScale=0.01):
     """Build an artificial neural network and initialize its weights
     to random values in the interval (-dblScale,dblScale).
@@ -497,7 +499,7 @@ def experiment(opts):
     config.append(10)
     net = init_net(config)
     dblAlpha = opts.learning_rate
-    print 'Learning rate: %f' % dblAlpha
+    print '%f' % dblAlpha
     for ixRound in xrange(opts.rounds):
         # Compute the error
         errors = 0
@@ -509,11 +511,14 @@ def experiment(opts):
               errors += 1
         # Get validation error
         validation_correct = num_correct(net, listInstVal)
-        sys.stderr.write(
-        "Round %d complete.  Training Accuracy: %f, Validation Accuracy: %f\n" % (
-          ixRound + 1,
-          1 - errors * 1.0 / len(listInstTrain),
-          validation_correct * 1.0 / len(listInstVal)))
+        # sys.stderr.write(
+        # "Round %d complete.  Training Accuracy: %f, Validation Accuracy: %f\n" % (
+        #   ixRound + 1,
+        #   1 - errors * 1.0 / len(listInstTrain),
+        #   validation_correct * 1.0 / len(listInstVal)))
+
+        print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
+
         if opts.stopping_condition:
             # TODO(CS181 Student): implement your stopping condition
             # as described in part 3.4 of the homework instructions.
@@ -560,7 +565,7 @@ def main(argv):
     parser.add_option("--num_inputs", action="store",
                       dest="num_inputs",
                       default=(10*12), type=int,
-                      help="number of hidden units to use.")
+                      help="number of inputs to use.")
     parser.add_option("--enable-stopping", action="store_true",
                       dest="stopping_condition", default=False,
                       help="detect when to stop training early (TODO)")
