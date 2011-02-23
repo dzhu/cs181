@@ -157,10 +157,13 @@ class PerceptronTest(unittest.TestCase):
         pcpt = nn.Perceptron(list(listDblW), dblW0, ixPcpt)
         nn.update_pcpt(pcpt, listDblInput, dblDelta,  dblLearningRate)
         self.assertEqual(len(listDblW), len(pcpt.listDblW))
+        dblProductBase = dblLearningRate*dblActivation*dblError
         for dblW,dblIn,dblWOrig in zip(pcpt.listDblW,listDblInput,listDblW):
-            dblProduct = dblLearningRate*dblIn*dblActivation*dblError
+            dblProduct = dblProductBase*dblIn
             dblExpected = dblProduct - (dblW - dblWOrig)
             self.assertAlmostEqual(dblProduct*dblActivation, dblExpected)
+        self.assertAlmostEqual(dblProductBase*dblActivation,
+                               dblProductBase - (pcpt.dblW0 - dblW0))
 
     @repeated
     def test_pcpt_activation(self):

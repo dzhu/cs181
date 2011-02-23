@@ -1,0 +1,77 @@
+Problem 1
+---------
+I assume that an on pixel gives an input of 1 to the perceptron, and
+that an off pixel gives 0.
+
+Note: for any perceptron and any particular input, there cannot be a
+situation in which turning the pixel from off to on changes the output
+from negative to positive, and also another situation in which it does
+the reverse, since the first requires that its weight be positive,
+while the second requires that its weight be negative.
+
+1. No -- The input condition requires that 0, 1, 2, 7, 8, or 9 pixels
+   are on. Consider one input with exactly 6 pixels on, not including
+   the top right pixel, and another one with exactly 2 on, not
+   including that pixel. Turning on the top right pixel proves
+   impossibility, by the note.
+
+2. Yes -- each pixel in the top row has a weight of 2, and all other
+   pixels have a weight of -1. The threshold is 0.
+
+3. No -- Consider the following inputs ("X" represents on, "-"
+   represents off).
+
+   X--  X-X  -X-  -XX
+   ---  ---  --X  --X
+   ---  ---  ---  ---
+
+   Considering the first two, we see that turning on the top right
+   pixel can change the state from connected to unconnected; but in
+   the other two, turning it on does the reverse. Impossible by the
+   note.
+
+Problem 2
+---------
+TODO
+ideas:
+- input is likely to be very noisy
+- very high number of inputs; no one is very important
+
+Problem 3
+---------
+2.i. Image included in submission as xor_net.png.
+
+     Weights resulting from a run:
+
+        (2.324, 2.727, -2.764)         (-3.896, 3.412, -3.563)
+
+                        (2.406, -5.169, 5.186)
+
+     In each tuple, the first value represents the bias w_0, and the
+     remaining values are the weights of its variable inputs. The left
+     node in the hidden layer corresponds to (x1 && ~x2), while the
+     right one corresponds to (x1 || ~x2), or ~(~x1 && x2).
+
+     The output node corresponds to (i1 || ~i2), where i1 and i2 are
+     its inputs. Thus the whole net represents ((x1 && ~x2) || (~x1 &&
+     x2)), which is exactly (x1 ^ x2).
+
+     As visual aids, the activation levels of the two hidden nodes and
+     the output node have been included in the submission as
+     hidden1.png, hidden2.png, and output.png, respectively.
+
+2.ii. Every once in a while, the output is incorrect (so far, I've
+      seen the (-1,1) input get classified incorrectly, but nothing
+      else). TODO
+
+3.a. 
+3.b.i. 
+3.b.ii. 
+3.b.iii. 
+3.c.
+
+Problem 4
+---------
+1. 
+
+2. 
