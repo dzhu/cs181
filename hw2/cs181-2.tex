@@ -1,154 +1,213 @@
 \documentclass{article}
-\usepackage{qtree}
 \usepackage{graphicx}
 \usepackage[left=1.25in,right=1.25in]{geometry}
 \usepackage{color}
+\usepackage{amsmath}
 \definecolor{Yellow}{rgb}{1,1,0}
+\newcommand{\mat}[1]{\begin{pmatrix}#1\end{pmatrix}}
 \newcommand{\edit}[1]{\colorbox{Yellow}{#1}}
 %\newcommand{\edit}[1]{}
+
 \begin{document}
+  \section*{Problem 1}
+  \textit{Consider training a single perceptron with the perceptron
+    activation rule.  Assume that an image is a $3\times 3$ array of
+    pixels, with each pixel being on or off. For each of the following
+    features, either present a perceptron that recognizes the feature
+    or prove none exists.}
 
-\section*{Problem 1}
+  I assume that an on pixel gives an input of 1 to the perceptron, and
+  that an off pixel gives 0.
 
-Consider training a single perceptron with the perceptron activation rule.
-Assume that an image is a $3\times 3$ array of pixels, with each pixel 
-being on or off. For each of the following features, either present a 
-perceptron that recognizes the feature or prove none exists.
-\begin{enumerate}
-\item \textbf{bright or dark} - at least 75\% of the pixels are on, or 
-at least 75\% of the pixels are off: none exists.
-We can restate the condition as if 1, 2, 3, 7, 8, or 9 of the pixels are on,
-i.e. $\sum a_i<4$ or $\sum a_i>6$, where $a_1,\ldots,a_9$ are pixels with $a_i=0$ if a pixel
-is off and $a_i=1$ if it is on. This is not linearly separable. 
-(If however we ran the neural network on $|\left(\sum a_i\right) -5|$ it would
-have been linearly separable, but that wasn't the question.)
+  Lemma: for any perceptron and any particular input, there cannot be
+  a situation in which turning the pixel from off to on changes the
+  output from negative to positive, and also another situation in
+  which it does the reverse, since the first requires that its weight
+  be positive, while the second requires that its weight be negative.
 
-\item \textbf{top-bright} - a larger fraction of pixels is on in the top
-row than in the bottom two rows: we present one that exists. 
-Let $a_1,a_2,a_3$ be the first row and
-$a_4,\ldots,a_9$ be the bottom two rows. Our perceptron classifier can
-be as follows: letting $a_i=0$ denote off and $a_i=1$ denote on, 
-$$P(a_1,\ldots,a_9)=2(a_1+a_2+a_3)-(a_4+\ldots+a_9)$$
-is positive if a larger fraction of pixels are on in the top row than
-in the bottom two rows, and nonpositive otherwise. 
+  \begin{enumerate}
+  \item \textbf{bright or dark} - at least 75\% of the pixels are on,
+    or at least 75\% of the pixels are off.
 
-\item \textbf{connected} - the set of pixels that are on is connected: 
-none exists. Minsky and Papert found that perceptrons can't distinguish
-XOR, so that they can't even distinguish a very narrow subproblem of
-connectedness, so that perceptrons cannot determine connectedness. 
-\end{enumerate}
+    No -- The input condition requires that 0, 1, 2, 7, 8, or 9 pixels
+    are on. Consider one input with exactly 6 pixels on, not including
+    the top right pixel, and another one with exactly 2 on, not
+    including that pixel. Turning on the top right pixel proves
+    impossibility, by the lemma.
 
-\section*{Problem 2}
-Consider four different possible learning algorithms for the digits
-classification problem and argue for or against each of them given that
-decision trees can be continuous: 
-\begin{itemize}
-\item decision trees - 
- these trees would have to be massively complex. ????
- Decision trees are good when only a few features matter. ****
-\item boosted decision stumps - ??????
-\item perceptrons - linear separation is very limited. They can't tell 
-connectedness or separation. In order for it to work we would need to
-feed it higher level features ahead of time.  
+  \item \textbf{top-bright}: a larger fraction of pixels is on in the
+    top row than in the bottom two rows.
 
-\item multi-layer feed-forward neural networks - this appears most promising. 
-  It is good when many features have to be taken into account simultaneously
-  but independently, which applies to our problem. It also can make complex 
-  decision boundaries to arbitrary precision given enough nodes in a single
-  hidden layer. One downside is that if we have a working neural network,
-  it would be difficult to look into it to figure out exactly how different
-  factors work together, as we would be able to in decision trees. 
-\end{itemize}
+    Yes: each pixel in the top row has a weight of 2, and all other
+    pixels have a weight of -1. The threshold is 0.
 
-\section*{Problem 3}
+    %% we present one that exists.  Let $a_1,a_2,a_3$ be the first row
+    %% and $a_4,\ldots,a_9$ be the bottom two rows. Our perceptron
+    %% classifier can be as follows: letting $a_i=0$ denote off and
+    %% $a_i=1$ denote on,
+    %% $$P(a_1,\ldots,a_9)=2(a_1+a_2+a_3)-(a_4+\ldots+a_9)$$
+    %% is positive if a larger fraction of pixels are on in the top row than
+    %% in the bottom two rows, and nonpositive otherwise. 
 
-\begin{enumerate}
-\setcount{enumi}1
-\item \textbf{XOR}
-Include a picture of the network generated. Explain how the combination of weights
-emulates the logical operations needed to express XOR. 
+  \item \textbf{connected}
 
-\edit{I don't know how to make images not float.}
+    No -- Consider the following inputs.
 
-The weights aren't included in the image, so we will describe them here.
-Call the inputs $A_1$ and $A_2$. 
-In one hidden node (call it $B_1$), its activation is the sigmoid function
-of roughly $4.0 A_1-4.1 A_2-5.0$. In the other hidden node ($B_2$), its activation
-is the sigmoid of $2.7A_1-2.7A_2+2.2$. The output node has activation of
-sigmoid of $5.2 B_1-5.1 B_2+2.4$. 
+    \[\mat{1&0&0\\0&0&0\\0&0&0}\qquad\mat{1&0&1\\0&0&0\\0&0&0}\qquad\mat{0&1&0\\0&0&1\\0&0&0}\qquad\mat{0&1&1\\0&0&1\\0&0&0}\]
 
-Looking at $B_1$, if the two inputs are the same, $B_1$ outputs 
-roughly 0 (after sigmoid). If $A_1$ is 1 and $A_2$ is 0, then $B_1$ outputs roughly a half;
-if $A_1$ is 0 and $A_2$ is 1, it outputs roughly 0. 
-$B_2$ does similarly, except flipped: if $A_1$ and $A_2$ same, it
-outputs roughly 1; if $A_1$ is 1 and $A_2$ is 0, it outputs roughly 1;
-if $A_1$ is 0 and $A_2$ is 1 it outputs roughly a half. 
+    Considering the first two, we see that turning on the top right
+    pixel can change the state from connected to unconnected; but in
+    the other two, turning it on does the reverse. Impossible by the
+    lemma.
 
-Then we look at the output node. If $A_1$ and $A_2$ were the same, 
-$B_1$ outputs roughly 0 and $B_2$ outputs roughly 1. 
+  \end{enumerate}
 
-\edit{This part is just wrong. I don't really know why.}
+  \section*{Problem 2}
+  Consider four different possible learning algorithms for the digits
+  classification problem and argue for or against each of them given that
+  decision trees can be continuous: 
+  \begin{itemize}
+  \item decision trees - 
+    these trees would have to be massively complex. ????
+    Decision trees are good when only a few features matter. ****
+  \item boosted decision stumps - ??????
+  \item perceptrons - linear separation is very limited. They can't tell 
+    connectedness or separation. In order for it to work we would need to
+    feed it higher level features ahead of time.  
 
-What are some reasons the networks could intermittently fail to learn XOR?
-What parameters can you tune to alleviate this type of problem?
+  \item multi-layer feed-forward neural networks - this appears most promising. 
+    It is good when many features have to be taken into account simultaneously
+    but independently, which applies to our problem. It also can make complex 
+    decision boundaries to arbitrary precision given enough nodes in a single
+    hidden layer. One downside is that if we have a working neural network,
+    it would be difficult to look into it to figure out exactly how different
+    factors work together, as we would be able to in decision trees. 
+  \end{itemize}
 
+  \section*{Problem 3}
 
+  \begin{enumerate}
+    \setcounter{enumi}1
+  \item \textbf{XOR}
+    Include a picture of the network generated. Explain how the combination of weights
+    emulates the logical operations needed to express XOR. 
 
-\item \textbf{Experimental Analysis}
-\begin{enumerate}
-\item Provide the learning rate you used. How did you select this rate?
+    \begin{center}
+      \includegraphics[scale=.4]{xor_net.png}
+    \end{center}
 
-\item For this learning rate, chart the training set and validation error
-against the number of epochs from 1 to 100. 
+    Weights resulting from a run (hidden nodes in the first line,
+    output node in the second):
 
-\begin{enumerate}
-\item Are we in danger of overfitting by training for too many epochs?
+    %fix this too
 
+    (2.324, 2.727, -2.764)         (-3.896, 3.412, -3.563)
 
-\item What is a good number of epochs to train for?
+    (2.406, -5.169, 5.186)
 
+    %TODO fix this paragraph
 
-\item Why is it important that we use a validation set (rather than the
-actual test set) to tune the number of epochs?
+    In each tuple, the first value represents the bias $w_0$, and the
+    remaining values are the weights of its variable inputs. The left
+    node in the hidden layer corresponds to (x1 && ~x2), while the
+    right one corresponds to (x1 || ~x2), or ~(~x1 && x2).
 
-If we use the test set to tune the number of epochs, the tuning may 
-overfit to the testing data, resulting in better reported performance. 
+    The output node corresponds to (i1 || ~i2), where i1 and i2 are
+    its inputs. Thus the whole net represents ((x1 && ~x2) || (~x1 &&
+    x2)), which is exactly (x1 ^ x2).
 
-\end{enumerate}
-\item What is the training, validation, and test performance of the
-network trained with your chosen learning rate and number of epochs?
+    As visual aids, plots of the activation levels of the two hidden
+    nodes and the output node (as a function of the two inputs) have
+    been included in the submission as hidden1.png, hidden2.png, and
+    output.png, respectively.
 
-\end{enumerate}
+    \begin{center}
+      \includegraphics[scale=.3]{hidden1.png}
+      \includegraphics[scale=.3]{hidden2.png}
+      \includegraphics[scale=.3]{output.png}
+    \end{center}
 
-\item \textbf{Model Selection}
-\begin{enumerate}
-\item Experiment with the distributed and binary encoding for both 15 and
-30 hidden layers. Which encoding performs better? Is this in line with what
-we know about encodings? Use the better encoding for the rest of this problem.
+    %% \edit{I don't know how to make images not float.}
 
-\item Provide the learning rates you used for training 15 and 30 hidden units.
+    %% The weights aren't included in the image, so we will describe them here.
+    %% Call the inputs $A_1$ and $A_2$. 
+    %% In one hidden node (call it $B_1$), its activation is the sigmoid function
+    %% of roughly $4.0 A_1-4.1 A_2-5.0$. In the other hidden node ($B_2$), its activation
+    %% is the sigmoid of $2.7A_1-2.7A_2+2.2$. The output node has activation of
+    %% sigmoid of $5.2 B_1-5.1 B_2+2.4$. 
 
-\setcount{enumii}3
+    %% Looking at $B_1$, if the two inputs are the same, $B_1$ outputs 
+    %% roughly 0 (after sigmoid). If $A_1$ is 1 and $A_2$ is 0, then $B_1$ outputs roughly a half;
+    %% if $A_1$ is 0 and $A_2$ is 1, it outputs roughly 0. 
+    %% $B_2$ does similarly, except flipped: if $A_1$ and $A_2$ same, it
+    %% outputs roughly 1; if $A_1$ is 1 and $A_2$ is 0, it outputs roughly 1;
+    %% if $A_1$ is 0 and $A_2$ is 1 it outputs roughly a half. 
 
-\item In three sentences or less, explain your stopping condition. 
+    %% Then we look at the output node. If $A_1$ and $A_2$ were the same, 
+    %% $B_1$ outputs roughly 0 and $B_2$ outputs roughly 1. 
 
-\item For both 15 and hidden units, use your algorithm to determine when to stop.
-Graph training data and validation set performance against the number of
-epochs you trained for.
+    %% \edit{This part is just wrong. I don't really know why.}
 
-\item How many epochs did you use for 15 hidden units? 30?
-
-\item What is the test performance for 15 and 30 hidden units? Does this agree
-with the validation set performance you observed? Which network structure
-(15, 30, 0 hidden units) would you choose based on these experiments?
-
-
-\end{enumerate}
+    What are some reasons the networks could intermittently fail to learn XOR?
+    What parameters can you tune to alleviate this type of problem?
 
 
-\end{enumerate}
 
-\section*{Problem 4}
+  \item \textbf{Experimental Analysis}
+    \begin{enumerate}
+    \item Provide the learning rate you used. How did you select this rate?
+
+    \item For this learning rate, chart the training set and validation error
+      against the number of epochs from 1 to 100. 
+
+      \begin{enumerate}
+      \item Are we in danger of overfitting by training for too many epochs?
+
+
+      \item What is a good number of epochs to train for?
+
+
+      \item Why is it important that we use a validation set (rather than the
+        actual test set) to tune the number of epochs?
+
+        If we use the test set to tune the number of epochs, the tuning may 
+        overfit to the testing data, resulting in better reported performance. 
+
+      \end{enumerate}
+    \item What is the training, validation, and test performance of the
+      network trained with your chosen learning rate and number of epochs?
+
+    \end{enumerate}
+
+  \item \textbf{Model Selection}
+    \begin{enumerate}
+    \item Experiment with the distributed and binary encoding for both 15 and
+      30 hidden layers. Which encoding performs better? Is this in line with what
+      we know about encodings? Use the better encoding for the rest of this problem.
+
+    \item Provide the learning rates you used for training 15 and 30 hidden units.
+
+      \setcounter{enumii}3
+
+    \item In three sentences or less, explain your stopping condition. 
+
+    \item For both 15 and hidden units, use your algorithm to determine when to stop.
+      Graph training data and validation set performance against the number of
+      epochs you trained for.
+
+    \item How many epochs did you use for 15 hidden units? 30?
+
+    \item What is the test performance for 15 and 30 hidden units? Does this agree
+      with the validation set performance you observed? Which network structure
+      (15, 30, 0 hidden units) would you choose based on these experiments?
+
+
+    \end{enumerate}
+
+
+  \end{enumerate}
+
+  \section*{Problem 4}
 
 
 
