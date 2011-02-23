@@ -373,7 +373,25 @@ def update_net(net, inst, dblLearningRate, listTargetOutputs):
     This function returns the list of outputs after feeding forward.  Weight
     updates are done in place.
     """
-    raise NotImplementedError
+    
+    # 1
+    net_io = build_layer_inputs_and_outputs(net, inst.listDblFeatures)
+    # 2
+    outlayer_error = [output_error(net_io[-1][i],listTargetOutputs) for i in range(len(listTargetOutputs))] 
+    alllayer_errors = [outlayer_error]
+    numLayers = len(net.listLayer)
+    for i in range(numLayers-1):
+        # i is 0 to n-1
+        thislayer_error = hidden_layer_error(net.listLayer[numLayers-1-i],alllayer_errors[0],net.listLayer[numLayers-i])
+        alllayer_errors = [thislayer_error] + alllayer_errors
+    # 3
+    alllayer_deltas = []
+    for i in range(numLayers):
+        curlayer_deltas = layer_deltas(net_io[1][i],alllayer_errors[i])
+        alllayer_deltas = alllayer_deltas + [curlayer_deltas]
+
+    for i in range(numLayers): 
+        update_layer(net.listLayer[i],net_io[0][i],alllayer_deltas[i],dblLearningRate)
 
 def init_net(listCLayerSize, dblScale=0.01):
     """Build an artificial neural network and initialize its weights
@@ -389,7 +407,9 @@ def init_net(listCLayerSize, dblScale=0.01):
     connected to the next.
 
     This function should return the network."""
-    raise NotImplementedError
+
+    layers = [new NeuralNetLayer(0, [] )]
+    
 
 def load_data(sFilename, cMaxInstances=None):
     """Load at most cMaxInstances instances from sFilename, or all instance
