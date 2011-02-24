@@ -66,9 +66,10 @@
     digits classification problem and argue for or against each of
     them given that decision trees can be continuous:}
   \begin{itemize}
-  \item decision trees - 
-    these trees would have to be massively complex. ????
-    Decision trees are good when only a few features matter. ****
+  \item decision trees -- These tend to be best when a small number of
+    attributes are particularly important. For this problem,
+    individual inputs matter much less than the relationship between
+    them; decision trees would have a hard time capturing that well.
   \item boosted decision stumps - ??????
   \item perceptrons - linear separation is very limited. They can't tell 
     connectedness or separation. In order for it to work we would need to
@@ -99,11 +100,11 @@
     output node in the second):
 
     %fix this too
+    \begin{center}
+      (2.324, 2.727, -2.764)         (-3.896, 3.412, -3.563)
 
-    (2.324, 2.727, -2.764)         (-3.896, 3.412, -3.563)
-
-    (2.406, -5.169, 5.186)
-
+      (2.406, -5.169, 5.186)
+    \end{center}
     %TODO fix this paragraph
 
     In each tuple, the first value represents the bias $w_0$, and the
@@ -117,15 +118,15 @@
     $((x_1\wedge\lnot x_2)\vee(\lnot x_1\wedge x_2))$, which is
     exactly $(x_1\oplus x_2)$.
 
-    As visual aids, plots of the activation levels of the two hidden
-    nodes and the output node (as a function of the two inputs) have
-    been included in the submission as hidden1.png, hidden2.png, and
-    output.png, respectively.
+    Plots of the activation levels of the two hidden nodes and the
+    output node (as a function of the two inputs) have been included
+    below, and in the submission as {\tt hidden1.png}, {\tt
+      hidden2.png}, and {\tt output.png}, respectively.
 
     \begin{center}
-      \includegraphics[scale=.3]{hidden1.png}
-      \includegraphics[scale=.3]{hidden2.png}
-      \includegraphics[scale=.3]{output.png}
+      \includegraphics[scale=.35]{hidden1.png}
+      \includegraphics[scale=.35]{hidden2.png}
+      \includegraphics[scale=.35]{output.png}
     \end{center}
 
     %% \edit{I don't know how to make images not float.}
@@ -157,7 +158,29 @@
 
   \item \textbf{Experimental Analysis}
     \begin{enumerate}
-    \item Provide the learning rate you used. How did you select this rate?
+    \item \textit{Provide the learning rate you used. How did you
+      select this rate?}
+
+      We think the optimal rate is about $.1$. We ran a great many
+      trials, with varying ranges of learning rates. Included below
+      are plots of performance on the test set after 40 rounds. (Each
+      data point represents only one run, so the statistical
+      significance is maybe not that good, but the trends seem to be
+      visible.) Our thanks go to the NICE and Science Center basement
+      machines.
+
+      % TODO make these images
+
+      With a step of .1:
+
+      Clearly, the rate should not be more than 10.
+
+      With a step of .01:
+
+      With a step of .001:
+
+      With a step of .0001:
+
 
     \item For this learning rate, chart the training set and validation error
       against the number of epochs from 1 to 100. 
