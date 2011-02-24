@@ -3,7 +3,7 @@ Problem 1
 I assume that an on pixel gives an input of 1 to the perceptron, and
 that an off pixel gives 0.
 
-Note: for any perceptron and any particular input, there cannot be a
+Lemma: for any perceptron and any particular input, there cannot be a
 situation in which turning the pixel from off to on changes the output
 from negative to positive, and also another situation in which it does
 the reverse, since the first requires that its weight be positive,
@@ -13,7 +13,7 @@ while the second requires that its weight be negative.
    are on. Consider one input with exactly 6 pixels on, not including
    the top right pixel, and another one with exactly 2 on, not
    including that pixel. Turning on the top right pixel proves
-   impossibility, by the note.
+   impossibility, by the lemma.
 
 2. Yes -- each pixel in the top row has a weight of 2, and all other
    pixels have a weight of -1. The threshold is 0.
@@ -28,7 +28,7 @@ while the second requires that its weight be negative.
    Considering the first two, we see that turning on the top right
    pixel can change the state from connected to unconnected; but in
    the other two, turning it on does the reverse. Impossible by the
-   note.
+   lemma.
 
 Problem 2
 ---------
@@ -41,7 +41,8 @@ Problem 3
 ---------
 2.i. Image included in submission as xor_net.png.
 
-     Weights resulting from a run:
+     Weights resulting from a run (hidden nodes in the first line,
+     output node in the second):
 
         (2.324, 2.727, -2.764)         (-3.896, 3.412, -3.563)
 
@@ -56,15 +57,16 @@ Problem 3
      its inputs. Thus the whole net represents ((x1 && ~x2) || (~x1 &&
      x2)), which is exactly (x1 ^ x2).
 
-     As visual aids, the activation levels of the two hidden nodes and
-     the output node have been included in the submission as
-     hidden1.png, hidden2.png, and output.png, respectively.
+     As visual aids, plots of the activation levels of the two hidden
+     nodes and the output node (as a function of the two inputs) have
+     been included in the submission as hidden1.png, hidden2.png, and
+     output.png, respectively.
 
 2.ii. Every once in a while, the output is incorrect (so far, I've
       seen the (-1,1) input get classified incorrectly, but nothing
       else). TODO
 
-3.a. 
+3.a. We settled on .04. This was determined by running an 
 3.b.i. 
 3.b.ii. 
 3.b.iii. 
