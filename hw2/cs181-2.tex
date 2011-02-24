@@ -4,7 +4,7 @@
 \usepackage{color}
 \usepackage{amsmath}
 \definecolor{Yellow}{rgb}{1,1,0}
-\newcommand{\mat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
 \newcommand{\edit}[1]{\colorbox{Yellow}{#1}}
 %\newcommand{\edit}[1]{}
 
@@ -16,8 +16,8 @@
     features, either present a perceptron that recognizes the feature
     or prove none exists.}
 
-  I assume that an on pixel gives an input of 1 to the perceptron, and
-  that an off pixel gives 0.
+  We assume that an on pixel gives an input of 1 to the perceptron,
+  and that an off pixel gives 0.
 
   Lemma: for any perceptron and any particular input, there cannot be
   a situation in which turning the pixel from off to on changes the
@@ -39,7 +39,7 @@
     top row than in the bottom two rows.
 
     Yes: each pixel in the top row has a weight of 2, and all other
-    pixels have a weight of -1. The threshold is 0.
+    pixels have a weight of $-1$. The threshold is 0.
 
     %% we present one that exists.  Let $a_1,a_2,a_3$ be the first row
     %% and $a_4,\ldots,a_9$ be the bottom two rows. Our perceptron
@@ -59,13 +59,12 @@
     pixel can change the state from connected to unconnected; but in
     the other two, turning it on does the reverse. Impossible by the
     lemma.
-
   \end{enumerate}
 
   \section*{Problem 2}
-  Consider four different possible learning algorithms for the digits
-  classification problem and argue for or against each of them given that
-  decision trees can be continuous: 
+  \textit{Consider four different possible learning algorithms for the
+    digits classification problem and argue for or against each of
+    them given that decision trees can be continuous:}
   \begin{itemize}
   \item decision trees - 
     these trees would have to be massively complex. ????
@@ -88,9 +87,9 @@
 
   \begin{enumerate}
     \setcounter{enumi}1
-  \item \textbf{XOR}
-    Include a picture of the network generated. Explain how the combination of weights
-    emulates the logical operations needed to express XOR. 
+  \item \textbf{XOR} \textit{Include a picture of the network
+    generated. Explain how the combination of weights emulates the
+    logical operations needed to express XOR.}
 
     \begin{center}
       \includegraphics[scale=.4]{xor_net.png}
@@ -109,12 +108,14 @@
 
     In each tuple, the first value represents the bias $w_0$, and the
     remaining values are the weights of its variable inputs. The left
-    node in the hidden layer corresponds to (x1 && ~x2), while the
-    right one corresponds to (x1 || ~x2), or ~(~x1 && x2).
+    node in the hidden layer corresponds to $(x_1\wedge\lnot x_2)$,
+    while the right one corresponds to $(x_1\vee\lnot x_2)$, or
+    $\lnot(\lnot x_1\wedge x_2)$.
 
-    The output node corresponds to (i1 || ~i2), where i1 and i2 are
-    its inputs. Thus the whole net represents ((x1 && ~x2) || (~x1 &&
-    x2)), which is exactly (x1 ^ x2).
+    The output node corresponds to $(i_1\vee\lnot i_2)$, where $i_1$
+    and $i_2$ are its inputs. Thus the whole net represents
+    $((x_1\wedge\lnot x_2)\vee(\lnot x_1\wedge x_2))$, which is
+    exactly $(x_1\oplus x_2)$.
 
     As visual aids, plots of the activation levels of the two hidden
     nodes and the output node (as a function of the two inputs) have
@@ -148,8 +149,9 @@
 
     %% \edit{This part is just wrong. I don't really know why.}
 
-    What are some reasons the networks could intermittently fail to learn XOR?
-    What parameters can you tune to alleviate this type of problem?
+    \textit{What are some reasons the networks could intermittently
+      fail to learn XOR?  What parameters can you tune to alleviate
+      this type of problem?}
 
 
 
