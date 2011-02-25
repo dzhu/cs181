@@ -70,26 +70,33 @@
     attributes are particularly important. For this problem,
     individual inputs matter much less than the relationship between
     them; decision trees would have a hard time capturing that well.
-  \item boosted decision stumps -- similar to above; even though they perform well
-    for identifying cancer characteristics, a weighted average of 
-    several splits would not be useful for identifying digits because
-    of the importance of specific interactions between groups of inputs. 
-  \item perceptrons - linear separation is very limited. They can't tell 
-    connectedness or separation. In order for it to work we would need to
-    feed it higher level features ahead of time.  
+  \item boosted decision stumps -- similar to above; even though they
+    perform well for identifying cancer characteristics, a weighted
+    average of several splits would not be useful for identifying
+    digits because of the importance of specific interactions between
+    groups of inputs.
+  \item perceptrons - linear separation is very limited. They can't
+    tell connectedness or separation. In order for it to work we would
+    need to feed it higher level features ahead of time.
 
-  \item multi-layer feed-forward neural networks - this appears most promising. 
-    It is good when many features have to be taken into account simultaneously
-    but independently, which applies to our problem. It also can make complex 
-    decision boundaries to arbitrary precision given enough nodes in a single
-    hidden layer. One downside is that if we have a working neural network,
-    it would be difficult to look into it to figure out exactly how different
-    factors work together, as we would be able to in decision trees. 
+  \item multi-layer feed-forward neural networks - this appears most
+    promising.  It is good when many features have to be taken into
+    account simultaneously but independently, which applies to our
+    problem. It also can make complex decision boundaries to arbitrary
+    precision given enough nodes in a single hidden layer. One
+    downside is that if we have a working neural network, it would be
+    difficult to look into it to figure out exactly how different
+    factors work together, as we would be able to in decision trees.
   \end{itemize}
 
   \section*{Problem 3}
 
   \begin{enumerate}
+    \textit{Do you really think you need to answer this example
+      question in your writeup?}
+
+    No.
+
     \setcounter{enumi}1
   \item \textbf{XOR} \textit{Include a picture of the network
     generated. Explain how the combination of weights emulates the
@@ -183,47 +190,69 @@
 
       % TODO make these images
 
-      With a step of .1:
+      With a step of .1 (learning rate ranging from .1 to 50):
 
-      Clearly, the rate should not be more than 10.
+      \begin{center}
+        \includegraphics[scale=.5]{plot_test_1.png}
+      \end{center}
 
-      With a step of .01:
+      Clearly, the rate should not be more than 10. We continue to
+      zoom in on what appears to be the best peak.
 
-      With a step of .001:
+      With a step of .01 (range .01 to 3):
 
-      With a step of .0001:
+      \begin{center}
+        \includegraphics[scale=.5]{plot_test_01.png}
+      \end{center}
 
+      With a step of .001 (range .001 to 1):
 
-    \item For this learning rate, chart the training set and validation error
-      against the number of epochs from 1 to 100. 
+      \begin{center}
+        \includegraphics[scale=.5]{plot_test_001.png}
+      \end{center}
+
+      With a step of .0001 (range .0001 to .12):
+
+      \begin{center}
+        \includegraphics[scale=.5]{plot_test_0001.png}
+      \end{center}
+
+      So the differences between the different rates are pretty small
+      at this point, but it looks like it's safe to say that something
+      around .1 is best.
+
+    \item \textit{For this learning rate, chart the training set and
+      validation error against the number of epochs from 1 to 100.}
 
       \begin{enumerate}
-      \item Are we in danger of overfitting by training for too many epochs?
+      \item \textit{Are we in danger of overfitting by training for
+        too many epochs?}
 
 
-      \item What is a good number of epochs to train for?
+      \item \textit{What is a good number of epochs to train for?}
 
 
-      \item Why is it important that we use a validation set (rather than the
-        actual test set) to tune the number of epochs?
+      \item \textit{Why is it important that we use a validation set
+        (rather than the actual test set) to tune the number of
+        epochs?}
 
         If we use the test set to tune the number of epochs, the tuning may 
         overfit to the testing data, resulting in better reported performance. 
 
       \end{enumerate}
-    \item What is the training, validation, and test performance of the
-      network trained with your chosen learning rate and number of epochs?
+    \item \textit{What is the training, validation, and test
+      performance of the network trained with your chosen learning
+      rate and number of epochs?}
 
     \end{enumerate}
 
   \item \textbf{Model Selection}
     \begin{enumerate}
-    \item Experiment with the distributed and binary encoding for both 15 and
-      30 hidden layers. Which encoding performs better? Is this in line with what
-      we know about encodings? Use the better encoding for the rest of this problem.
+    \item \textit{Experiment with the distributed and binary encoding
+      for both 15 and 30 hidden layers. Which encoding performs
+      better? Is this in line with what we know about encodings? Use
+      the better encoding for the rest of this problem.}
 
-\edit{I'm having trouble getting these to run. I'll tell it to run, and then after
-several minutes, it'll have reverted itself to having not been run at all.}
 
       We believe that the distributed encoding should do better. 
       This is because the binary encoding does not encode in a way
@@ -233,22 +262,25 @@ several minutes, it'll have reverted itself to having not been run at all.}
       example. 
 
 
-    \item Provide the learning rates you used for training 15 and 30 hidden units.
+    \item \textit{Provide the learning rates you used for training 15
+      and 30 hidden units.}
 
       \setcounter{enumii}3
 
-    \item In three sentences or less, explain your stopping condition. 
+    \item \textit{In three sentences or less, explain your stopping
+      condition.}
 
-    \item For both 15 and hidden units, use your algorithm to determine when to stop.
-      Graph training data and validation set performance against the number of
-      epochs you trained for.
+    \item \textit{For both 15 and hidden units, use your algorithm to
+      determine when to stop.  Graph training data and validation set
+      performance against the number of epochs you trained for.}
 
-    \item How many epochs did you use for 15 hidden units? 30?
+    \item \textit{How many epochs did you use for 15 hidden units?
+      30?}
 
-    \item What is the test performance for 15 and 30 hidden units? Does this agree
-      with the validation set performance you observed? Which network structure
-      (15, 30, 0 hidden units) would you choose based on these experiments?
-
+    \item \textit{What is the test performance for 15 and 30 hidden
+      units? Does this agree with the validation set performance you
+      observed? Which network structure (15, 30, 0 hidden units) would
+      you choose based on these experiments?}
 
     \end{enumerate}
 
@@ -256,50 +288,55 @@ several minutes, it'll have reverted itself to having not been run at all.}
   \end{enumerate}
 
   \section*{Problem 4}
-  Back-propagation for neural networks performs gradient descent on the 
-  error function
-  $$E(w)=\frac{1}{2}\sum_{d=1}^n\sum_{k=1}^K(y_{dk}-a_{dk})^2$$
-  when there are $n$ examples $(x_d,y_d)$ and $K$ output units
-  so that $y_d\in [0,1]^K$. (Note we index examples by $d$.)
+  \textit{Back-propagation for neural networks performs gradient
+    descent on the error function}
+  \[E(w)=\frac{1}{2}\sum_{d=1}^n\sum_{k=1}^K(y_{dk}-a_{dk})^2\]
+  \textit{when there are $n$ examples $(x_d,y_d)$ and $K$ output units
+    so that $y_d\in [0,1]^K$. (Note we index examples by $d$.)}
 
-  Consider an alternativ error function
-  $$F(W)=\frac{1}{2}\sum_{d=1}^n\sum_{k=1}^K (y_{dk}-a_{dk})^2+\gamma \sum_{j\in V}\sum_{i\in\text{Parents}(j)} w_{ji}^2$$
-  where the sum in the latter term is taken over all pairs of units $i,j$
-  such that there is an edge from $i$ to $j$. 
+  \textit{Consider an alternative error function}
+  \[F(W)=\frac12\sum_{d=1}^n\sum_{k=1}^K(y_{dk}-a_{dk})^2+\gamma\sum_{j\in V}\sum_{i\in\text{Parents}(j)}w_{ji}^2\]
+  \textit{where the sum in the latter term is taken over all pairs of
+    units $i,j$ such that there is an edge from $i$ to $j$.}
 
-\begin{enumerate}
-\item Explain why you might want to use the error function $F$. What
-problem is it trying to address, and how does it address it?
+  \begin{enumerate}
+  \item \textit{Explain why you might want to use the error function
+    $F$. What problem is it trying to address, and how does it address
+    it?}
 
-The error function $F$ takes into account the sum of squares of weights
-in the network. Using such an error function will try to bound the
-weights of a network, thus preventing a case in which normal gradient
-descent ends up increasing (or decreasing) certain weights exceedingly far
-in the same direction, which can pose a problem as it makes it 
-slower to adjust a weight back if it is incorrect, and also because it pushes
-the activation of a node too far along the outsides of the sigmoid
-function to make much of a difference, so that too high of a weight
-from one input node decreases a neuron's sensitivity. 
-\edit{????....}
+    The error function $F$ takes into account the sum of squares of weights
+    in the network. Using such an error function will try to bound the
+    weights of a network, thus preventing a case in which normal gradient
+    descent ends up increasing (or decreasing) certain weights exceedingly far
+    in the same direction, which can pose a problem as it makes it 
+    slower to adjust a weight back if it is incorrect, and also because it pushes
+    the activation of a node too far along the outsides of the sigmoid
+    function to make much of a difference, so that too high of a weight
+    from one input node decreases a neuron's sensitivity. 
+    \edit{????....}
 
-\item Use gradient descent to derive a weight update rule for the
-error function $F$. In order to simplify the description of your
-weight update rules, you may assume the following form for $\frac{\partial E}{\partial w_{ji}}$:
-$$\frac{\partial E}{\partial w_{ji}} = -\sum_{d=1}^n a_{id} \delta_{jd}$$
-where $a_{id}$ is the activation of unit $i$ for example $d$ and 
-$\delta_{jd}$ is the back propagation error at unit $j$ given example
-$d$. The weight update rule should be expressed in terms of $a_{id},\delta_{jd},w_{ji}$,
-the learning rate $\alpha$ and parameter $\gamma$. 
+  \item \textit{Use gradient descent to derive a weight update rule
+    for the error function $F$. In order to simplify the description
+    of your weight update rules, you may assume the following form for
+    $\frac{\partial E}{\partial w_{ji}}$}:
 
-\begin{align*}
-F(W) & = E(W)+\gamma\sum_{j\in V}\sum_{i\in \text{Parents}(j)} w_{ji}^2 \\
-\dee{F(w)}{w_{ji}} & = \dee{E(w)}{w_{ji}} + \gamma \dee{}{w_{ji}} \left( \sum_{(i.j)\in E} w_{ji}^2\right) \\
- & = -\sum_{d=1}^n a_{id} \delta_{jd}+ \gamma 2w_{ji}\\
-\end{align*}
-The desired weight update rule consists of plugging in $\dee{F(W)}{w_{ji}}$ as calculated
-above into 
-$$w_{ji}^{(t+1)}\leftarrow w_{ji}^t-\alpha \dee{}{w_{ji}} F(w)$$
-\end{enumerate}
+    \[\frac{\partial E}{\partial w_{ji}} = -\sum_{d=1}^n a_{id}\delta_{jd}\]
+
+    where $a_{id}$ is the activation of unit $i$ for example $d$ and
+    $\delta_{jd}$ is the back propagation error at unit $j$ given
+    example $d$. The weight update rule should be expressed in terms
+    of $a_{id},\delta_{jd},w_{ji}$, the learning rate $\alpha$ and
+    parameter $\gamma$.
+
+    \begin{align*}
+      F(W) & = E(W)+\gamma\sum_{j\in V}\sum_{i\in \text{Parents}(j)} w_{ji}^2 \\
+      \dee{F(w)}{w_{ji}} & = \dee{E(w)}{w_{ji}} + \gamma \dee{}{w_{ji}} \left( \sum_{(i.j)\in E} w_{ji}^2\right) \\
+      & = -\sum_{d=1}^n a_{id} \delta_{jd}+ \gamma 2w_{ji}\\
+    \end{align*}
+    The desired weight update rule consists of plugging in $\dee{F(W)}{w_{ji}}$ as calculated
+    above into 
+    $$w_{ji}^{(t+1)}\leftarrow w_{ji}^t-\alpha \dee{}{w_{ji}} F(w)$$
+  \end{enumerate}
 
 
 \end{document}
