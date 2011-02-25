@@ -7,7 +7,7 @@
 \newcommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
 \newcommand{\edit}[1]{\colorbox{Yellow}{#1}}
 %\newcommand{\edit}[1]{}
-
+\newcommand{\dee}[2]{\frac{\partial{#1}}{\partial{#2}}}
 \begin{document}
   \section*{Problem 1}
   \textit{Consider training a single perceptron with the perceptron
@@ -70,7 +70,10 @@
     attributes are particularly important. For this problem,
     individual inputs matter much less than the relationship between
     them; decision trees would have a hard time capturing that well.
-  \item boosted decision stumps - ??????
+  \item boosted decision stumps -- similar to above; even though they perform well
+    for identifying cancer characteristics, a weighted average of 
+    several splits would not be useful for identifying digits because
+    of the importance of specific interactions between groups of inputs. 
   \item perceptrons - linear separation is very limited. They can't tell 
     connectedness or separation. In order for it to work we would need to
     feed it higher level features ahead of time.  
@@ -233,7 +236,50 @@
   \end{enumerate}
 
   \section*{Problem 4}
+  Back-propagation for neural networks performs gradient descent on the 
+  error function
+  $$E(w)=\frac{1}{2}\sum_{d=1}^n\sum_{k=1}^K(y_{dk}-a_{dk})^2$$
+  when there are $n$ examples $(x_d,y_d)$ and $K$ output units
+  so that $y_d\in [0,1]^K$. (Note we index examples by $d$.)
 
+  Consider an alternativ error function
+  $$F(W)=\frac{1}{2}\sum_{d=1}^n\sum_{k=1}^K (y_{dk}-a_{dk})^2+\gamma \sum_{j\in V}\sum_{i\in\text{Parents}(j)} w_{ji}^2$$
+  where the sum in the latter term is taken over all pairs of units $i,j$
+  such that there is an edge from $i$ to $j$. 
+
+\begin{enumerate}
+\item Explain why you might want to use the error function $F$. What
+problem is it trying to address, and how does it address it?
+
+The error function $F$ takes into account the sum of squares of weights
+in the network. Using such an error function will try to bound the
+weights of a network, thus preventing a case in which normal gradient
+descent ends up increasing (or decreasing) certain weights exceedingly far
+in the same direction, which can pose a problem as it makes it 
+slower to adjust a weight back if it is incorrect, and also because it pushes
+the activation of a node too far along the outsides of the sigmoid
+function to make much of a difference, so that too high of a weight
+from one input node decreases a neuron's sensitivity. 
+\edit{????....}
+
+\item Use gradient descent to derive a weight update rule for the
+error function $F$. In order to simplify the description of your
+weight update rules, you may assume the following form for $\frac{\partial E}{\partial w_{ji}}$:
+$$\frac{\partial E}{\partial w_{ji}} = -\sum_{d=1}^n a_{id} \delta_{jd}$$
+where $a_{id}$ is the activation of unit $i$ for example $d$ and 
+$\delta_{jd}$ is the back propagation error at unit $j$ given example
+$d$. The weight update rule should be expressed in terms of $a_{id},\delta_{jd},w_{ji}$,
+the learning rate $\alpha$ and parameter $\gamma$. 
+
+\begin{align*}
+F(W) & = E(W)+\gamma\sum_{j\in V}\sum_{i\in \text{Parents}(j)} w_{ji}^2 \\
+\dee{F(w)}{w_{ji}} & = \dee{E(w)}{w_{ji}} + \gamma \dee{}{w_{ji}} \left( \sum_{(i.j)\in E} w_{ji}^2\right) \\
+ & = -\sum_{d=1}^n a_{id} \delta_{jd}+ \gamma 2w_{ji}\\
+\end{align*}
+The desired weight update rule consists of plugging in $\dee{F(W)}{w_{ji}}$ as calculated
+above into 
+$$w_{ji}^{(t+1)}\leftarrow w_{ji}^t-\alpha \dee{}{w_{ji}} F(w)$$
+\end{enumerate}
 
 
 \end{document}
