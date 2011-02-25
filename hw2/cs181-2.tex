@@ -136,6 +136,7 @@
       fail to learn XOR?  What parameters can you tune to alleviate
       this type of problem?}
 
+<<<<<<< HEAD
     The weights for one incorrect output net are as follows:
 
     \[(-7.117, 4.143, -4.186)\qquad(-6.529, 3.440, -3.485)\]
@@ -147,6 +148,18 @@
     for input $(1,-1)$ and about .361 for the other three.
 
     TODO why does this actually happen?
+
+    If the training data were not sufficiently randomized, i.e.  if
+    the network was trained on the same data repeatedly, AND if it had
+    too high of a learning rate, then it could set its weights too
+    strongly to classify the data it had seen repeatedly, and then not
+    converge when it is trained on the rest of the data. In other
+    words, it's possible that the neural network gets stuck in a local
+    (error) minimum.
+      
+    We could reduce learning rate to make this less likely. 
+
+    \edit{Does increasing epochs help? The interface is confusing.}
 
   \item \textbf{Experimental Analysis}
     \begin{enumerate}
@@ -228,6 +241,15 @@
       for both 15 and 30 hidden layers. Which encoding performs
       better? Is this in line with what we know about encodings? Use
       the better encoding for the rest of this problem.}
+
+
+      We believe that the distributed encoding should do better. 
+      This is because the binary encoding does not encode in a way
+      that makes sense; there is no property of the (images of the)
+      digits that links all odd digits together while they all share
+      a 1 in the least significant spot in a binary encoding, for 
+      example. 
+
 
     \item \textit{Provide the learning rates you used for training 15
       and 30 hidden units.}
