@@ -494,58 +494,59 @@ def experiment(opts):
     listInstTest = load(opts.test)
     config = [opts.num_inputs]
     if opts.hidden_units:
-      print 'Adding a hidden layer with %d units' % opts.hidden_units
+#      print 'Adding a hidden layer with %d units' % opts.hidden_units
       config.append(opts.hidden_units)
     if opts.encoding == 'binary':
       config.append(4)
-      print '[binary]'
+#      print '[binary]'
     else:
       config.append(10)
-      print '[distributed]'
+#      print '[distributed]'
+    for testrun in range(100):
+      net = init_net(config)
+      dblAlpha = opts.learning_rate
+  #    print '%f' % dblAlpha
 
-    net = init_net(config)
-    dblAlpha = opts.learning_rate
-    print '%f' % dblAlpha
+      if opts.encoding == 'binary':
+        encoder = binary_encode_label
+        decoder = binary_decode_net_output
+      else:
+        encoder = distributed_encode_label
+        decoder = distributed_decode_net_output
 
-    if opts.encoding == 'binary':
-      encoder = binary_encode_label
-      decoder = binary_decode_net_output
-    else:
-      encoder = distributed_encode_label
-      decoder = distributed_decode_net_output
+      # for stopping condition - to see if current validation error is less than previous
+      last_validation_accuracy = 0.0
 
-    # for stopping condition - to see if current validation error is less than previous
-    last_validation_accuracy = 0.0
-
-    for ixRound in xrange(opts.rounds):
-        # Compute the error
-        errors = 0
-        for inst in listInstTrain:
-            listDblOut = update_net(net,inst,dblAlpha, encoder(inst.iLabel))
-            iGuess = decoder(listDblOut)
-            #print inst.iLabel, iGuess
-            if iGuess != inst.iLabel:
-              errors += 1
-        # Get validation error
-        validation_correct = num_correct(net, listInstVal, decoder)
-        # sys.stderr.write(
-        # "Round %d complete.  Training Accuracy: %f, Validation Accuracy: %f\n" % (
-        #   ixRound + 1,
-        #   1 - errors * 1.0 / len(listInstTrain),
-        #   validation_correct * 1.0 / len(listInstVal)))
-
-        print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
-
-        if opts.stopping_condition:
-            # TODO(CS181 Student): implement your stopping condition
-            # as described in part 3.4 of the homework instructions.
-            # Don't forget to use --enable-stopping on the command
-            # line to activate the functionality you implement here.
-            validation_accuracy = validation_correct * 1.0 / len(listInstVal)
-            if validation_accuracy < last_validation_accuracy :
-              break
-            last_validation_accuracy = validation_accuracy
-
+      for ixRound in xrange(opts.rounds):
+          # Compute the error
+          errors = 0
+          for inst in listInstTrain:
+              listDblOut = update_net(net,inst,dblAlpha, encoder(inst.iLabel))
+              iGuess = decoder(listDblOut)
+              #print inst.iLabel, iGuess
+              if iGuess != inst.iLabel:
+                errors += 1
+          # Get validation error
+          validation_correct = num_correct(net, listInstVal, decoder)
+          # sys.stderr.write(
+          # "Round %d complete.  Training Accuracy: %f, Validation Accuracy: %f\n" % (
+          #   ixRound + 1,
+          #   1 - errors * 1.0 / len(listInstTrain),
+          #   validation_correct * 1.0 / len(listInstVal)))
+  
+          print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
+  
+          if opts.stopping_condition:
+              # TODO(CS181 Student): implement your stopping condition
+              # as described in part 3.4 of the homework instructions.
+              # Don't forget to use --enable-stopping on the command
+              # line to activate the functionality you implement here.
+              validation_accuracy = validation_correct * 1.0 / len(listInstVal)
+              if ixRound > 99 or validation_accuracy < last_validation_accuracy :
+                print '* %d %f %f' % (ixRound+1, 1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
+                break
+              last_validation_accuracy = validation_accuracy
+  
     cCorrect = 0
     for inst in listInstTest:
         listDblOut = feed_forward(net,inst.listDblFeatures)
