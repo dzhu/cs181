@@ -208,7 +208,7 @@ are the weights initialized to?}
         \includegraphics[scale=.5]{plot_test_001.png}
       \end{center}
 
-      With a step of .0001 (range .0001 to .12):
+      With a step of .0001 (range .0001 to .2):
 
       \begin{center}
         \includegraphics[scale=.5]{plot_test_0001.png}
@@ -221,27 +221,46 @@ are the weights initialized to?}
     \item \textit{For this learning rate, chart the training set and
       validation error against the number of epochs from 1 to 100.}
 
+      \begin{center}
+        \includegraphics[scale=.4]{100_rounds.png}
+      \end{center}
+
+      The bottom line is the training set error; the top is validation
+      set error.
+
       \begin{enumerate}
       \item \textit{Are we in danger of overfitting by training for
         too many epochs?}
 
+        It doesn't really look like it; the validation set performance
+        hardly goes down (and actually looks like it might be going
+        up) as the number of rounds increases.
 
       \item \textit{What is a good number of epochs to train for?}
 
+        At around 10 epochs, it looks like the validation performance
+        has basically reached its stable value. and that's the
+        smallest number of epochs to do so.
 
       \item \textit{Why is it important that we use a validation set
         (rather than the actual test set) to tune the number of
         epochs?}
 
-        If we use the test set to tune the number of epochs, 
-        upon testing we will achieve artificially better reported 
-        performance. 
+        If we use the test set to tune the number of epochs, the
+        tuning may overfit to the testing data, resulting in
+        artificially better reported performance. The point of the
+        test set is that it doesn't affect the parameters of the net
+        at all, so that it can provide an accurate measure of its
+        performance.
 
       \end{enumerate}
-    \item \textit{What is the training, validation, and test
-      performance of the network trained with your chosen learning
-      rate and number of epochs?}
+    \item \textit{What is the training, validation, and test}
+      performance \textit{of the network trained with your chosen
+        learning rate and number of epochs?}
 
+      After the last epoch, the training performance is 91.85\%, the
+      validation performance is 85.80\%, and the test performance is
+      90.50\%.
     \end{enumerate}
 
   \item \textbf{Model Selection}
@@ -254,18 +273,17 @@ are the weights initialized to?}
       The distributed encoding does better. After 9 rounds, distributed
       achieves 0.937 test accuracy and binary achieves 0.896. 
 
-      This is in line with our beliefs that the distributed encoding 
-      should do better. 
-      This is because the binary encoding does not encode in a way
-      that makes sense; there is no property of the (images of the)
-      digits that links all odd digits together, even though they all share
-      a 1 in the least significant spot in a binary encoding, for 
-      example. In other words, there is no intrinsic numerical ordering
-      of images of numbers - i.e., the desired output is categorical, 
-      even though there is an ordering in the numbers themselves. 
-      (Additionally, it would not appear that a binary encoding would
-      even be optimal for ordered outputs by the previous argument.)
-
+      This is in line with our beliefs that the distributed encoding
+      should do better. This is because the binary encoding does not
+      encode in a way that makes sense; there is no property of the
+      (images of the) digits that links all odd digits together, even
+      though they all share a 1 in the least significant spot in a
+      binary encoding, for example. In other words, there is no
+      intrinsic numerical ordering of images of numbers - i.e., the
+      desired output is categorical, even though there is an ordering
+      in the numbers themselves.  (Additionally, it would not appear
+      that a binary encoding would even be optimal for ordered outputs
+      by the previous argument.)
 
     \item \textit{Provide the learning rates you used for training 15
       and 30 hidden units.}
