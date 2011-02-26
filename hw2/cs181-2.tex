@@ -253,8 +253,22 @@
       better? Is this in line with what we know about encodings? Use
       the better encoding for the rest of this problem.}
 
-      The distributed encoding does better. After 9 rounds, distributed
-      achieves 0.937 test accuracy and binary achieves 0.896. 
+      The distributed encoding does better. After 9 rounds,
+      distributed achieves 0.937 test accuracy and binary achieves
+      0.896. Additionally, it seems that distributed encodings perform
+      better in terms of reaching their maximum performances in a
+      small number of epochs: below are plots of validation set
+      performance vs. learning rate and number of epochs, for 15
+      hidden nodes. The first is for binary encoding, the second for
+      distributed. The left-to-right axis is number of epochs, and the
+      front-to-back axis is learning rate multiplied by 100. (Note the
+      difference in range of the vertical axis.) Similar results are
+      achieved for 30 hidden units.
+
+      \begin{center}
+        \includegraphics[scale=.35]{15_binary.png}
+        \includegraphics[scale=.35]{15_distributed.png}
+      \end{center}
 
       This is in line with our beliefs that the distributed encoding
       should do better. This is because the binary encoding does not
@@ -288,7 +302,7 @@ Anyway, need to change anyway. }
       determine when to stop.  Graph training data and validation set
       performance against the number of epochs you trained for.}
 
-\edit{Please see 34_results.txt}
+%\edit{Please see 34_results.txt}
 
     \item \textit{How many epochs did you use for 15 hidden units?
       30?}
