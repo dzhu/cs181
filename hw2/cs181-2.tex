@@ -148,15 +148,24 @@
 
     TODO why does this actually happen?
 
-    If the training data were not sufficiently randomized, i.e.  if
-    the network was trained on the same data repeatedly, AND if it had
-    too high of a learning rate, then it could set its weights too
-    strongly to classify the data it had seen repeatedly, and then not
-    converge when it is trained on the rest of the data. In other
-    words, it's possible that the neural network gets stuck in a local
-    (error) minimum.
+    What is probably happening is that the weights of the neural net
+    are either stuck in a local minimum or is not convergent.
+    These are fixed respectively by having random restarts and considering
+    the best performing neural network, and by reducing learning rate
+    to ensure convergence. 
+
+\edit{Which of these is the case? what about getting stuck - what
+are the weights initialized to?}
+
+%    If the training data were not sufficiently randomized, i.e.  if
+%    the network was trained on the same data repeatedly, AND if it had
+%    too high of a learning rate, then it could set its weights too
+%    strongly to classify the data it had seen repeatedly, and then not
+%    converge when it is trained on the rest of the data. In other
+%    words, it's possible that the neural network gets stuck in a local
+%    (error) minimum.
       
-    We could reduce learning rate to make this less likely. 
+%    We could reduce learning rate to make this less likely. 
 
     \edit{Does increasing epochs help? The interface is confusing.}
 
@@ -238,10 +247,11 @@
         epochs?}
 
         If we use the test set to tune the number of epochs, the
-        tuning may overfit to the testing data, resulting in better
-        reported performance. The point of the test set is that it
-        doesn't affect the parameters of the net at all, so that it
-        can provide an accurate measure of its performance.
+        tuning may overfit to the testing data, resulting in
+        artificially better reported performance. The point of the
+        test set is that it doesn't affect the parameters of the net
+        at all, so that it can provide an accurate measure of its
+        performance.
 
       \end{enumerate}
     \item \textit{What is the training, validation, and test}
@@ -260,22 +270,40 @@
       better? Is this in line with what we know about encodings? Use
       the better encoding for the rest of this problem.}
 
-      We believe that the distributed encoding should do better. 
-      This is because the binary encoding does not encode in a way
-      that makes sense; there is no property of the (images of the)
-      digits that links all odd digits together while they all share
-      a 1 in the least significant spot in a binary encoding, for 
-      example. 
+      The distributed encoding does better. After 9 rounds, distributed
+      achieves 0.937 test accuracy and binary achieves 0.896. 
+
+      This is in line with our beliefs that the distributed encoding
+      should do better. This is because the binary encoding does not
+      encode in a way that makes sense; there is no property of the
+      (images of the) digits that links all odd digits together, even
+      though they all share a 1 in the least significant spot in a
+      binary encoding, for example. In other words, there is no
+      intrinsic numerical ordering of images of numbers - i.e., the
+      desired output is categorical, even though there is an ordering
+      in the numbers themselves.  (Additionally, it would not appear
+      that a binary encoding would even be optimal for ordered outputs
+      by the previous argument.)
 
     \item \textit{Provide the learning rates you used for training 15
       and 30 hidden units.}
+      
+      We used 0.5 as learning rate for all tests.
+
+\edit{I mean like this is in tasknn.py. Were we supposed to change it?} 
 
       \setcounter{enumii}3
 
     \item \textit{In three sentences or less, explain your stopping
       condition.}
 
-    \item \textit{For both 15 and hidden units, use your algorithm to
+      If validation accuracy decreases (or does not increase by more than
+      some epsilon that we arbitrarily picked TODO), then stop. 
+      
+      \edit{THERE"S AN ARBITRARY EPSILON! danny, how did you determine stopping
+      condition in 3.3?}
+
+    \item \textit{For both 15 and 30 hidden units, use your algorithm to
       determine when to stop.  Graph training data and validation set
       performance against the number of epochs you trained for.}
 
