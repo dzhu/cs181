@@ -113,22 +113,21 @@
 
     In each tuple, the first value represents the bias $w_0$, and the
     remaining values are the weights of its variable inputs. The left
-    node in the hidden layer corresponds to $(x_1\wedge\lnot x_2)$,
-    while the right one corresponds to $(x_1\vee\lnot x_2)$, or
-    $\lnot(\lnot x_1\wedge x_2)$.
+    node in the hidden layer corresponds to $(x_1\vee\lnot x_2)$,
+    while the right one corresponds to $(x_1\wedge\lnot x_2)$.
 
     The output node corresponds to $(i_1\vee\lnot i_2)$, where $i_1$
     and $i_2$ are its inputs. Thus the whole net represents
-    $((x_1\wedge\lnot x_2)\vee(\lnot x_1\wedge x_2))$, which is
-    exactly $(x_1\oplus x_2)$.
+    $(\lnot(x_1\vee\lnot x_2)\vee(\lnot x_1\wedge x_2))$, which is
+    exactly $(\lnot x_1\wedge x_2)\vee(x_1\wedge \lnot x_2)=(x_1\oplus x_2)$.
 
     Plots of the activation levels of the two hidden nodes and the
     output node (as a function of the two inputs) have been included
     below.
 
     \begin{center}
-      \includegraphics[scale=.35]{hidden1.png}
       \includegraphics[scale=.35]{hidden2.png}
+      \includegraphics[scale=.35]{hidden1.png}
       \includegraphics[scale=.35]{output.png}
     \end{center}
 
@@ -146,28 +145,12 @@
     about .5 for input $(1,-1)$.) The output activation level is .8916
     for input $(1,-1)$ and about .361 for the other three.
 
-    TODO why does this actually happen?
+    It seems as though incorrect outputs very frequently correspond
+    to this one, so we suspect that the weights of the neural net
+    are stuck in a local minimum (rather than not converging at all). 
+    This can be fixed by having random restarts and considering 
+    the best performing neural network. 
 
-    What is probably happening is that the weights of the neural net
-    are either stuck in a local minimum or is not convergent.
-    These are fixed respectively by having random restarts and considering
-    the best performing neural network, and by reducing learning rate
-    to ensure convergence. 
-
-\edit{Which of these is the case? what about getting stuck - what
-are the weights initialized to?}
-
-%    If the training data were not sufficiently randomized, i.e.  if
-%    the network was trained on the same data repeatedly, AND if it had
-%    too high of a learning rate, then it could set its weights too
-%    strongly to classify the data it had seen repeatedly, and then not
-%    converge when it is trained on the rest of the data. In other
-%    words, it's possible that the neural network gets stuck in a local
-%    (error) minimum.
-      
-%    We could reduce learning rate to make this less likely. 
-
-    \edit{Does increasing epochs help? The interface is confusing.}
 
   \item \textbf{Experimental Analysis}
     \begin{enumerate}
@@ -221,9 +204,9 @@ are the weights initialized to?}
     \item \textit{For this learning rate, chart the training set and
       validation error against the number of epochs from 1 to 100.}
 
-      \begin{center}
-        \includegraphics[scale=.4]{100_rounds.png}
-      \end{center}
+%      \begin{center}
+%        \includegraphics[scale=.4]{100_rounds.png}
+%      \end{center}
 
       The bottom line is the training set error; the top is validation
       set error.
@@ -290,19 +273,17 @@ are the weights initialized to?}
       
       We used 0.5 as learning rate for all tests.
 
-\edit{I mean like this is in tasknn.py. Were we supposed to change it?} 
+\edit{I mean like this is in tasknn.py. Were we supposed to change it?
+Anyway, need to change anyway. } 
 
       \setcounter{enumii}3
 
     \item \textit{In three sentences or less, explain your stopping
       condition.}
 
-      If validation accuracy decreases (or does not increase by more than
-      some epsilon that we arbitrarily picked TODO), then stop. 
+      If validation accuracy does not increase by 2\% after five rounds,
+      or if there have been more than 100 rounds, then stop. 
       
-      \edit{THERE"S AN ARBITRARY EPSILON! danny, how did you determine stopping
-      condition in 3.3?}
-
     \item \textit{For both 15 and 30 hidden units, use your algorithm to
       determine when to stop.  Graph training data and validation set
       performance against the number of epochs you trained for.}

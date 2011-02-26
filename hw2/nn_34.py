@@ -494,18 +494,18 @@ def experiment(opts):
     listInstTest = load(opts.test)
     config = [opts.num_inputs]
     if opts.hidden_units:
-#      print 'Adding a hidden layer with %d units' % opts.hidden_units
+      print 'Adding a hidden layer with %d units' % opts.hidden_units
       config.append(opts.hidden_units)
     if opts.encoding == 'binary':
       config.append(4)
-#      print '[binary]'
+      print '[binary]'
     else:
       config.append(10)
-#      print '[distributed]'
-    for testrun in range(100):
+      print '[distributed]'
+    for testiter in range(100): 
       net = init_net(config)
       dblAlpha = opts.learning_rate
-  #    print '%f' % dblAlpha
+#      print '%f' % dblAlpha
 
       if opts.encoding == 'binary':
         encoder = binary_encode_label
@@ -515,7 +515,7 @@ def experiment(opts):
         decoder = distributed_decode_net_output
 
       # for stopping condition - to see if current validation error is less than previous
-      last_validation_accuracy = 0.0
+      last_five_validation_accuracies = [0.0,0.0,0.0,0.0,0.0]
 
       for ixRound in xrange(opts.rounds):
           # Compute the error
@@ -533,29 +533,29 @@ def experiment(opts):
           #   ixRound + 1,
           #   1 - errors * 1.0 / len(listInstTrain),
           #   validation_correct * 1.0 / len(listInstVal)))
-  
-          print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
-  
+
+  #      print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
+
           if opts.stopping_condition:
               # TODO(CS181 Student): implement your stopping condition
               # as described in part 3.4 of the homework instructions.
               # Don't forget to use --enable-stopping on the command
               # line to activate the functionality you implement here.
               validation_accuracy = validation_correct * 1.0 / len(listInstVal)
-              if ixRound > 99 or validation_accuracy < last_validation_accuracy :
-                print '* %d %f %f' % (ixRound+1, 1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
+              if ixRound > 100 or validation_accuracy < 0.02 + last_five_validation_accuracies[0] :
                 break
-              last_validation_accuracy = validation_accuracy
-  
-    cCorrect = 0
-    for inst in listInstTest:
-        listDblOut = feed_forward(net,inst.listDblFeatures)
-        iGuess = decoder(listDblOut)
-        #if opts.fShowGuesses:
-        #print inst.iLabel, iGuess
-        cCorrect += int(inst.iLabel == iGuess)
-    print "correct:",cCorrect, "out of", len(listInstTest),
-    print "(%.1f%%)" % (100.0*float(cCorrect)/float(len(listInstTest)))
+              for i in range(4):
+                last_five_validation_accuracies[i]=last_five_validation_accuracies[i+1]
+              last_five_validation_accuracies[4] = validation_accuracy
+      cCorrect = 0
+      for inst in listInstTest:
+          listDblOut = feed_forward(net,inst.listDblFeatures)
+          iGuess = decoder(listDblOut)
+          #if opts.fShowGuesses:
+          #print inst.iLabel, iGuess
+          cCorrect += int(inst.iLabel == iGuess)
+  #    print "correct:",cCorrect, "out of", len(listInstTest),
+      print "%d %f %f %f" % (ixRound+1, (1-errors * 1.0 / len(listInstTrain)), validation_accuracy, float(cCorrect)/float(len(listInstTest)))
 
 def main(argv):
     import optparse

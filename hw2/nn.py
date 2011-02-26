@@ -515,7 +515,7 @@ def experiment(opts):
       decoder = distributed_decode_net_output
 
     # for stopping condition - to see if current validation error is less than previous
-    last_validation_accuracy = 0.0
+    last_five_validation_accuracies = [0.0,0.0,0.0,0.0,0.0]
 
     for ixRound in xrange(opts.rounds):
         # Compute the error
@@ -542,10 +542,12 @@ def experiment(opts):
             # Don't forget to use --enable-stopping on the command
             # line to activate the functionality you implement here.
             validation_accuracy = validation_correct * 1.0 / len(listInstVal)
-            if validation_accuracy < last_validation_accuracy :
+            print last_five_validation_accuracies
+            if ixRound > 99 or validation_accuracy < 0.02 + last_five_validation_accuracies[0] :
               break
-            last_validation_accuracy = validation_accuracy
-
+            for i in range(4):
+              last_five_validation_accuracies[i]=last_five_validation_accuracies[i+1]
+            last_five_validation_accuracies[4] = validation_accuracy
     cCorrect = 0
     for inst in listInstTest:
         listDblOut = feed_forward(net,inst.listDblFeatures)
@@ -553,7 +555,7 @@ def experiment(opts):
         #if opts.fShowGuesses:
         #print inst.iLabel, iGuess
         cCorrect += int(inst.iLabel == iGuess)
-    print "correct:",cCorrect, "out of", len(listInstTest),
+#    print "correct:",cCorrect, "out of", len(listInstTest),
     print "(%.1f%%)" % (100.0*float(cCorrect)/float(len(listInstTest)))
 
 def main(argv):
