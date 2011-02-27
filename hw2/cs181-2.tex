@@ -5,8 +5,8 @@
 \usepackage{amsmath}
 \definecolor{Yellow}{rgb}{1,1,0}
 \newcommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
-\newcommand{\edit}[1]{\colorbox{Yellow}{#1}}
-%\newcommand{\edit}[1]{}
+%\newcommand{\edit}[1]{\colorbox{Yellow}{#1}}
+\newcommand{\edit}[1]{}
 \newcommand{\dee}[2]{\frac{\partial{#1}}{\partial{#2}}}
 \begin{document}
   \section*{Problem 1}
@@ -305,13 +305,24 @@
       to determine when to stop. Graph training data and validation
       set performance against the number of epochs you trained for.}
 
-%\edit{Please see 34_results.txt}
+      Learning rate .5.
 
+      For 15 units:
+
+      \begin{center}
+        \includegraphics[scale=.35]{15_early_stop.png}
+      \end{center}
+
+      For 30 units:
+
+      \begin{center}
+        \includegraphics[scale=.35]{30_early_stop.png}
+      \end{center}
     \item \textit{How many epochs did you use for 15 hidden units?
       30?}
 
-      20 for the earlier tests; with the stopping condition, 9 or 10
-      rounds.
+      20 for the earlier tests; with the stopping condition, about 9
+      or 10 for 30 units and 12 or 13 for 15.
 
     \item \textit{What is the test performance for 15 and 30 hidden
       units? Does this agree with the validation set performance you
