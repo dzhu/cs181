@@ -545,7 +545,7 @@ def experiment(opts):
             print last_five_validation_accuracies
             if ixRound > 99 or validation_accuracy < 0.02 + last_five_validation_accuracies[0] :
               break
-            for i in range(4):
+            for i in range(5):
               last_five_validation_accuracies[i]=last_five_validation_accuracies[i+1]
             last_five_validation_accuracies[4] = validation_accuracy
     cCorrect = 0
