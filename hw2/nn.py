@@ -537,17 +537,10 @@ def experiment(opts):
         print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
 
         if opts.stopping_condition:
-            # TODO(CS181 Student): implement your stopping condition
-            # as described in part 3.4 of the homework instructions.
-            # Don't forget to use --enable-stopping on the command
-            # line to activate the functionality you implement here.
-            validation_accuracy = validation_correct * 1.0 / len(listInstVal)
-            print last_five_validation_accuracies
-            if ixRound > 99 or validation_accuracy < 0.02 + last_five_validation_accuracies[0] :
-              break
-            for i in range(4):
-              last_five_validation_accuracies[i]=last_five_validation_accuracies[i+1]
-            last_five_validation_accuracies[4] = validation_accuracy
+            validation_accuracy = validation_correct / float(len(listInstVal))
+            if ixRound > 100 or validation_accuracy < 0.02 + last_five_validation_accuracies[0] :
+                break
+            last_five_validation_accuracies = last_five_validation_accuracies[1:] + [validation_accuracy]
     cCorrect = 0
     for inst in listInstTest:
         listDblOut = feed_forward(net,inst.listDblFeatures)

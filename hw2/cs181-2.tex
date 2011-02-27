@@ -204,9 +204,9 @@
     \item \textit{For this learning rate, chart the training set and
       validation error against the number of epochs from 1 to 100.}
 
-%      \begin{center}
-%        \includegraphics[scale=.4]{100_rounds.png}
-%      \end{center}
+      \begin{center}
+        \includegraphics[scale=.4]{100_rounds.png}
+      \end{center}
 
       The bottom line is the training set error; the top is validation
       set error.
@@ -253,17 +253,21 @@
       better? Is this in line with what we know about encodings? Use
       the better encoding for the rest of this problem.}
 
-      The distributed encoding does better. After 9 rounds,
-      distributed achieves 0.937 test accuracy and binary achieves
-      0.896. Additionally, it seems that distributed encodings perform
-      better in terms of reaching their maximum performances in a
-      small number of epochs: below are plots of validation set
-      performance vs. learning rate and number of epochs, for 15
-      hidden nodes. The first is for binary encoding, the second for
-      distributed. The left-to-right axis is number of epochs, and the
-      front-to-back axis is learning rate multiplied by 100. (Note the
-      difference in range of the vertical axis.) Similar results are
-      achieved for 30 hidden units.
+      The distributed encoding does better. After 20 rounds at
+      learning rate 1, distributed encoding with 15 nodes achieves
+      0.924 test accuracy and binary achieves 0.847. Additionally, it
+      seems that distributed encodings perform better in terms of
+      reaching their maximum performances after fewer epochs: below
+      are plots of validation set performance vs. learning rate and
+      number of epochs, for 15 hidden nodes. The first is for binary
+      encoding, the second for distributed. The left-to-right axis is
+      number of epochs, and the front-to-back axis is learning rate
+      multiplied by 100. Whereas the binary encoding takes many epochs
+      to ramp up to a stable performance value, distributed does so
+      almost immediately. (Note also the difference in the ranges of
+      the vertical axes.) Similar results are achieved for 30 hidden
+      units (see images {\tt 30\_binary.png} and {\tt
+        30\_distributed.png}).
 
       \begin{center}
         \includegraphics[scale=.35]{15_binary.png}
@@ -276,7 +280,7 @@
       (images of the) digits that links all odd digits together, even
       though they all share a 1 in the least significant spot in a
       binary encoding, for example. In other words, there is no
-      intrinsic numerical ordering of images of numbers - i.e., the
+      intrinsic numerical ordering of images of numbers --- i.e., the
       desired output is categorical, even though there is an ordering
       in the numbers themselves.  (Additionally, it would not appear
       that a binary encoding would even be optimal for ordered outputs
@@ -285,10 +289,9 @@
     \item \textit{Provide the learning rates you used for training 15
       and 30 hidden units.}
       
-      We used 0.5 as learning rate for all tests.
+      We used rates varying between .01 and 2 for all tests.
 
-\edit{I mean like this is in tasknn.py. Were we supposed to change it?
-Anyway, need to change anyway. } 
+      % \edit{I mean like this is in tasknn.py. Were we supposed to change it?  Anyway, need to change anyway. }
 
       \setcounter{enumii}3
 
@@ -307,7 +310,7 @@ Anyway, need to change anyway. }
     \item \textit{How many epochs did you use for 15 hidden units?
       30?}
 
-      Roughly 9 or 10 for 15 units, and 10 for 30 units. 
+      20.
 
     \item \textit{What is the test performance for 15 and 30 hidden
       units? Does this agree with the validation set performance you
