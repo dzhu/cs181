@@ -535,7 +535,6 @@ def experiment(opts):
           #   validation_correct * 1.0 / len(listInstVal)))
 
   #      print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
-
           if opts.stopping_condition:
               # TODO(CS181 Student): implement your stopping condition
               # as described in part 3.4 of the homework instructions.
@@ -544,7 +543,7 @@ def experiment(opts):
               validation_accuracy = validation_correct * 1.0 / len(listInstVal)
               if ixRound > 100 or validation_accuracy < 0.02 + last_five_validation_accuracies[0] :
                 break
-              for i in range(4):
+              for i in range(5):
                 last_five_validation_accuracies[i]=last_five_validation_accuracies[i+1]
               last_five_validation_accuracies[4] = validation_accuracy
       cCorrect = 0
