@@ -1,15 +1,34 @@
 \documentclass{article}
-\begin{document}
+\usepackage{amsmath}
+
 \renewcommand{\labelenumi}{(\alph{enumi})}
 \renewcommand{\labelenumii}{(\roman{enumii})}
 \author{Danny Zhu \& Tianhui Cai}
+\let\b\mathbf
+
+\begin{document}
 \maketitle
 
 \section*{Problem 1}
 \begin{enumerate}
+\item The set of points satisfying the given constraint is an
+  $m$-dimensional hypercube of edge $2\epsilon$, so the probability is
+  $(2\epsilon)^m$.
+\item Then the set of points satisfying the constraint is the
+  intersection of a size $2\epsilon$ hypercube centered at $\mathbf x$
+  with the unit hypercube; the volume of that set is at most the
+  volume of the small hypercube.
 \item 
-\item 
-\item 
+  \begin{align*}
+    d(\b x,\b y)^2&=\sum_j(x_j-y_j)^2\\
+    d(\b x,\b y)^2&=(x_j-y_j)^2\qquad\textrm{for each $j$}\\
+    d(\b x,\b y)&=|x_j-y_j|\qquad\textrm{for each $j$}
+    d(\b x,\b y)&=\max j|x_j-y_j|
+  \end{align*}
+  Now, $d(\b x,\b y)\le\epsilon$ implies $\max_j|x_j-y_j|\le\epsilon$,
+  so the set of $\b y$ satisfying the former is a subset of the set
+  satisfying the latter; hence the former has a probability of
+  occurring that is not greater.
 \item 
 \item 
 \end{enumerate}
