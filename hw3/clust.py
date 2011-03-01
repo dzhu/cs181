@@ -1,10 +1,18 @@
 #!/usr/bin/env python
-
+import math
 import random
+from itertools import imap
 
 def dist(v1, v2):
     """Returns the Euclidean distance between instance 1 and instance 2."""
-    raise NotImplementedError
+    return math.sqrt(sum(imap(lambda x,y: (x-y) * (x-y), v1, v2)))
+
+def centroid(pts):
+    n = float(len(pts))
+    return list(imap((lambda *x: sum(x)/n), *pts))
+
+def p(pts):
+    print ['(' + ', '.join(map(lambda f: '%.02f' % f, p)) + ')' for p in pts]
 
 def kmeans(dataset, num_clusters, initial_means=None):
     """Runs the kmeans algorithm.
@@ -19,7 +27,37 @@ def kmeans(dataset, num_clusters, initial_means=None):
   Returns (means, error), where means is the list of mean vectors, and error is
   the mean distance from a datapoint to its cluster.
   """
-    raise NotImplementedError
+
+    if initial_means:
+        means = initial_means
+    else:
+        means = random.sample(dataset, num_clusters)
+
+    dimn = len(dataset[0]) # I guess we'll just assume they're all the same length
+
+    i = 0
+    while True:
+        print i
+        i += 1
+        #print 'means:', means
+        assts = [[] for _ in xrange(num_clusters)]
+        num_assts = [0] * num_clusters
+
+        for dat in dataset:
+            dists = [dist(mean, dat) for mean in means]
+            mean_ind = dists.index(min(dists))
+            assts[mean_ind].append(dat)
+        #print 'assts:', '\n'.join(map(str, assts))
+
+        new_means = [centroid(pts) for pts in assts]
+        max_dist = max(dist(m, m2) for m, m2 in zip(means, new_means))
+        means = new_means
+        print max_dist
+        if max_dist < .0001:
+            break
+
+    total_error = sum(sum(dist(mean, dat) for dat in dats) for dats, mean in zip(assts, means))
+    return means, total_error / len(dataset)
 
 def parse_input(datafile, num_examples):
     data = []
