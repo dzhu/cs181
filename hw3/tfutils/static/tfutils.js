@@ -132,14 +132,8 @@ var TfUtils = (function() {
 	if (dictTaskProperties.type == "graph") {
 	    jDisplay = $("<canvas width='480' height='320' class='graph'/>");
 	} else if (dictTaskProperties.type == "chart") {
-        jDisplay = $("<div id='" + sId + "_chart'/>");
-	} else if (dictTaskProperties.type == "multiple_chart") {
-        var ct = 0;
-        var jDisplay = "<div id='" + sId + "_chart'/>";
-        for (ct = 0; ct < 5; ct++) {
-          jDisplay += "<div id='" + sId + "_chart" + ct + "'/>";
-        }
-    }
+	    jDisplay = $("<div id='" + sId + "_chart'/>");
+	}
 	jTaskContent.append(jDisplay);
 
 	jTask.append(jHeader);
@@ -198,25 +192,9 @@ var TfUtils = (function() {
 		    dictChart.chart.width = iWidth;
 		    dictChart.chart.height = iHeight;
 		    var chart = new Highcharts.Chart(dictChart);
-		    //dictChart.chart.renderTo = sId + "_chart0";
-		    //var chart = new Highcharts.Chart(dictChart);
 		    return chart;
 		});
-	    } else if (sType == "multiple_chart") {
-		return handleErrors(function(dictCharts) {
-           var i = 0;
-           for (i = 0; i < dictTaskProperties.extra_data; ++i) {
-		      var iWidth = jTask.width();
-		      var iHeight = Math.floor(iWidth*9.0/16.0);
-              var dictChart = dictCharts[i];
-		      dictChart.chart.renderTo = sId + "_chart" + i;
-		      dictChart.chart.width = iWidth;
-		      dictChart.chart.height = iHeight;
-		      var chart = new Highcharts.Chart(dictChart);
-           }
-		   return true;
-		});
-        }
+	    }
 	})();
 	tk.button = jRunHolder.find('a');
 	tk.button.click(function(event) {
@@ -240,10 +218,9 @@ var TfUtils = (function() {
 	    jDismissHolder.append(jDismiss);
 
 	    var sMsgBase = "An internal error occurred: ";
-	    var sCompleteError = sStatus + " (" + (xhr.status || "") + ")";
 	    var sMsg = (sMsgBase + '"' +
-			(exn ? exn + " (" + sCompleteStatus + ")"
-			 : sCompleteError)
+			(exn ? exn.message + " (" + sStatus + ")"
+			 : sStatus)
 			+ '"');
 	    jErrorText.text(sMsg);
 	    jErrorMsg.append(jErrorText);
@@ -302,7 +279,7 @@ var TfUtils = (function() {
 	    success: handleSuccess, 
 	    error: handleError,
 	    dataType: "json",
-	    timeout: 1000.0 * 60.0 * 5.0 // five minute timeout
+	    timeout: 1000.0 * 60.0 * 10.0 // ten minute timeout
 	});
     }
 

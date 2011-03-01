@@ -81,7 +81,6 @@ def get_task_metadata():
     listTaskData = []
     for task in dictTask.values():
         dictData = {"name": task.get_name(), "type": task.get_type(),
-                    "extra_data": task.get_extra_data(),
                     "description": task.get_description(),
                     "id":task_id(task), "priority": task.get_priority()}
         listTaskData.append(dictData)
@@ -128,9 +127,7 @@ def serve_task(req, sTask):
     dictTask = get_task_dict()
     if sTask not in dictTask:
         raise ValueError("No such task: %s" % sTask)
-    res = json.dumps(dictTask[sTask].run())
-    print res
-    return res
+    return json.dumps(dictTask[sTask].run())
 
 def serve_updates(req, sUpdateTask):
     if sUpdateTask == "check":

@@ -50,12 +50,12 @@ class SingleTest(object):
         tr = unittest.TestResult()
         fileOldStdout = sys.stdout
         sys.stdout = StringIO.StringIO()
-        sConsole = None
+        #sConsole = None
         try:
             self.test.run(tr)
-            sConsole = sys.stdout.getvalue()
+            sConsole = ''#sys.stdout.getvalue()
         finally:
-            sys.stdout.close()
+            #sys.stdout.close()
             sys.stdout = fileOldStdout
         if tr.errors or tr.failures:
             sTb = str((map(lambda (a,b): b, tr.errors + tr.failures))[0])
