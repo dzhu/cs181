@@ -1,0 +1,168 @@
+10
+
+dir
+130
+svn+ssh://jklai@tarsonis.mizzao.tk/var/svn/repos/cs181-2011/hw/tfutils/static/jqueryui/development-bundle/demos
+svn+ssh://jklai@tarsonis.mizzao.tk/var/svn/repos/cs181-2011
+
+
+
+2011-02-26T16:00:12.767114Z
+130
+jklai
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+97c16f68-c316-468d-aefb-a5f3b78d54f1
+
+resizable
+dir
+
+show
+dir
+
+toggle
+dir
+
+slider
+dir
+
+removeClass
+dir
+
+switchClass
+dir
+
+tabs
+dir
+
+progressbar
+dir
+
+effect
+dir
+
+demos.css
+file
+
+
+
+
+2011-02-26T15:58:24.865045Z
+2e2ec04700af4ac5681a956cfe405c47
+2011-02-26T16:00:12.767114Z
+130
+jklai
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+14338
+
+dialog
+dir
+
+accordion
+dir
+
+autocomplete
+dir
+
+selectable
+dir
+
+position
+dir
+
+images
+dir
+
+toggleClass
+dir
+
+draggable
+dir
+
+droppable
+dir
+
+hide
+dir
+
+index.html
+file
+
+
+
+
+2011-02-26T15:58:24.865045Z
+e16d48a71e50aabb6c8d35ac2529be3b
+2011-02-26T16:00:12.767114Z
+130
+jklai
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+13727
+
+sortable
+dir
+
+button
+dir
+
+datepicker
+dir
+
+animate
+dir
+
+addClass
+dir
+
