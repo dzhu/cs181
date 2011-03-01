@@ -11,9 +11,6 @@ def centroid(pts):
     n = float(len(pts))
     return list(imap((lambda *x: sum(x)/n), *pts))
 
-def p(pts):
-    print ['(' + ', '.join(map(lambda f: '%.02f' % f, p)) + ')' for p in pts]
-
 def kmeans(dataset, num_clusters, initial_means=None):
     """Runs the kmeans algorithm.
 
@@ -25,20 +22,14 @@ def kmeans(dataset, num_clusters, initial_means=None):
      initial the means to random data points.
 
   Returns (means, error), where means is the list of mean vectors, and error is
-  the mean distance from a datapoint to its cluster.
+  the mean squared distance from a datapoint to its cluster.
   """
+    assert(initial_means is None or len(initial_means) == num_clusters)
+    print 'clusters:', num_clusters, 'data:', dataset
 
-    if initial_means:
-        means = initial_means
-    else:
-        means = random.sample(dataset, num_clusters)
+    means = [dataset[i] for i in initial_means] if initial_means else random.sample(dataset, num_clusters)
 
-    dimn = len(dataset[0]) # I guess we'll just assume they're all the same length
-
-    i = 0
     while True:
-        print i
-        i += 1
         #print 'means:', means
         assts = [[] for _ in xrange(num_clusters)]
         num_assts = [0] * num_clusters
@@ -52,11 +43,12 @@ def kmeans(dataset, num_clusters, initial_means=None):
         new_means = [centroid(pts) for pts in assts]
         max_dist = max(dist(m, m2) for m, m2 in zip(means, new_means))
         means = new_means
-        print max_dist
+        print 'max_dist:', max_dist
         if max_dist < .0001:
             break
 
-    total_error = sum(sum(dist(mean, dat) for dat in dats) for dats, mean in zip(assts, means))
+    total_error = sum(sum(dist(mean, dat)**2 for dat in dats) for dats, mean in zip(assts, means))
+    print 'returning:', means, total_error / len(dataset)
     return means, total_error / len(dataset)
 
 def parse_input(datafile, num_examples):
