@@ -1,13 +1,15 @@
 #!/usr/bin/env python
+import heapq
 import math
 import random
-from itertools import imap
+from itertools import imap, combinations
 
 def dist(v1, v2):
     """Returns the Euclidean distance between instance 1 and instance 2."""
     return math.sqrt(sum(imap(lambda x,y: (x-y) * (x-y), v1, v2)))
 
 def centroid(pts):
+    """Given a list of lists, representing points, determine their centroid."""
     n = float(len(pts))
     return list(imap((lambda *x: sum(x)/n), *pts))
 
@@ -25,7 +27,7 @@ def kmeans(dataset, num_clusters, initial_means=None):
   the mean squared distance from a datapoint to its cluster.
   """
     assert(initial_means is None or len(initial_means) == num_clusters)
-    print 'clusters:', num_clusters, 'data:', dataset
+    print 'clusters:', num_clusters#, 'data:', dataset
 
     means = [dataset[i] for i in initial_means] if initial_means else random.sample(dataset, num_clusters)
 
@@ -63,17 +65,81 @@ def parse_input(datafile, num_examples):
           break
     return data
 
+class Cluster(object):
+    def __init__(self, arg1, arg2):
+        """Create a new cluster, either from a list of list of floats
+        and a list of indices, or from two clusters (then this is the
+        merge of those two)."""
+
+        self.valid = True
+        if isinstance(arg1, list):
+            self.pts = arg1
+            self.inds = arg2
+        else:
+            self.pts = arg1.pts #eh, they'll all be the same
+            self.inds = list(heapq.merge(arg1.inds, arg2.inds))
+            arg1.valid = arg2.valid = False
+
+    def __str__(self):
+        return str([tuple(self.pts[i]) for i in self.inds])
+    def __repr__(self):
+        return str([tuple(self.pts[i]) for i in self.inds])
+
+
+def run_hac(func, dataset, num_clusters):
+    """Runs the hac algorithm for an arbitrary evaluation
+    function. func should take two Clusters and return the "distance"
+    between them."""
+
+    def make_tuple(clust1, clust2):
+        return func(clust1, clust2), clust1, clust2
+
+    clusters = set(Cluster(dataset, [i]) for i in range(len(dataset)))
+    heap = [make_tuple(c1, c2) for c1, c2 in combinations(clusters, 2)]
+    heapq.heapify(heap)
+    # start with len(dataset) clusters, end with num_clusters -- must
+    # do this many merges
+    for i in xrange(len(dataset) - num_clusters):
+        print i
+        # find first pair of clusters that haven't already been merged
+        pair = heapq.heappop(heap)
+        while not (pair[1].valid  and pair[2].valid):
+            pair = heapq.heappop(heap)
+
+        new_clust = Cluster(pair[1], pair[2])
+        clusters.discard(pair[1])
+        clusters.discard(pair[2])
+        #clusters.remove(pair[1])
+        #clusters.remove(pair[2])
+
+        for clust in clusters:
+            heapq.heappush(heap, make_tuple(new_clust, clust))
+
+        clusters.add(new_clust)
+        #clusters.append(new_clust)
+        print 'all clusters:', clusters
+
+    print 'returning:', [c.inds for c in clusters]
+    return [c.inds for c in clusters]
+
+def clust_func(func, c1, c2):
+    return func(dist(c1.pts[i1], c2.pts[i2]) for i1 in c1.inds for i2 in c2.inds)
+
+def clust_min(c1, c2): return clust_func(min, c1, c2)
+def clust_max(c1, c2): return clust_func(max, c1, c2)
+
 def min_hac(dataset, num_clusters):
     """Runs the min hac algorithm in dataset.  Returns a list of the clusters
   formed.
   """
-    raise NotImplementedError
+    return run_hac(clust_min, dataset, num_clusters)
 
 def max_hac(dataset, num_clusters):
     """Runs the max hac algorithm in dataset.  Returns a list of the clusters
   formed.
   """
-    raise NotImplementedError
+    return run_hac(clust_max, dataset, num_clusters)
+
 
 def mean_hac(dataset, num_clusters):
     """Runs the mean hac algorithm in dataset.  Returns a list of the clusters

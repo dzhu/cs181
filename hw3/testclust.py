@@ -64,7 +64,7 @@ class KMeansTest(unittest.TestCase):
 
 class HACTest(unittest.TestCase):
   def setUp(self):
-    self.dataset = [ [1], [1], [2], [4], [5], [7] ]
+    self.dataset = [ [1], [1], [2], [4], [5], [7.5] ]
 
   def sort_clusters(self, clusters):
     return map(lambda x: sorted(x), clusters)

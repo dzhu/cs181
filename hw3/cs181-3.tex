@@ -21,15 +21,16 @@
 \item 
   \begin{align*}
     d(\b x,\b y)^2&=\sum_j(x_j-y_j)^2\\
-    d(\b x,\b y)^2&=(x_j-y_j)^2\qquad\textrm{for each $j$}\\
-    d(\b x,\b y)&=|x_j-y_j|\qquad\textrm{for each $j$}
-    d(\b x,\b y)&=\max j|x_j-y_j|
+    d(\b x,\b y)^2&\ge(x_j-y_j)^2\qquad\textrm{for each $j$}\\
+    d(\b x,\b y)&\ge|x_j-y_j|\qquad\textrm{for each $j$}\\
+    d(\b x,\b y)&\ge\max_j|x_j-y_j|
   \end{align*}
   Now, $d(\b x,\b y)\le\epsilon$ implies $\max_j|x_j-y_j|\le\epsilon$,
   so the set of $\b y$ satisfying the former is a subset of the set
   satisfying the latter; hence the former has a probability of
   occurring that is not greater.
-\item 
+\item We want a probability of at most $\delta$ that no points are
+  nearby. That probability is
 \item 
 \end{enumerate}
 \section*{Problem 2}
