@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{graphicx}
 
 \renewcommand{\labelenumi}{(\alph{enumi})}
 \renewcommand{\labelenumii}{(\roman{enumii})}
@@ -31,21 +32,68 @@
   satisfying the latter; hence the former has a probability of
   occurring that is not greater.
 \item We want a probability of at most $\delta$ that no points are
-  nearby. That probability is
-\item 
+  within $\epsilon$. That probability is 
+  $$(1-P(d(\mathbf x,\mathbf y)\leq \epsilon))^n\geq (1-\rho)^n$$
+  Setting $(1-\rho)^n=\delta$, it follows that
+  $$n\geq \log \delta / \log(1-\rho)$$
+\item It does poorly in higher-dimensional spaces because the distance
+  between points increases: fixing $\delta$, $\rho$ decreases 
+  exponentially with $m$, so that $\log(1-\rho)$ becomes a negative number
+  of smaller absolute value, so that the number of points $n$ needed
+  for there to be a point $\mathbf y$ within $\epsilon$ of a fixed point  
+  $\mathbf x$ increases. 
 \end{enumerate}
 \section*{Problem 2}
 \begin{enumerate}
-\item 
-\item 
-\item 
-\item 
-\item 
+\item Maximum likelihood: $P(\mathbf X=\mathbf x | \mathbf D)=P(\mathbf X = \mathbf x | \Theta=\theta_{ML})$
+  where $$\theta_{ML} = \arg \max_\theta P(\mathbf D|\theta)$$
+  MAP: $P(\mathbf X = \mathbf x | \mathbf D) = P(\mathbf X = \mathbf x | \Theta = \theta_{MAP})$
+  where $$\theta_{MAP} = \arg \max_\theta P(\mathbf D | \theta)P(\Theta = \theta)$$
+  Full Bayes: $P(\mathbf X = \mathbf x | \mathbf D) = \int_\theta P(\mathbf X = \mathbf x | \Theta = \theta)P(\Theta = \theta | \mathbf D)d\theta$
+
+  % ... I just copied these from lecture notes...why is this worth 5 points 
+\item $\theta_{MAP}$ maximizes $P(\mathbf D)=P(\mathbf D | \Theta = \theta)P(\Theta = \theta)$,
+  using Bayesian inference, whereas $\theta_{ML}$ does not. 
+  % ...I dunno. 
+\item MAP is advantageous over ML because it can take into consideration
+  a prior, whereas ML cannot. Priors provide regularization, penalizing
+  attributes that are unlikely. 
+  MAP is advantageous over full bayes because full bayes requires
+  integration steps that can be difficult to perform. 
+\item
+  Consider the following distributions.
+      \begin{center}
+        \includegraphics[scale=.5]{beta_1_1.png}
+        \includegraphics[scale=.5]{beta_3_3.png}
+        \includegraphics[scale=.5]{beta_2_5.png}
+      \end{center}
+  A Beta(1,1) is an uninformed prior; it does not give preference to any
+  outcome for being more likely. A Beta(3,3) indicates that $\theta$
+  closer to 0.5 is more likely, as it is equivalent to assuming that
+  given the data follows a Beta, there were previously 2 instances classified
+  as 1 and 2 as 0. A Beta(2,5) indicates that $\theta$ closer to 0.2 is more 
+  likely, as again it is equivalent to assuming that given the data follows 
+  a Beta, there was one instance classifying as 1 and 4 as 0. Outcomes in
+  which $\theta$ is closer to 1 are penalized for being less likely.  
+\item The Beta is the conjugate prior of the Bernoulli. In particular, 
+  $P(\theta | \mathbf D) = \text{Beta} (\Theta = \theta | N_T+\alpha, N_F+\beta)$
+  where the prior is a Beta($\alpha,\beta$). Hence such a prior can incorporate
+  information from the prior - that there were previously seen $\alpha-1$ 1's
+  and $\beta-1$ 0's. 
 \end{enumerate}
 \section*{Problem 3}
 \begin{enumerate}
-\item 
-\item 
+\item We require the following parameters.
+  \begin{itemize}
+  \item 1 for $P(Y)$
+  \item 1 each for $P(X_1|Y=0)$ and $P(X_1|Y=1)$, a total of 2
+  \item 1 each for $P(X_j|X_{j-1},Y)$ for both $Y=0,1$ and $X_{j-1}=0,1$
+    over $j=2\ldots m$, so a total of $2\times 2\times (m-1)$.
+  \end{itemize}
+  This adds up to $3+4m-4=4m-1$.
+% please check this
+\item The parameter values are as follows.
+% I am confused, can  you check (a) first
 \item 
 \item 
 \item 
