@@ -33,6 +33,8 @@ def kmeans(dataset, num_clusters, initial_means=None):
 
     while True:
         #print 'means:', means
+
+        # assignments of data points to each cluster
         assts = [[] for _ in xrange(num_clusters)]
         num_assts = [0] * num_clusters
 
@@ -100,7 +102,7 @@ def run_hac(func, dataset, num_clusters):
     # start with len(dataset) clusters, end with num_clusters -- must
     # do this many merges
     for i in xrange(len(dataset) - num_clusters):
-        print i
+        print i, '/', len(dataset) - num_clusters
         # find first pair of clusters that haven't already been merged
         pair = heapq.heappop(heap)
         while not (pair[1].valid  and pair[2].valid):
@@ -117,16 +119,19 @@ def run_hac(func, dataset, num_clusters):
 
         clusters.add(new_clust)
         #clusters.append(new_clust)
-        print 'all clusters:', clusters
+        #print 'all clusters:', clusters
 
-    print 'returning:', [c.inds for c in clusters]
+    #print 'returning:', [c.inds for c in clusters]
     return [c.inds for c in clusters]
 
 def clust_func(func, c1, c2):
-    return func(dist(c1.pts[i1], c2.pts[i2]) for i1 in c1.inds for i2 in c2.inds)
+    """Apply func to the list of distances between every element of c1
+    and every element of c2."""
+    return func([dist(c1.pts[i1], c2.pts[i2]) for i1 in c1.inds for i2 in c2.inds])
 
 def clust_min(c1, c2): return clust_func(min, c1, c2)
 def clust_max(c1, c2): return clust_func(max, c1, c2)
+def clust_mean(c1, c2): return clust_func(lambda l: sum(l) / len(l), c1, c2)
 
 def min_hac(dataset, num_clusters):
     """Runs the min hac algorithm in dataset.  Returns a list of the clusters
