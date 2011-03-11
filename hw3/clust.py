@@ -9,7 +9,8 @@ def dist(v1, v2):
     return math.sqrt(sum(imap(lambda x,y: (x-y) * (x-y), v1, v2)))
 
 def centroid(pts):
-    """Given a list of lists, representing points, determine their centroid."""
+    """Given a list of lists of numbers, representing points,
+    determine their centroid."""
     n = float(len(pts))
     return list(imap((lambda *x: sum(x)/n), *pts))
 
@@ -32,8 +33,6 @@ def kmeans(dataset, num_clusters, initial_means=None):
     means = [dataset[i] for i in initial_means] if initial_means else random.sample(dataset, num_clusters)
 
     while True:
-        #print 'means:', means
-
         # assignments of data points to each cluster
         assts = [[] for _ in xrange(num_clusters)]
         num_assts = [0] * num_clusters
@@ -42,7 +41,6 @@ def kmeans(dataset, num_clusters, initial_means=None):
             dists = [dist(mean, dat) for mean in means]
             mean_ind = dists.index(min(dists))
             assts[mean_ind].append(dat)
-        #print 'assts:', '\n'.join(map(str, assts))
 
         new_means = [centroid(pts) for pts in assts]
         max_dist = max(dist(m, m2) for m, m2 in zip(means, new_means))
@@ -52,7 +50,7 @@ def kmeans(dataset, num_clusters, initial_means=None):
             break
 
     total_error = sum(dist(mean, dat)**2 for dats, mean in zip(assts, means) for dat in dats)
-    print 'returning:', means, total_error / len(dataset)
+    print 'means:', means
     return means, total_error / len(dataset)
 
 def parse_input(datafile, num_examples):
@@ -97,12 +95,12 @@ def run_hac(func, dataset, num_clusters):
     def make_tuple(clust1, clust2):
         return func(clust1, clust2), clust1, clust2
 
-    # this uses heaps, supposedly for performance, but what happens is
+    # This uses heaps, supposedly for performance, but what happens is
     # that you end up filling the heap with pairs of clusters that
     # have already been merged into others, so that, toward the end,
     # each iteration takes a very long time. It might just be better
-    # to do this more directly, but I don't feel like reimplementing
-    # it now.
+    # to do this more directly with lists instead, but I don't feel
+    # like reimplementing it now.
 
     clusters = set(Cluster(dataset, [i]) for i in range(len(dataset)))
     heap = [make_tuple(c1, c2) for c1, c2 in combinations(clusters, 2)]
@@ -110,7 +108,6 @@ def run_hac(func, dataset, num_clusters):
     # start with len(dataset) clusters, end with num_clusters -- must
     # do this many merges
     for i in xrange(len(dataset) - num_clusters):
-        #print i, '/', len(dataset) - num_clusters
         # find first pair of clusters that haven't already been merged
         pair = heapq.heappop(heap)
         while not (pair[1].valid  and pair[2].valid):
@@ -119,8 +116,6 @@ def run_hac(func, dataset, num_clusters):
         new_clust = Cluster(pair[1], pair[2])
         clusters.discard(pair[1])
         clusters.discard(pair[2])
-        #clusters.remove(pair[1])
-        #clusters.remove(pair[2])
 
         for clust in clusters:
             heapq.heappush(heap, make_tuple(new_clust, clust))
@@ -141,6 +136,8 @@ def clust_min(c1, c2): return clust_func(min, c1, c2)
 def clust_max(c1, c2): return clust_func(max, c1, c2)
 def clust_mean(c1, c2): return clust_func(lambda l: sum(l) / len(l), c1, c2)
 def clust_centroid(c1, c2): return dist(centroid(c1.pts),centroid(c2.pts))
+
+# Yay for first-class functions!
 
 def min_hac(dataset, num_clusters):
     """Runs the min hac algorithm in dataset.  Returns a list of the clusters
