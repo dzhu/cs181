@@ -55,7 +55,8 @@
   % ... I just copied these from lecture notes...why is this worth 5 points 
 \item $\theta_{MAP}$ maximizes $P(\Theta|\mathbf D)\propto P(\mathbf D)=P(\mathbf D | \Theta = \theta)P(\Theta = \theta)$,
   using Bayes' rule, whereas $\theta_{ML}$ does not - it merely maximizes $P(\mathbf D | \Theta = \theta)$
-  without the $P(\Theta=\theta)$ factor, i.e. there is no prior.  
+  without the $P(\Theta=\theta)$ factor, i.e. there is no prior. MAP allows us to account
+  for situations in which an outcome is unlikely. 
   % ...I dunno. 
 \item MAP is advantageous over ML because it can take into consideration
   a prior, whereas ML cannot. Priors provide regularization, penalizing
