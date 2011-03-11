@@ -136,15 +136,30 @@ parameter values. We already know how to calculate the numerator: it's the
 $P(X_1,\ldots,X_m,Y)$ we were given in the model, using the parameter values
 we defined in (a). 
 $$P(\mathbf X = \mathbf x_i)=P(\mathbf X = \mathbf x_i, Y=T)P(Y=T)+P(\mathbf X = \mathbf x_i, Y=F)P(Y=F)$$
-Again, we know how to calculate these with parameter values. $P(Y=T)$ is $\theta_c$, for instance.
+Again, we know how to calculate these with parameter values. $P(Y=T)$ is 
+$\theta_c$, for instance.
 
 The other sufficient statistics are calculated analogously, except summing
 over different sets - i.e., 
-$$E[N_{Y=T,condition}]=\sum_{i, condition(i)} P(Y=T|\mathbf X=\mathbf x_i)$$
+$$E[N_{Y=T,\mathrm{condition}}]=\sum_{i, \mathrm{condition}(i)} P(Y=T|\mathbf X=\mathbf x_i)$$
+and
+$$E[N_{Y=N,\mathrm{condition}}]=\sum_{i, \mathrm{condition}(i)} P(Y=N|\mathbf X=\mathbf x_i)$$
+We do this where condition is automatically True, $x_1=T$, $x_1=F$, and 
+combinations of $(x_j,x_{j-1})\in \{T,F\}^2$
 
-\item The EM algorithm works similarly to the one given in Lecture 11. We'll repeat it anyway. 
-****TODO*****
- 
+\item The EM algorithm works entirely analogously to the one given in Lecture 
+  11. We'll repeat it anyway.
+  \begin{itemize}
+  \item Set $\theta_c$, $\theta^T_1$, $\theta^{TT}_j$, $\theta^{TF}_j$, 
+    $\theta^{FT}_j$, $\theta^{FF}_j$ to some initial values.
+  \item Repeat until convergence:
+    \begin{itemize}
+    \item Calculate expectations using parameters as in part (c)
+    \item Calculate parameters using expectations as in part (b)
+    \end{itemize}
+  \end{itemize}
+  Possibly random-restart to avoid local minima.
+
 \item This model for clustering can be advantageous as it considers interactions
   between different attributes -- specifically, interactions between adjacent
   attributes in a given ordering of the attributes. This is good if the 
@@ -159,8 +174,11 @@ $$E[N_{Y=T,condition}]=\sum_{i, condition(i)} P(Y=T|\mathbf X=\mathbf x_i)$$
 \begin{enumerate}
 \item 
   \begin{enumerate}
-  \item 
-  \item 
+  \item \includegraphics[scale=0.5]{kmeansresults.png} 
+  \item We may choose $K=4$ as improvement slows down with
+    greater values of $K$. Larger $K$ results in smaller 
+    mean squared error, but a smaller $K$ is better for 
+    simplicity and so that k-means has fewer iterations. 
   \end{enumerate}
 \item 
   \begin{enumerate}
