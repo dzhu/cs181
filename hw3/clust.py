@@ -132,6 +132,7 @@ def clust_func(func, c1, c2):
 def clust_min(c1, c2): return clust_func(min, c1, c2)
 def clust_max(c1, c2): return clust_func(max, c1, c2)
 def clust_mean(c1, c2): return clust_func(lambda l: sum(l) / len(l), c1, c2)
+def clust_centroid(c1, c2): return dist(centroid(c1),centroid(c2))
 
 def min_hac(dataset, num_clusters):
     """Runs the min hac algorithm in dataset.  Returns a list of the clusters
@@ -150,13 +151,13 @@ def mean_hac(dataset, num_clusters):
     """Runs the mean hac algorithm in dataset.  Returns a list of the clusters
   formed.
   """
-    raise NotImplementedError
+    return run_hac(clust_mean, dataset, num_clusters)
 
 def centroid_hac(dataset, num_clusters):
     """Runs the centroid hac algorithm in dataset.  Returns a list of the clusters
   formed.
   """
-    raise NotImplementedError
+    return run_hac(clust_centroid, dataset, num_clusters)
 
 def main(argv):
     import optparse
