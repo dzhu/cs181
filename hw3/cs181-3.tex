@@ -21,7 +21,7 @@
   intersection of a size $2\epsilon$ hypercube centered at $\mathbf x$
   with the unit hypercube; the volume of that set is at most the
   volume of the small hypercube.
-\item 
+\item
   \begin{align*}
     d(\b x,\b y)^2&=\sum_j(x_j-y_j)^2\\
     d(\b x,\b y)^2&\ge(x_j-y_j)^2\qquad\textrm{for each $j$}\\
@@ -33,16 +33,16 @@
   satisfying the latter; hence the former has a probability of
   occurring that is not greater.
 \item We want a probability of at most $\delta$ that no points are
-  within $\epsilon$. That probability is 
-  $$(1-P(d(\mathbf x,\mathbf y)\leq \epsilon))^n\geq (1-\rho)^n$$
+  within $\epsilon$. That probability is
+  \[(1-P(d(\mathbf x,\mathbf y)\leq \epsilon))^n\geq (1-\rho)^n\]
   Setting $(1-\rho)^n=\delta$, it follows that
-  $$n\geq \log \delta / \log(1-\rho)$$
+  \[n\geq \log \delta / \log(1-\rho)\]
 \item It does poorly in higher-dimensional spaces because the distance
-  between points increases: fixing $\delta$, $\rho$ decreases 
-  exponentially with $m$, so that $\log(1-\rho)$ becomes a negative number
-  of smaller absolute value, so that the number of points $n$ needed
-  for there to be a point $\mathbf y$ within $\epsilon$ of a fixed point  
-  $\mathbf x$ increases. 
+  between points increases: fixing $\delta$, $\rho$ decreases
+  exponentially with $m$, so that $\log(1-\rho)$ becomes a negative
+  number of smaller absolute value, so that the number of points $n$
+  needed for there to be a point $\mathbf y$ within $\epsilon$ of a
+  fixed point $\mathbf x$ increases.
 \end{enumerate}
 \section*{Problem 2}
 \begin{enumerate}
@@ -56,14 +56,14 @@
 
   Full Bayes: $P(\mathbf X = \mathbf x | \mathbf D) = \int_\theta P(\mathbf X = \mathbf x | \Theta = \theta)P(\Theta = \theta | \mathbf D)d\theta$
 
-  % ... I just copied these from lecture notes...why is this worth 5 points 
+  % ... I just copied these from lecture notes...why is this worth 5 points
 \item $\theta_{MAP}$ maximizes $P(\Theta|\mathbf D)\propto P(\mathbf
   D)=P(\mathbf D | \Theta = \theta)P(\Theta = \theta)$, using Bayes'
   rule, whereas $\theta_{ML}$ does not --- it merely maximizes
   $P(\mathbf D | \Theta = \theta)$ without the $P(\Theta=\theta)$
   factor, i.e. there is no prior. MAP allows us to account for
   situations in which an outcome is unlikely.
-  % ...I dunno. 
+  % ...I dunno.
 \item MAP is advantageous over ML because it can take into
   consideration a prior, whereas ML cannot. Priors provide
   regularization, penalizing attributes that are unlikely.  MAP is
@@ -96,27 +96,27 @@
 \item We require the following parameters.
   \begin{itemize}
   \item 1 for $P(Y)$. Let $\theta_c=P(Y=T)$.
-  \item 1 each for $P(X_1|Y=0)$ and $P(X_1|Y=1)$, a total of 2. Let $\theta_1^T=P(X_1=T|Y=T)$. 
+  \item 1 each for $P(X_1|Y=0)$ and $P(X_1|Y=1)$, a total of 2. Let $\theta_1^T=P(X_1=T|Y=T)$.
   \item 1 each for $P(X_j|X_{j-1},Y)$ for both $Y=0,1$ and $X_{j-1}=0,1$
-    over $j=2\ldots m$, so a total of $2\times 2\times (m-1)$. Let $\theta_j^{FT}=P(X_j=T|X_{j-1}=F,Y=T$ and so on. 
+    over $j=2\ldots m$, so a total of $2\times 2\times (m-1)$. Let $\theta_j^{FT}=P(X_j=T|X_{j-1}=F,Y=T$ and so on.
   \end{itemize}
   This adds up to $3+4m-4=4m-1$ total parameters.
   % please check this
-\item The parameter values are found as follows. First we find log likelihood. 
+\item The parameter values are found as follows. First we find log likelihood.
   \begin{align*}
     \mathcal L(D,\theta) &=
     \sum_{i:y_i=T}\ln \theta_c + \sum_{i:y_i=F}\ln (1-\theta_c) + \\ &
-    + \sum_{\stackrel{i:x_{i1}=T}{y_i=T}} \ln \theta_1^T + \sum_{\stackrel{i:x_{i1}=F}{y_i=T}}\ln(1-\theta_1^T)
-    + \sum_{\stackrel{i:x_{i1}=T}{y_i=F}} \ln \theta_1^F + \sum_{\stackrel{i:x_{i1}=F}{y_i=F}}\ln(1-\theta_1^F)\\
-    &\qquad + \sum_{j=2}^{m} 
-    \left[ 
-      \sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=T}}{y_i=T}}\ln \theta_{j-1}^{TT} + 
-      \sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=F}}{y_i=T}}\ln \theta_{j-1}^{FT} + 
+    + \sum_{\stackrel{i:x_{i1}=T}{y_i=T}} \ln \theta_1^T + \sum_{\stackrel{i:x_{i1}=F}{y_i=T}}\ln\left(1-\theta_1^T\right)
+    + \sum_{\stackrel{i:x_{i1}=T}{y_i=F}} \ln \theta_1^F + \sum_{\stackrel{i:x_{i1}=F}{y_i=F}}\ln\left(1-\theta_1^F\right)\\
+    &\qquad + \sum_{j=2}^{m}
+    \left[
+      \sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=T}}{y_i=T}}\ln \theta_{j-1}^{TT} +
+      \sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=F}}{y_i=T}}\ln \theta_{j-1}^{FT} +
       \sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=T}}{y_i=F}}\ln \theta_{j-1}^{TF} +  \right.\\
-      &\qquad\sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=F}}{y_i=F}}\ln \theta_{j-1}^{FF} +  
-      \sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=T}}{y_i=T}}\ln (1-\theta_{j-1}^{TT}) + 
-      \sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=F}}{y_i=T}}\ln (1-\theta_{j-1}^{FT}) +\\ 
-      &\qquad\left.\sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=T}}{y_i=F}}\ln (1-\theta_{j-1}^{TF}) + 
+      &\qquad\sum_{\stackrel{\stackrel{i:x_{ij}=T}{x_{i(j-1)}=F}}{y_i=F}}\ln \theta_{j-1}^{FF} +
+      \sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=T}}{y_i=T}}\ln\left(1-\theta_{j-1}^{TT}\right) +
+      \sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=F}}{y_i=T}}\ln\left(1-\theta_{j-1}^{FT}\right) +\\
+      &\qquad\left.\sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=T}}{y_i=F}}\ln\left(1-\theta_{j-1}^{TF}\right) +
       \sum_{\stackrel{\stackrel{i:x_{ij}=F}{x_{i(j-1)}=F}}{y_i=F}}\ln (1-\theta_{j-1}^{FF})
       \right] \\
   \end{align*}
@@ -129,11 +129,11 @@
     L(D,\theta)}{\theta_c}=\frac{N_{Y=T}}{\theta_c}-\frac{N_{Y=F}}{1-\theta_c}$$
   Setting this to 0, we find that
   $$\theta_c=\frac{N_{Y=T}}{N_{Y=F}+N_{Y=T}}$$
-  Analogous maximum likelihood values hold for the other parameters. 
+  Analogous maximum likelihood values hold for the other parameters.
   $$\theta_1^T=\frac{N_{X_1=T,Y=T}}{N_{X_1=T,Y=T}+N_{X_1=F,Y=T}}$$
   $$\theta_j^{TF}=\frac{N_{X_j=T,X_{j-1}=T,Y=F}}{N_{X_j=T,X_{j-1}=T,Y=F}+N_{X_j=F,X_{j-1}=T,Y=F}}$$
-  ...and so on. 
-\item These are pretty similar. Let's do $E[N_{Y=T}]$ for now. 
+  ...and so on.
+\item These are pretty similar. Let's do $E[N_{Y=T}]$ for now.
 
   $$E[N_{Y=T}]=\sum_i P(Y=T|\mathbf X = \mathbf x_i)$$ Hence it
   suffices to show how to calculate each $P(Y=T|\mathbf X=\mathbf
@@ -153,12 +153,12 @@
   and
   \[E[N_{Y=N,\mathrm{condition}}]=\sum_{i, \mathrm{condition}(i)} P(Y=N|\mathbf X=\mathbf x_i)\]
   We do this where condition is automatically True, $x_1=T$, $x_1=F$,
-  and combinations of $(x_j,x_{j-1})\in \{T,F\}^2$
+  and combinations of $(x_j,x_{j-1})\in \{T,F\}^2$.
 
-\item The EM algorithm works entirely analogously to the one given in Lecture 
-  11. We'll repeat it anyway.
+\item The EM algorithm works entirely analogously to the one given in
+  Lecture 11. We'll repeat it anyway.
   \begin{itemize}
-  \item Set $\theta_c$, $\theta^T_1$, $\theta^{TT}_j$, $\theta^{TF}_j$, 
+  \item Set $\theta_c$, $\theta^T_1$, $\theta^{TT}_j$, $\theta^{TF}_j$,
     $\theta^{FT}_j$, $\theta^{FF}_j$ to some initial values.
   \item Repeat until convergence:
     \begin{itemize}
@@ -168,30 +168,70 @@
   \end{itemize}
   Possibly random-restart to avoid local minima.
 
-\item This model for clustering can be advantageous as it considers interactions
-  between different attributes -- specifically, interactions between adjacent
-  attributes in a given ordering of the attributes. This is good if the 
-  attributes can be ordered to be conditionally independent with the exception 
-  of adjacent attributes. Compared to Autoclass, it can realize interactions
-  between adjacent attributes, but if there are no interactions between adjacent
-  attributes, it can work just as well, i.e. we can just have, say, 
-  $\theta_j^{TF}=\theta_j^{FF}$ and so on so that $P(X_j|X_{j-1},Y)=P(X_j|Y)$. 
-  We do expect order of attributes matter. ***TODO: example?****
+\item This model for clustering can be advantageous as it considers
+  interactions between different attributes --- specifically,
+  interactions between adjacent attributes in a given ordering of the
+  attributes. This is good if the attributes can be ordered to be
+  conditionally independent with the exception of adjacent
+  attributes. Compared to Autoclass, it can realize interactions
+  between adjacent attributes, but if there are no interactions
+  between adjacent attributes, it can work just as well, e.g., we can
+  just have, say, $\theta_j^{TF}=\theta_j^{FF}$ and so on so that
+  $P(X_j|X_{j-1},Y)=P(X_j|Y)$.  We do expect order of attributes to
+  matter.
 \end{enumerate}
 \section*{Problem 4}
 \begin{enumerate}
-\item 
+\item
   \begin{enumerate}
-  \item \includegraphics[scale=0.5]{kmeansresults.png} 
-  \item We may choose $K=4$ as improvement slows down with
-    greater values of $K$. Larger $K$ results in smaller 
-    mean squared error, but a smaller $K$ is better for 
-    simplicity and so that k-means has fewer iterations. 
+  \item \mbox{}\\ \includegraphics[scale=0.5]{kmeansresults.png}
+  \item We may choose $K=4$ as improvement slows down with greater
+    values of $K$ (the ``knee'' point). Larger $K$ results in smaller
+    mean squared error, but a smaller $K$ is better for simplicity and
+    so that k-means has fewer iterations.
   \end{enumerate}
-\item 
+\item
   \begin{enumerate}
-  \item 
-  \item 
+  \item Cluster sizes:
+
+    \begin{tabular}{|r|c|c|c|c|}\hline
+      Min & 1 & 25 & 1 & 73\\\hline
+      Max & 19 & 23 & 32 & 26\\\hline
+    \end{tabular}
+
+    Max-HAC: In this plot, the pink points are in one plane (with $z=0$) and
+    the other three clusters are in another $z=1$.
+    \begin{center}
+      \includegraphics[scale=.3]{max_hac.png}
+    \end{center}
+
+    Min-HAC: Here, the green and red clusters have $z=0$ and the pink
+    and blue have $z=1$.
+    \begin{center}
+      \includegraphics[scale=.3]{min_hac.png}
+    \end{center}
+
+    The clusters formed by max-HAC are much more evenly sized. This
+    makes sense, since the nature of the max metric is to choose the
+    merge at each step that will produce the most compact result.
+  \item
+    \begin{tabular}{|r|c|c|c|c|}\hline
+      Mean & 46 & 1 & 152 &1 \\\hline
+      Centroid & 147 & 1 & 5 & 47\\\hline
+    \end{tabular}
+
+    Mean-HAC: the blue points have $z=1$; others have $z=0$.
+    \begin{center}
+      \includegraphics[scale=.3]{mean_hac.png}
+    \end{center}
+    Centroid-HAC: blue and red points have $z=1$, others have $z=0$.
+    \begin{center}
+      \includegraphics[scale=.3]{centroid_hac.png}
+    \end{center}
+
+    I'm not really sure how we would expect mean and centroid to
+    differ, so I have nothing to say here.
   \end{enumerate}
+
 \end{enumerate}
 \end{document}

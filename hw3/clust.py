@@ -51,7 +51,7 @@ def kmeans(dataset, num_clusters, initial_means=None):
         if max_dist < .0001:
             break
 
-    total_error = sum(sum(dist(mean, dat)**2 for dat in dats) for dats, mean in zip(assts, means))
+    total_error = sum(dist(mean, dat)**2 for dats, mean in zip(assts, means) for dat in dats)
     print 'returning:', means, total_error / len(dataset)
     return means, total_error / len(dataset)
 
@@ -75,17 +75,18 @@ class Cluster(object):
 
         self.valid = True
         if isinstance(arg1, list):
-            self.pts = arg1
+            self.all_pts = arg1
             self.inds = arg2
         else:
-            self.pts = arg1.pts #eh, they'll all be the same
+            self.all_pts = arg1.all_pts #eh, they'll all be the same
             self.inds = list(heapq.merge(arg1.inds, arg2.inds))
             arg1.valid = arg2.valid = False
+        self.pts = [self.all_pts[i] for i in self.inds]
 
     def __str__(self):
-        return str([tuple(self.pts[i]) for i in self.inds])
+        return str(self.pts)
     def __repr__(self):
-        return str([tuple(self.pts[i]) for i in self.inds])
+        return str(self.pts)
 
 
 def run_hac(func, dataset, num_clusters):
@@ -96,13 +97,20 @@ def run_hac(func, dataset, num_clusters):
     def make_tuple(clust1, clust2):
         return func(clust1, clust2), clust1, clust2
 
+    # this uses heaps, supposedly for performance, but what happens is
+    # that you end up filling the heap with pairs of clusters that
+    # have already been merged into others, so that, toward the end,
+    # each iteration takes a very long time. It might just be better
+    # to do this more directly, but I don't feel like reimplementing
+    # it now.
+
     clusters = set(Cluster(dataset, [i]) for i in range(len(dataset)))
     heap = [make_tuple(c1, c2) for c1, c2 in combinations(clusters, 2)]
     heapq.heapify(heap)
     # start with len(dataset) clusters, end with num_clusters -- must
     # do this many merges
     for i in xrange(len(dataset) - num_clusters):
-        print i, '/', len(dataset) - num_clusters
+        #print i, '/', len(dataset) - num_clusters
         # find first pair of clusters that haven't already been merged
         pair = heapq.heappop(heap)
         while not (pair[1].valid  and pair[2].valid):
@@ -127,12 +135,12 @@ def run_hac(func, dataset, num_clusters):
 def clust_func(func, c1, c2):
     """Apply func to the list of distances between every element of c1
     and every element of c2."""
-    return func([dist(c1.pts[i1], c2.pts[i2]) for i1 in c1.inds for i2 in c2.inds])
+    return func([dist(pt1, pt2) for pt1 in c1.pts for pt2 in c2.pts])
 
 def clust_min(c1, c2): return clust_func(min, c1, c2)
 def clust_max(c1, c2): return clust_func(max, c1, c2)
 def clust_mean(c1, c2): return clust_func(lambda l: sum(l) / len(l), c1, c2)
-def clust_centroid(c1, c2): return dist(centroid(c1),centroid(c2))
+def clust_centroid(c1, c2): return dist(centroid(c1.pts),centroid(c2.pts))
 
 def min_hac(dataset, num_clusters):
     """Runs the min hac algorithm in dataset.  Returns a list of the clusters
