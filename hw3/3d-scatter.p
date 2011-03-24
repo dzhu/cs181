@@ -8,8 +8,8 @@
 #     ...
 # This script can be run with: gnuplot 3d-scatter.p
 
-set terminal pdf
-set output "output.pdf"
+set terminal png
+set output "output.png"
 set title "HAC, max, 3 attributes, k=4" 
 set xlabel "Age" 
 set xlabel  offset character -3, -2, 0 font "" textcolor lt -1 norotate
