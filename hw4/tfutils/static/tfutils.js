@@ -279,7 +279,7 @@ var TfUtils = (function() {
 	    success: handleSuccess, 
 	    error: handleError,
 	    dataType: "json",
-	    timeout: 1000.0 * 60.0 * 40.0 // forty minute timeout
+	    timeout: 1000.0 * 60.0 * 10.0 // ten minute timeout
 	});
     }
 
