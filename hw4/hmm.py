@@ -2,7 +2,7 @@
 
 from util import * 
 from numpy import *
-from math import log
+from math import log, exp
 import copy
 import sys
 
@@ -465,7 +465,7 @@ observations = %s
         for state in states:
             ##          V.path   V. prob.
             output = sequence[0]
-            p = self.initial[state] * self.observation[state][output]
+            p = log(self.initial[state]) + log(self.observation[state][output])
             T[state] = ([state], p)
         for output in sequence[1:]:
             cnt += 1
@@ -479,9 +479,9 @@ observations = %s
                 valmax = None
                 for source_state in states:
                     (v_path, v_prob) = T[source_state]
-                    p = (self.transition[source_state][next_state] *
-                         self.observation[next_state][output])
-                    v_prob *= p
+                    p = (log(self.transition[source_state][next_state]) +
+                         log(self.observation[next_state][output]))
+                    v_prob += p
 
                     if valmax is None or v_prob > valmax:
                         argmax = v_path
