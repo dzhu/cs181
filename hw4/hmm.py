@@ -387,17 +387,26 @@ observations = %s
     def learn_from_labeled_data(self, state_seqs, obs_seqs):
         """
         Learn the parameters given state and observations sequences. 
-        Tje ordering of states in states[i][j] must correspond with observations[i][j].
+        The ordering of states in states[i][j] must correspond with observations[i][j].
         Uses Laplacian smoothing to avoid zero probabilities.
         """
+        self.initial.fill(1.)
+        self.transition.fill(1.)
+        self.observation.fill(1.)
 
-        # Fill this in...
-#         self.initial = normalize(...)
-#         self.transition = ...
-#         self.observation = ...
-#         self.compute_logs()
-        raise Exception("Not implemented")
+        for st_seq, obs_seq in zip(state_seqs, obs_seqs):
+            self.initial[st_seq[0]] += 1
+            last_st = None
+            for st, obs in zip(st_seq, obs_seq):
+                if last_st is not None:
+                    self.transition[last_st, st] += 1
+                last_st = st
+                self.observation[st, obs] += 1
 
+        self.initial /= sum(self.initial)
+        self.transition /= reshape(sum(self.transition, 1), (2, 1))
+        self.observation /= reshape(sum(self.observation, 1), (2, 1))
+        self.compute_logs()
 
                      
     # declare the @ decorator just before the function, invokes print_timing()
