@@ -403,9 +403,12 @@ observations = %s
                 last_st = st
                 self.observation[st, obs] += 1
 
+        # normalize the array
         self.initial /= sum(self.initial)
+        # normalize each row of the arrays
         self.transition /= reshape(sum(self.transition, 1), (2, 1))
         self.observation /= reshape(sum(self.observation, 1), (2, 1))
+
         self.compute_logs()
 
                      

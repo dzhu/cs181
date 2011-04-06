@@ -32,9 +32,10 @@
 \end{center}
 
 \begin{enumerate}[(a)]
-\item \textit{Let $S$ be the set of all nodes in the network. Using the idea 
-  of $d$-separation, for each pair of nodes $U,V\in S$, list the subsets of
-  $S\setminus \{U,V\}$ that when observed would render $U,V$ independent.}
+\item \textit{Let $S$ be the set of all nodes in the network. Using
+  the idea of $d$-separation, for each pair of nodes $U,V\in S$, list
+  the subsets of $S\setminus \{U,V\}$ that when observed would render
+  $U,V$ independent.}
 
   \begin{tabular}{|c|c|}
   \hline
@@ -42,7 +43,7 @@
   \hline
   $(B, A)$ & Impossible \\
   $(B, E)$ & $\emptyset$ \\
-  $(B, J)$ & $A$ \\ 
+  $(B, J)$ & $A$ \\
   $(B, M)$ & $A$ \\
   $(E, A)$ & Impossible \\
   $(E, J)$ & $A$ \\
@@ -53,14 +54,16 @@
   \hline
   \end{tabular}
 
-\item \textit{Build another Bayesian network that has the same independence 
-  properties, using variable order $M,J,A,B,E$.}
+\item \textit{Build another Bayesian network that has the same
+  independence properties, using variable order $M,J,A,B,E$.}
 
-  The process is to consider $M,J,A,B,E$ in order and for each node $N_i$ to find 
-  the minimal set of nodes $Pa(N_i)$ such that $P(N_i|N_1,\ldots,N_{i-1})=P(N_i|Pa(N_i))$. 
+  The process is to consider $M,J,A,B,E$ in order and for each node
+  $N_i$ to find the minimal set of nodes $Pa(N_i)$ such that
+  $P(N_i|N_1,\ldots,N_{i-1})=P(N_i|Pa(N_i))$.
 
-  Doing this iteratively, $P(M)=P(M)$; $P(J|M)=P(J|M)$; $P(A|M,J)=P(A|M)$; 
-  $P(B|M,J,A)=P(B|A)$; $P(E|M,J,A,B)=P(E|A)$. Hence we get the following diagram:
+  Doing this iteratively, $P(M)=P(M)$; $P(J|M)=P(J|M)$;
+  $P(A|M,J)=P(A|M)$; $P(B|M,J,A)=P(B|A)$; $P(E|M,J,A,B)=P(E|A)$. Hence
+  we get the following diagram:
 
 \begin{center}
 \begin{tikzpicture}[->,semithick,>=stealth,node distance=1.5cm,shorten >=1pt]
@@ -82,62 +85,68 @@
 
   (a): $(k-1)+(k-1)+k^2(k-1)+k(k-1)+k(k-1)$.
 
-  (b): $(k-1)+k(k-1)+k^2(k-1)+k(k-1)+k(k-1)$.   
+  (b): $(k-1)+k(k-1)+k^2(k-1)+k(k-1)+k(k-1)$.
 
   \textit{Give there reasons why the BN in (a) is preferred over the BN in (b).}
 
-  \begin{enumerate} 
+  \begin{enumerate}
   \item Fewer parameters means less storage.
-  \item Fewer parameters means better sampling of data. 
-  \item No cycles $\rightarrow$ polytree $\rightarrow$ optimal elimination order.
+  \item Fewer parameters means better sampling of data.
+  \item No cycles $\rightarrow$ polytree $\rightarrow$ optimal
+    elimination order.
   \end{enumerate}
 
 \end{enumerate}
 
 \section{Problem 2}
 \begin{enumerate}[(a)]
-\item \textit{Suppose the driver does not detect a cop and the traffic is slow. 
-  Use variable elimination to determine}
+\item \textit{Suppose the driver does not detect a cop and the traffic
+  is slow.  Use variable elimination to determine}
 
-%  TODO: I'm not sure what variable elimination has to do with anything. 
+%  TODO: I'm not sure what variable elimination has to do with anything.
 
   \begin{enumerate}
-  \item \textit{The probability of being late when the driver decides to speed 
-    and when the driver decides not to speed}
-$$P(OT=1|S,SC=0,ST=1)  =\sum_C \sum_T P(C|SC=0)P(T|C,S)P(OT=1|T,S,ST=1)$$
-We note that by Bayes' rule,
-$$P(C=1|SC=0)=\frac{P(SC=0|C=1)P(C=1)}{P(SC=0|C=1)P(C=1)+P(SC=0|C=0)P(C=0)}=\frac{0.4\cdot 0.1}{0.4\cdot 0.1+1\cdot 0.9}=\frac{2}{47}$$
-We can rewrite
-$$P(OT=1|S,SC=0,ST=1)=\sum_T P(OT=1|T,S)g_1(T,S)\text{ where }g_1(T,S)=\sum_C P(C|SC=0)P(T|C,S)$$
-We find that $g_1(T=0,S=0)=1$, $g_1(T=1,S=0)=0$, $g_1(T=0,S=1)=46/47$, and $g_1(T=1,S=1)=1/47$.
-Now we rewrite
-$$P(OT=1|S,SC=0,ST=1)= g_2(S)\text{ where } g_2(S)=\sum_T P(OT=1|T,S)g_1(T,S)$$
-We find that $g_2(S=0)=0.1\cdot 1$ and $g_2(S=1)=0.9\cdot 46/47=0.88085$ so that
-so that the probability of being late if you speed is 0.11915 and the probability
-of being late if you don't speed is 0.9. 
+  \item \textit{the probability of being late when the driver decides
+    to speed and when the driver decides not to speed}
+    \[P(OT=1|S,SC=0,ST=1) =\sum_C \sum_TP(C|SC=0)P(T|C,S)P(OT=1|T,S,ST=1)\]
 
-  \item \textit{The probability of getting a ticket when the driver decides to 
-    speed and when the driver decides not to speed}
+    Note that by Bayes' rule,
+    \[P(C=1|SC=0)=\frac{P(SC=0|C=1)P(C=1)}{P(SC=0|C=1)P(C=1)+P(SC=0|C=0)P(C=0)}=\frac{0.4\cdot 0.1}{0.4\cdot 0.1+1\cdot 0.9}=\frac{2}{47}\]
+    We can rewrite
+    \[P(OT=1|S,SC=0,ST=1)=\sum_T P(OT=1|T,S)g_1(T,S)\text{ where }g_1(T,S)=\sum_C P(C|SC=0)P(T|C,S)\]
+    We find that $g_1(T=0,S=0)=1$, $g_1(T=1,S=0)=0$,
+    $g_1(T=0,S=1)=46/47$, and $g_1(T=1,S=1)=1/47$.  Now we rewrite
+    \[P(OT=1|S,SC=0,ST=1)= g_2(S)\text{ where } g_2(S)=\sum_T P(OT=1|T,S)g_1(T,S)\]
+    We find that $g_2(S=0)=0.1\cdot 1$ and $g_2(S=1)=0.9\cdot
+    46/47=0.88085$ so that so that the probability of being late if
+    you speed is 0.11915 and the probability of being late if you
+    don't speed is 0.9.
 
-$$P(S|SC=0,ST=1,SC=0)=\sum_C P(T|C,S)P(C|SC=0)=g(S)$$
-Using calculations from before,
+  \item \textit{the probability of getting a ticket when the driver
+    decides to speed and when the driver decides not to speed}
 
-$g(S=0)=P(T=1|C=0,S=0)P(C=0,SC=0) + P(T=1|C=1,S=0)P(C=1|SC=0)=0$
+    \[P(S|SC=0,ST=1,SC=0)=\sum_C P(T|C,S)P(C|SC=0)=g(S)\]
+    Using calculations from before,
 
-$g(S=1)=P(T=1|C=0,S=1)P(C=0,SC=0) + P(T=1|C=1,S=1)P(C=1|SC=0)=0.5\cdot 2/47=0.021277$
+    \begin{align*}
+      g(S=0)&=P(T=1|C=0,S=0)P(C=0,SC=0) + P(T=1|C=1,S=0)P(C=1|SC=0)\\
+      &=0\\
+      g(S=1)&=P(T=1|C=0,S=1)P(C=0,SC=0) + P(T=1|C=1,S=1)P(C=1|SC=0)\\
+      &=0.5\cdot 2/47=0.021277
+    \end{align*}
 
-so that probability of getting a ticket while speeding is 0.021277 and probability of
-getting a ticket while not speeding is 0. 
+    so that probability of getting a ticket while speeding is 0.021277
+    and probability of getting a ticket while not speeding is 0.
 
-  \item \textit{Suppose the cost of a ticket is \$150, and the cost of arriving 
-    late is \$10. What is the expected utility of speeding and not speeding?
-    What would be the optimal decision?}
+  \item \textit{Suppose the cost of a ticket is \$150, and the cost of
+    arriving late is \$10. What is the expected utility of speeding
+    and not speeding?  What would be the optimal decision?}
 
-   Speeding: $-\left[ 150\cdot 0.021277 +10\cdot 0.11915 \right]=-4.383$ 
+   Speeding: $-(150\cdot 0.021277 +10\cdot 0.11915)=-4.383$
 
-   Not speeding: $-\left[150\cdot 0 +10\cdot 0.9\right]=-9$
+   Not speeding: $-(150\cdot 0 +10\cdot 0.9)=-9$
 
-   Clearly we should speed. 
+   Clearly we should speed.
   \end{enumerate}
 
 \end{enumerate}
@@ -145,17 +154,17 @@ getting a ticket while not speeding is 0.
 \section*{Problem 3}
 \begin{enumerate}[(a)]
 \setcounter{enumi}2
-\item 
+\item
   \begin{enumerate}
-  \item \emph{Define the HMM for modeling the no-momentum case in terms of 
+  \item \emph{Define the HMM for modeling the no-momentum case in terms of
     states, observations, and the model parameters necessary.}
   \item \emph{Run \emph{\texttt{viterbi.py}} on the two datasets, \emph{\texttt{robot\_with\_momentumdata}}
     and \emph{\texttt{robot\_no\_momentum.data}}, to learn an HMM for each condition and also
     to infer the sequences of locations visited by the robot. Explore when,
-    how, and why a hidden Markov model is successful or not in inferring the 
+    how, and why a hidden Markov model is successful or not in inferring the
     robot's true sequences. Give a brief writeup of what you found; include any
     observations about how well HMMs work on these problems and why. Think of
-    explanations for the observations, and for failures, think of modifications 
+    explanations for the observations, and for failures, think of modifications
     to lead to success.}
 
     \begin{itemize}
@@ -175,11 +184,11 @@ getting a ticket while not speeding is 0.
 \item \emph{Describe the HMM for modeling this weather problem in terms of hidden
   states, observations, and the model parameters necessary.}
 
-\item 
+\item
   \begin{enumerate}
   \setcounter{enumiii}2
   \item \emph{Use the two unit tests \emph{\texttt{test\_bw\_beta\_all\_equal}}
-    and 
+    and
     \emph{\texttt{test\_bw\_gamma\_first\_col\_equal}} to answer the following questions;
     include outputs in writeup.}
 
@@ -188,27 +197,27 @@ getting a ticket while not speeding is 0.
     \item \emph{Why are the gamma values for the first state the same for all time periods?}
     \end{enumerate}
 
-  \item \emph{Alpha and beta values get small for long sequences. If you look at the 
-    \emph{\texttt{get\_alpha}} function, you can see that there is normalization code. 
+  \item \emph{Alpha and beta values get small for long sequences. If you look at the
+    \emph{\texttt{get\_alpha}} function, you can see that there is normalization code.
     Why is the sum of the logs of the normalization factors the log likelihood of
     the returned observation sequence?}
 
-    $\log(a\cdot b)=\log(a)+\log(b)$. Taking logs of small alpha and beta values 
-    make them less prone to encoding error. 
+    $\log(a\cdot b)=\log(a)+\log(b)$. Taking logs of small alpha and beta values
+    make them less prone to encoding error.
 
-  \end{enumerate} 
+  \end{enumerate}
 
 \item
   \begin{enumerate}
   \item \emph{Run \texttt{\emph{classify.py}} on each data set to learn an HMM
-    for each city from the training data and use them to classify the test data. 
+    for each city from the training data and use them to classify the test data.
     Vary the number of hidden states from 1 to 6 and plot the final classification
     accuracy vs the number of hidden states.}
 
-  \item \emph{Plot $\log(P(D|\Theta))$ for training the model for Boston with 
+  \item \emph{Plot $\log(P(D|\Theta))$ for training the model for Boston with
     varying numbers of hidden states. Do you see any patterns?}
 
-  \item \emph{By looking at the data and the learned models, try to explain your 
+  \item \emph{By looking at the data and the learned models, try to explain your
     results. When do more hidden states help? When are they not needed? What is
     it about the observations that makes more states unnecessary?}
 
