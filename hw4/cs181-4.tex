@@ -99,52 +99,53 @@
 \item \textit{Suppose the driver does not detect a cop and the traffic is slow. 
   Use variable elimination to determine}
 
-  TODO: I'm not sure what variable elimination has to do with anything. 
+%  TODO: I'm not sure what variable elimination has to do with anything. 
 
   \begin{enumerate}
   \item \textit{The probability of being late when the driver decides to speed 
     and when the driver decides not to speed}
 
-    If the driver speeds, we obtain probability 
-    $$1-\left[P(OT=T|Ticket=T,S=T)P(Ticket=T|S=T)+P(OT=T|Ticket=F,S=T)P(Ticket=F|S=T)\right]$$
-    $$=1-\left[0\cdot P(Ticket=T|S=T,SC=F,ST=T)+0.9\cdot P(Ticket=F|S=T,SC=F,ST=T)=1-0.9\cdot (1-0.477)\right]=0.502$$
-    using results from the second part of the problem.
+%    If the driver speeds, we obtain probability 
+%    $$1-\left[P(OT=T|Ticket=T,S=T)P(Ticket=T|S=T)+P(OT=T|Ticket=F,S=T)P(Ticket=F|S=T)\right]$$
+%    $$=1-\left[0\cdot P(Ticket=T|S=T,SC=F,ST=T)+0.9\cdot P(Ticket=F|S=T,SC=F,ST=T)=1-0.9\cdot (1-0.477)\right]=0.502$$
+%    using results from the second part of the problem.
 
-   If the driver doesn't speed, we obtain probability
-   $$1-\left[P(OT=T|Ticket=T,S=F)P(Ticket=T|S=F)+P(OT=T|Ticket=F,S=F)P(Ticket=F|S=F)\right]$$
-   $$=1-\left[0\cdot P(Ticket=T|S=F,SC=F,ST=T)+0.1\cdot P(Ticket=F|S=F,SC=F,ST=T)\right]$$
-   $$=1-0.1\cdot (1)=0.9$$
+%   If the driver doesn't speed, we obtain probability
+%   $$1-\left[P(OT=T|Ticket=T,S=F)P(Ticket=T|S=F)+P(OT=T|Ticket=F,S=F)P(Ticket=F|S=F)\right]$$
+%   $$=1-\left[0\cdot P(Ticket=T|S=F,SC=F,ST=T)+0.1\cdot P(Ticket=F|S=F,SC=F,ST=T)\right]$$
+%   $$=1-0.1\cdot (1)=0.9$$
  
 
   \item \textit{The probability of getting a ticket when the driver decides to 
     speed and when the driver decides not to speed}
 
-    If the driver speeds, we obtain probability
-    $$P(Ticket=T|SC=F,S=T,ST=T)$$
-    $$=P(Ticket=T|C=T,S=T,ST=T)P(C=T|SC=F,S=T,ST=T)+P(Ticket=T|C=F,S=T,ST=T)P(C=F|SC=F,S=T,ST=T)$$
-    $$=0.5\cdot P(C=T|SC=F,S=T,ST=T)+0\cdot P(C=F|SC=F,S=T,ST=T)$$
-    We need to find $P(C=F|SC=F,S=T,ST=T)$. By local independence of the BN, this equals $P(C=F|SC=F,ST=T)$. 
-    This equals, by using local independence of SC and ST given C,
-    \begin{align*}
-    \frac{P(C=F,SC=F,ST=T)}{P(SC=F,ST=T)} & =\frac{P(SC=F,ST=T|C=F)P(C=F)}{P(SC=F,ST=T|C=F)P(C=F)+P(SC=F,ST=T|C=T)P(C=T)}\\
-      & =\frac{P(SC=F|C=F)P(ST=T|C=F)P(C=F)}{P(SC=F|C=F)P(ST=T|C=F)P(C=F)+P(SC|C=T)P(ST=T|C=T)P(C=T)}\\
-      & =\frac{1\cdot 0.3\cdot 0.9}{1\cdot 0.3\cdot 0.9+0.4\cdot 0.8\cdot 0.1} = 0.894\\
-    \end{align*}
-    Hence the probability of getting a ticket is, as before, $$0.5\cdot 0.894=0.447$$
+%    If the driver speeds, we obtain probability
+%    $$P(Ticket=T|SC=F,S=T,ST=T)$$
+%    $$=P(Ticket=T|C=T,S=T,ST=T)P(C=T|SC=F,S=T,ST=T)+P(Ticket=T|C=F,S=T,ST=T)P(C=F|SC=F,S=T,ST=T)$$
+%    $$=0.5\cdot P(C=T|SC=F,S=T,ST=T)+0\cdot P(C=F|SC=F,S=T,ST=T)$$
+%    We need to find $P(C=F|SC=F,S=T,ST=T)$. By local independence of the BN, this equals $P(C=F|SC=F,ST=T)$. 
+%    This equals, by using local independence of SC and ST given C,
+%    \begin{align*}
+%    \frac{P(C=F,SC=F,ST=T)}{P(SC=F,ST=T)} & =\frac{P(SC=F,ST=T|C=F)P(C=F)}{P(SC=F,ST=T|C=F)P(C=F)+P(SC=F,ST=T|C=T)P(C=T)}\\
+%      & =\frac{P(SC=F|C=F)P(ST=T|C=F)P(C=F)}{P(SC=F|C=F)P(ST=T|C=F)P(C=F)+P(SC|C=T)P(ST=T|C=T)P(C=T)}\\
+%      & =\frac{1\cdot 0.3\cdot 0.9}{1\cdot 0.3\cdot 0.9+0.4\cdot 0.8\cdot 0.1} = 0.894\\
+%    \end{align*}
+%    Hence the probability of getting a ticket is, as before, $$0.5\cdot 0.894=0.447$$
 
-    If the driver doesn't speed, we get
-    $$P(Ticket=T,SC=F,S=F,ST=T)=P(Ticket=T|C=T,S=F,ST=T)P(C=T|SC=F,S=F,ST=T)+P(Ticket=T|C=F,S=F,ST=T)P(C=F|SC=F,S=F,ST=T)
-      =0\cdot \cdot P(C=T|SC=F,S=T,ST=T)+0\cdot P(C=F|SC=F,S=T,ST=T)=0$$
+%    If the driver doesn't speed, we get
+%    $$P(Ticket=T,SC=F,S=F,ST=T)=P(Ticket=T|C=T,S=F,ST=T)P(C=T|SC=F,S=F,ST=T)+P(Ticket=T|C=F,S=F,ST=T)P(C=F|SC=F,S=F,ST=T)
+%      =0\cdot \cdot P(C=T|SC=F,S=T,ST=T)+0\cdot P(C=F|SC=F,S=T,ST=T)=0$$
 
   \item \textit{Suppose the cost of a ticket is \$150, and the cost of arriving 
     late is \$10. What is the expected utility of speeding and not speeding?
     What would be the optimal decision?}
 
-   Speeding: $-\left[ 150\cdot 0.477 +10\cdot 0.502\right]=-76.57$ 
+%   Speeding: $-\left[ 150\cdot 0.477 +10\cdot 0.502\right]=-76.57$ 
 
-   Not speeding: $-\left[150\cdot 0+10\cdot 0.9\right]=-9$
+%   Not speeding: $-\left[150\cdot 0+10\cdot 0.9\right]=-9$
 
-   Clearly we should not speed. 
+%   Clearly we should not speed. 
+
   \end{enumerate}
 \end{enumerate}
 
