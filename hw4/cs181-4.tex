@@ -104,6 +104,29 @@
   \begin{enumerate}
   \item \textit{The probability of being late when the driver decides to speed 
     and when the driver decides not to speed}
+\begin{align*}
+P(S) & =\sum_C\sum_{SC}\sum_T P(C|SC)P(T|C,S,ST=1)P(OT|T,S)\\
+ & =\sum_C\sum_T P(T|C,S,ST=1)P(PT|T,S)g_1(C) \text{ where } g_1(C)=\sum_{SC}P(C|SC)
+\end{align*}
+and we have
+\begin{align*}
+g_1(1) & =P(C=1|SC=1)+P(C=1|SC=0)=1+\frac{2}{47}=\frac{49}{47}\\
+g_1(0) & =P(C=0|SC=1)+P(C=0|SC=0)=0+\frac{45}{47}
+\end{align*}
+since $$P(C=1|SC=0)=\frac{P(SC=0|C=1)P(C=1)}{P(SC=0|C=1)P(C=1)+P(SC=0|C=0)P(C=0)}=\frac{0.4\cdot 0.1}{0.4\cdot 0.1+1\cdot 0.9}=\frac{2}{47}$$
+Then we can also write
+$$P(S)=\sum_T P(OT|T,S) g_2(T,S)$$
+\begin{align*}
+g_2(1,1)&=P(T=1|C=0,S=1,ST=1)g_1(0)+P(T=1|C=0,S=1,ST=1)g_1(1)=0+0.5\cdot \frac{49}{47}=\frac{49}{94}\\
+g_2(0,1)&=P(T=0|C=0,S=1,ST=1)g_1(0)+P(T=0|C=0,S=1,ST=1)g_1(1)=1\cdot \frac{45}{47}+0.5\cdot\frac{49}{47}=\frac{139}{94}\\
+g_2(0,0)&=P(T=0|C=0,S=1,ST=1)g_1(0)+P(T=0|C=0,S=0,ST=1)g_1(1)=1\cdot \frac{45}{47}+1\cdot \frac{49}{47}=2
+\end{align*}
+Then we have 
+\begin{align*}
+P(S) &=\sum_T P(OT|T,S) g_2(T,S)\\
+P(1) &=0.9\cdot \frac{139}{94} + 0=1.33085\\
+P(0) &=0.1\cdot 2 + 0=0.2\\
+\end{align*}
 
 %    If the driver speeds, we obtain probability 
 %    $$1-\left[P(OT=T|Ticket=T,S=T)P(Ticket=T|S=T)+P(OT=T|Ticket=F,S=T)P(Ticket=F|S=T)\right]$$
@@ -118,6 +141,13 @@
 
   \item \textit{The probability of getting a ticket when the driver decides to 
     speed and when the driver decides not to speed}
+
+$$P(S)=\sum_C\sum_{SC}P(T|C,S)P(C|SC)=\sum_C P(T,C,S)g_1(C)$$
+with $g_1$ as in part (a).
+\begin{align*}
+g_2(1) &= 0.5\cdot \frac{49}{47}+0=\frac{49}{94}\\
+g_2(0) &= 0 + 0\\
+\end{align*}
 
 %    If the driver speeds, we obtain probability
 %    $$P(Ticket=T|SC=F,S=T,ST=T)$$
