@@ -104,79 +104,117 @@
   \begin{enumerate}
   \item \textit{The probability of being late when the driver decides to speed 
     and when the driver decides not to speed}
-\begin{align*}
-P(S) & =\sum_C\sum_{SC}\sum_T P(C|SC)P(T|C,S,ST=1)P(OT|T,S)\\
- & =\sum_C\sum_T P(T|C,S,ST=1)P(PT|T,S)g_1(C) \text{ where } g_1(C)=\sum_{SC}P(C|SC)
-\end{align*}
-and we have
-\begin{align*}
-g_1(1) & =P(C=1|SC=1)+P(C=1|SC=0)=1+\frac{2}{47}=\frac{49}{47}\\
-g_1(0) & =P(C=0|SC=1)+P(C=0|SC=0)=0+\frac{45}{47}
-\end{align*}
-since $$P(C=1|SC=0)=\frac{P(SC=0|C=1)P(C=1)}{P(SC=0|C=1)P(C=1)+P(SC=0|C=0)P(C=0)}=\frac{0.4\cdot 0.1}{0.4\cdot 0.1+1\cdot 0.9}=\frac{2}{47}$$
-Then we can also write
-$$P(S)=\sum_T P(OT|T,S) g_2(T,S)$$
-\begin{align*}
-g_2(1,1)&=P(T=1|C=0,S=1,ST=1)g_1(0)+P(T=1|C=0,S=1,ST=1)g_1(1)=0+0.5\cdot \frac{49}{47}=\frac{49}{94}\\
-g_2(0,1)&=P(T=0|C=0,S=1,ST=1)g_1(0)+P(T=0|C=0,S=1,ST=1)g_1(1)=1\cdot \frac{45}{47}+0.5\cdot\frac{49}{47}=\frac{139}{94}\\
-g_2(0,0)&=P(T=0|C=0,S=1,ST=1)g_1(0)+P(T=0|C=0,S=0,ST=1)g_1(1)=1\cdot \frac{45}{47}+1\cdot \frac{49}{47}=2
-\end{align*}
-Then we have 
-\begin{align*}
-P(S) &=\sum_T P(OT|T,S) g_2(T,S)\\
-P(1) &=0.9\cdot \frac{139}{94} + 0=1.33085\\
-P(0) &=0.1\cdot 2 + 0=0.2\\
-\end{align*}
-
-%    If the driver speeds, we obtain probability 
-%    $$1-\left[P(OT=T|Ticket=T,S=T)P(Ticket=T|S=T)+P(OT=T|Ticket=F,S=T)P(Ticket=F|S=T)\right]$$
-%    $$=1-\left[0\cdot P(Ticket=T|S=T,SC=F,ST=T)+0.9\cdot P(Ticket=F|S=T,SC=F,ST=T)=1-0.9\cdot (1-0.477)\right]=0.502$$
-%    using results from the second part of the problem.
-
-%   If the driver doesn't speed, we obtain probability
-%   $$1-\left[P(OT=T|Ticket=T,S=F)P(Ticket=T|S=F)+P(OT=T|Ticket=F,S=F)P(Ticket=F|S=F)\right]$$
-%   $$=1-\left[0\cdot P(Ticket=T|S=F,SC=F,ST=T)+0.1\cdot P(Ticket=F|S=F,SC=F,ST=T)\right]$$
-%   $$=1-0.1\cdot (1)=0.9$$
- 
+$$P(OT=1|S,SC=0,ST=1)  =\sum_C \sum_T P(C|SC=0)P(T|C,S)P(OT=1|T,S,ST=1)$$
+We note that by Bayes' rule,
+$$P(C=1|SC=0)=\frac{P(SC=0|C=1)P(C=1)}{P(SC=0|C=1)P(C=1)+P(SC=0|C=0)P(C=0)}=\frac{0.4\cdot 0.1}{0.4\cdot 0.1+1\cdot 0.9}=\frac{2}{47}$$
+We can rewrite
+$$P(OT=1|S,SC=0,ST=1)=\sum_T P(OT=1|T,S)g_1(T,S)\text{ where }g_1(T,S)=\sum_C P(C|SC=0)P(T|C,S)$$
+We find that $g_1(T=0,S=0)=1$, $g_1(T=1,S=0)=0$, $g_1(T=0,S=1)=46/47$, and $g_1(T=1,S=1)=1/47$.
+Now we rewrite
+$$P(OT=1|S,SC=0,ST=1)= g_2(S)\text{ where } g_2(S)=\sum_T P(OT=1|T,S)g_1(T,S)$$
+We find that $g_2(S=0)=0.1\cdot 1$ and $g_2(S=1)=0.9\cdot 46/47=0.88085$ so that
+so that the probability of being late if you speed is 0.11915 and the probability
+of being late if you don't speed is 0.9. 
 
   \item \textit{The probability of getting a ticket when the driver decides to 
     speed and when the driver decides not to speed}
 
-$$P(S)=\sum_C\sum_{SC}P(T|C,S)P(C|SC)=\sum_C P(T,C,S)g_1(C)$$
-with $g_1$ as in part (a).
-\begin{align*}
-g_2(1) &= 0.5\cdot \frac{49}{47}+0=\frac{49}{94}\\
-g_2(0) &= 0 + 0\\
-\end{align*}
+$$P(S|SC=0,ST=1,SC=0)=\sum_C P(T|C,S)P(C|SC=0)=g(S)$$
+Using calculations from before,
 
-%    If the driver speeds, we obtain probability
-%    $$P(Ticket=T|SC=F,S=T,ST=T)$$
-%    $$=P(Ticket=T|C=T,S=T,ST=T)P(C=T|SC=F,S=T,ST=T)+P(Ticket=T|C=F,S=T,ST=T)P(C=F|SC=F,S=T,ST=T)$$
-%    $$=0.5\cdot P(C=T|SC=F,S=T,ST=T)+0\cdot P(C=F|SC=F,S=T,ST=T)$$
-%    We need to find $P(C=F|SC=F,S=T,ST=T)$. By local independence of the BN, this equals $P(C=F|SC=F,ST=T)$. 
-%    This equals, by using local independence of SC and ST given C,
-%    \begin{align*}
-%    \frac{P(C=F,SC=F,ST=T)}{P(SC=F,ST=T)} & =\frac{P(SC=F,ST=T|C=F)P(C=F)}{P(SC=F,ST=T|C=F)P(C=F)+P(SC=F,ST=T|C=T)P(C=T)}\\
-%      & =\frac{P(SC=F|C=F)P(ST=T|C=F)P(C=F)}{P(SC=F|C=F)P(ST=T|C=F)P(C=F)+P(SC|C=T)P(ST=T|C=T)P(C=T)}\\
-%      & =\frac{1\cdot 0.3\cdot 0.9}{1\cdot 0.3\cdot 0.9+0.4\cdot 0.8\cdot 0.1} = 0.894\\
-%    \end{align*}
-%    Hence the probability of getting a ticket is, as before, $$0.5\cdot 0.894=0.447$$
+$g(S=0)=P(T=1|C=0,S=0)P(C=0,SC=0) + P(T=1|C=1,S=0)P(C=1|SC=0)=0$
 
-%    If the driver doesn't speed, we get
-%    $$P(Ticket=T,SC=F,S=F,ST=T)=P(Ticket=T|C=T,S=F,ST=T)P(C=T|SC=F,S=F,ST=T)+P(Ticket=T|C=F,S=F,ST=T)P(C=F|SC=F,S=F,ST=T)
-%      =0\cdot \cdot P(C=T|SC=F,S=T,ST=T)+0\cdot P(C=F|SC=F,S=T,ST=T)=0$$
+$g(S=1)=P(T=1|C=0,S=1)P(C=0,SC=0) + P(T=1|C=1,S=1)P(C=1|SC=0)=0.5\cdot 2/47=0.021277$
+
+so that probability of getting a ticket while speeding is 0.021277 and probability of
+getting a ticket while not speeding is 0. 
 
   \item \textit{Suppose the cost of a ticket is \$150, and the cost of arriving 
     late is \$10. What is the expected utility of speeding and not speeding?
     What would be the optimal decision?}
 
-%   Speeding: $-\left[ 150\cdot 0.477 +10\cdot 0.502\right]=-76.57$ 
+   Speeding: $-\left[ 150\cdot 0.021277 +10\cdot 0.11915 \right]=-4.383$ 
 
-%   Not speeding: $-\left[150\cdot 0+10\cdot 0.9\right]=-9$
+   Not speeding: $-\left[150\cdot 0 +10\cdot 0.9\right]=-9$
 
-%   Clearly we should not speed. 
+   Clearly we should speed. 
+  \end{enumerate}
+
+\end{enumerate}
+
+\section*{Problem 3}
+\begin{enumerate}[(a)]
+\setcounter{enumi}2
+\item 
+  \begin{enumerate}
+  \item \emph{Define the HMM for modeling the no-momentum case in terms of 
+    states, observations, and the model parameters necessary.}
+  \item \emph{Run \emph{\texttt{viterbi.py}} on the two datasets, \emph{\texttt{robot\_with\_momentumdata}}
+    and \emph{\texttt{robot\_no\_momentum.data}}, to learn an HMM for each condition and also
+    to infer the sequences of locations visited by the robot. Explore when,
+    how, and why a hidden Markov model is successful or not in inferring the 
+    robot's true sequences. Give a brief writeup of what you found; include any
+    observations about how well HMMs work on these problems and why. Think of
+    explanations for the observations, and for failures, think of modifications 
+    to lead to success.}
+
+    \begin{itemize}
+    \item \emph{What probabilistic assumptions are we making about the nature of
+      the data in using a hidden Markov model?}
+
+    \item \emph{How well do these assumptions match the actual domain?}
+
+    \item \emph{To what extent was, or was not, performance hurt by making such
+      assumptions?}
+
+    \end{itemize}
+  \end{enumerate}
+\end{enumerate}
+\section*{Problem 4}
+\begin{enumerate}[(a)]
+\item \emph{Describe the HMM for modeling this weather problem in terms of hidden
+  states, observations, and the model parameters necessary.}
+
+\item 
+  \begin{enumerate}
+  \setcounter{enumiii}2
+  \item \emph{Use the two unit tests \emph{\texttt{test\_bw\_beta\_all\_equal}}
+    and 
+    \emph{\texttt{test\_bw\_gamma\_first\_col\_equal}} to answer the following questions;
+    include outputs in writeup.}
+
+    \begin{enumerate}[(1)]
+    \item \emph{Why are the betas all equal for each time step?}
+    \item \emph{Why are the gamma values for the first state the same for all time periods?}
+    \end{enumerate}
+
+  \item \emph{Alpha and beta values get small for long sequences. If you look at the 
+    \emph{\texttt{get\_alpha}} function, you can see that there is normalization code. 
+    Why is the sum of the logs of the normalization factors the log likelihood of
+    the returned observation sequence?}
+
+    $\log(a\cdot b)=\log(a)+\log(b)$. Taking logs of small alpha and beta values 
+    make them less prone to encoding error. 
+
+  \end{enumerate} 
+
+\item
+  \begin{enumerate}
+  \item \emph{Run \texttt{\emph{classify.py}} on each data set to learn an HMM
+    for each city from the training data and use them to classify the test data. 
+    Vary the number of hidden states from 1 to 6 and plot the final classification
+    accuracy vs the number of hidden states.}
+
+  \item \emph{Plot $\log(P(D|\Theta))$ for training the model for Boston with 
+    varying numbers of hidden states. Do you see any patterns?}
+
+  \item \emph{By looking at the data and the learned models, try to explain your 
+    results. When do more hidden states help? When are they not needed? What is
+    it about the observations that makes more states unnecessary?}
+
+  \item \emph{The data was generated synthetically. How many hidden states do you
+    think were in our generating model? Why?}
 
   \end{enumerate}
 \end{enumerate}
-
 \end{document}
