@@ -406,8 +406,8 @@ observations = %s
         # normalize the array
         self.initial /= sum(self.initial)
         # normalize each row of the arrays
-        self.transition /= reshape(sum(self.transition, 1), (2, 1))
-        self.observation /= reshape(sum(self.observation, 1), (2, 1))
+        self.transition /= reshape(sum(self.transition, 1), (-1, 1))
+        self.observation /= reshape(sum(self.observation, 1), (-1, 1))
 
         self.compute_logs()
 
