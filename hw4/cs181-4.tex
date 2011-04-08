@@ -43,14 +43,14 @@
   \hline
   $(B, A)$ & Impossible \\
   $(B, E)$ & $\emptyset$ \\
-  $(B, J)$ & $A$ \\
-  $(B, M)$ & $A$ \\
+  $(B, J)$ & Any set containing $A$ \\
+  $(B, M)$ & Any set containing $A$ \\
   $(E, A)$ & Impossible \\
-  $(E, J)$ & $A$ \\
-  $(E, M)$ & $A$ \\
+  $(E, J)$ & Any set containing $A$ \\
+  $(E, M)$ & Any set containing $A$ \\
   $(A, J)$ & Impossible \\
   $(A, M)$ & Impossible \\
-  $(J, M)$ & $A$ \\
+  $(J, M)$ & Any set containing $A$ \\
   \hline
   \end{tabular}
 
@@ -62,7 +62,7 @@
   $P(N_i|N_1,\ldots,N_{i-1})=P(N_i|Pa(N_i))$.
 
   Doing this iteratively, $P(M)=P(M)$; $P(J|M)=P(J|M)$;
-  $P(A|M,J)=P(A|M)$; $P(B|M,J,A)=P(B|A)$; $P(E|M,J,A,B)=P(E|A)$. Hence
+  $P(A|M,J)=P(A|M)$; $P(B|M,J,A)=P(B|A)$; $P(E|M,J,A,B)=P(E|A,B)$. Hence
   we get the following diagram:
 
 \begin{center}
@@ -77,20 +77,30 @@
   \path (B) edge (A)
             edge (E)
         (E) edge (A)
+        (J) edge (M)
         (A) edge (J)
             edge (M);
 \end{tikzpicture}
 \end{center}
+This however doesn't actually give us all the same independence conditions
+as before: for instance, M and J are now never independent given any set
+of given nodes, whereas any set containing A previously would make them 
+independent. 
+Hence there does not exist such a Bayes model with this ordering that has
+all the same independence conditions as the previous model.
+This does, however, have the same dependence conditions as the previous
+model, by construction. 
 \item \textit{How many parameters are there in the BN in (a) and the
   BN in (b)?}
 
-  (a): $(k-1)+(k-1)+k^2(k-1)+k(k-1)+k(k-1)$.
+  (a): $1+1+4+2+2=10$.
 
-  (b): $(k-1)+k(k-1)+k^2(k-1)+k(k-1)+k(k-1)$.
+  (b): $1+2+4+2+4=13$.
 
   \textit{Give three reasons why the BN in (a) is preferred over the
     BN in (b).}
 
+  If we only care about dependence properties (which are preserved),
   \begin{enumerate}
   \item Fewer parameters means less storage.
   \item Fewer parameters means better sampling of data.
