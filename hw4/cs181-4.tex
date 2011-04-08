@@ -62,34 +62,34 @@
   $P(N_i|N_1,\ldots,N_{i-1})=P(N_i|Pa(N_i))$.
 
   Doing this iteratively, $P(M)=P(M)$; $P(J|M)=P(J|M)$;
-  $P(A|M,J)=P(A|M)$; $P(B|M,J,A)=P(B|A)$; $P(E|M,J,A,B)=P(E|A,B)$. Hence
-  we get the following diagram:
+  $P(A|M,J)=P(A|M)$; $P(B|M,J,A)=P(B|A)$;
+  $P(E|M,J,A,B)=P(E|A,B)$. Hence we get the following diagram:
 
-\begin{center}
-\begin{tikzpicture}[->,semithick,>=stealth,node distance=1.5cm,shorten >=1pt]
-  \tikzstyle{state}=[circle,draw=blue!50,fill=blue!20,thick]
-  \node [state] (B) {M};
-  \node [state] (A) [below right of=B] {A};
-  \node [state] (E) [above right of=A] {J};
-  \node [state] (J) [below left of=A] {B};
-  \node [state] (M) [below right of=A] {E};
+  \begin{center}
+    \begin{tikzpicture}[->,semithick,>=stealth,node distance=1.5cm,shorten >=1pt]
+      \tikzstyle{state}=[circle,draw=blue!50,fill=blue!20,thick]
+      \node [state] (B) {M};
+      \node [state] (A) [below right of=B] {A};
+      \node [state] (E) [above right of=A] {J};
+      \node [state] (J) [below left of=A] {B};
+      \node [state] (M) [below right of=A] {E};
 
-  \path (B) edge (A)
-            edge (E)
-        (E) edge (A)
-        (J) edge (M)
-        (A) edge (J)
-            edge (M);
-\end{tikzpicture}
-\end{center}
-This however doesn't actually give us all the same independence conditions
-as before: for instance, M and J are now never independent given any set
-of given nodes, whereas any set containing A previously would make them 
-independent. 
-Hence there does not exist such a Bayes model with this ordering that has
-all the same independence conditions as the previous model.
-This does, however, have the same dependence conditions as the previous
-model, by construction. 
+      \path (B) edge (A)
+      edge (E)
+      (E) edge (A)
+      (J) edge (M)
+      (A) edge (J)
+      edge (M);
+    \end{tikzpicture}
+  \end{center}
+  This however doesn't actually give us all the same independence
+  conditions as before: for instance, M and J are now never
+  independent given any set of given nodes, whereas any set containing
+  A previously would make them independent.  Hence there does not
+  exist such a Bayes model with this ordering that has all the same
+  independence conditions as the previous model.  This does, however,
+  have the same dependence conditions as the previous model, by
+  construction.
 \item \textit{How many parameters are there in the BN in (a) and the
   BN in (b)?}
 
@@ -115,7 +115,7 @@ model, by construction.
 \item \textit{Suppose the driver does not detect a cop and the traffic
   is slow.  Use variable elimination to determine}
 
-%  TODO: I'm not sure what variable elimination has to do with anything.
+  %  TODO: I'm not sure what variable elimination has to do with anything.
 
   \begin{enumerate}
   \item \textit{the probability of being late when the driver decides
@@ -154,30 +154,44 @@ model, by construction.
     arriving late is \$10. What is the expected utility of speeding
     and not speeding?  What would be the optimal decision?}
 
-   Speeding: $-(150\cdot 0.021277 +10\cdot 0.11915)=-4.383$
+    Speeding: $-(150\cdot 0.021277 +10\cdot 0.11915)=-4.383$
 
-   Not speeding: $-(150\cdot 0 +10\cdot 0.9)=-9$
+    Not speeding: $-(150\cdot 0 +10\cdot 0.9)=-9$
 
-   Clearly we should speed.
+    Clearly we should speed.
   \end{enumerate}
 
 \end{enumerate}
 
 \section*{Problem 3}
 \begin{enumerate}[(a)]
-\setcounter{enumi}2
+  \setcounter{enumi}2
 \item
   \begin{enumerate}
   \item \emph{Define the HMM for modeling the no-momentum case in terms of
     states, observations, and the model parameters necessary.}
-  \item \emph{Run \emph{\texttt{viterbi.py}} on the two datasets, \emph{\texttt{robot\_with\_momentumdata}}
-    and \emph{\texttt{robot\_no\_momentum.data}}, to learn an HMM for each condition and also
-    to infer the sequences of locations visited by the robot. Explore when,
-    how, and why a hidden Markov model is successful or not in inferring the
-    robot's true sequences. Give a brief writeup of what you found; include any
-    observations about how well HMMs work on these problems and why. Think of
-    explanations for the observations, and for failures, think of modifications
-    to lead to success.}
+
+    There are twelve states, one for each colored square on the board.
+
+    There are four possible observations, one for each color.
+
+    Each state can transition to any one corresponding to an adjacent
+    color with probability $\frac14$, or to itself with the remaining
+    probability.
+
+    Each state leads to the observation of the corresponding color
+    with probability $.925$, and to each of the other colors with
+    probability $.025$.
+  \item \emph{Run \emph{\texttt{viterbi.py}} on the two datasets,
+    \emph{\texttt{robot\_with\_momentumdata}} and
+    \emph{\texttt{robot\_no\_momentum.data}}, to learn an HMM for each
+    condition and also to infer the sequences of locations visited by
+    the robot. Explore when, how, and why a hidden Markov model is
+    successful or not in inferring the robot's true sequences. Give a
+    brief writeup of what you found; include any observations about
+    how well HMMs work on these problems and why. Think of
+    explanations for the observations, and for failures, think of
+    modifications to lead to success.}
 
     \begin{itemize}
     \item \emph{What probabilistic assumptions are we making about the nature of
@@ -204,7 +218,7 @@ model, by construction.
 
 \item
   \begin{enumerate}
-  \setcounter{enumiii}2
+    \setcounter{enumiii}2
   \item \emph{Use the two unit tests \emph{\texttt{test\_bw\_beta\_all\_equal}}
     and
     \emph{\texttt{test\_bw\_gamma\_first\_col\_equal}} to answer the following questions;
