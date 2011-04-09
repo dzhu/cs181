@@ -184,9 +184,27 @@ def compute_expectation_step(obs, N, N_ho, N_h1h2, N_h1, N_h, model, debug=False
     Return dataset_logliklihood
     note get_alpha() returns the likelihood of an observation seq and
     note that functions for getting beta, xi and gamma values are also implemented for you"""
-    
-    raise Exception("Not implemented")
+    L = len(obs)
+    M = shape(N_ho)[1]
 
+    total_loglikelihood = 0
+    for i in range(0,L): #going through observations
+      alpha = get_alpha(obs[i],model)
+      beta = get_beta(obs[i],model)
+      gamma = get_gamma(alpha[0],beta)
+      xi = get_xi(obs[i],alpha[0],beta,model)
+      total_loglikelihood += alpha[1]
+      for s in range(0,N): #going through hidden states
+        N_h1[s] += gamma[0][s]
+        for t in range(0,len(obs[i])): #going through individual things in observation
+          N_ho[s,obs[i][t]] += gamma[t][s]
+          N_h[s] += gamma[t][s]
+          if (t<len(obs[i])):
+            for s2 in range(0,N):
+              N_h1h2[s,s2] += xi[t,s,s2]
+
+    # dataset loglikelihood is the log of the product of the likelihoods of each sequence
+    return total_loglikelihood
 
 def compute_maximization_step(N, M, N_ho, N_h1h2, N_h1, N_h, model, debug=False):
     """M-step, update the hmm model by using the incoming sufficient statistics, and
@@ -207,9 +225,13 @@ def compute_maximization_step(N, M, N_ho, N_h1h2, N_h1, N_h, model, debug=False)
     debug: for printing out model parameters or not, set to True by -v option in command line
     """
 
-    raise Exception("Not implemented")
+    model[0][:]=N_h1[:]/ sum(N_h1[:])
+    for s in range(0,N):
+      model[1][s,:]=N_h1h2[s,:]/sum(N_h1h2[s])
+    for s in range(0,N):
+      model[2][s,:]=N_ho[s,:] / N_h[s]
 
-    
+    print model    
     
 # Note: This implementation is as presented in the Rabiner '89 HMM tutorial.
 # Variable definitions
