@@ -253,12 +253,12 @@ def baumwelch(obs,N,M, num_iters=0, debug=False,init_model=None, flag=False):
 
     if init_model == None:
         if debug:
-            seed = 42
+            seed = 29
         else:
             # Just making things deterministic for now.
             # Change to "seed = None" if you want to experiment with
             # random restart, for example.
-            seed = 42   
+            seed = 29   
         model = init_random_model(N,M, seed)
     else:
         model = init_model
