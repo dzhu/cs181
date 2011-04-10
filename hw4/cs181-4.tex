@@ -388,22 +388,33 @@ gamma:
 
     \end{enumerate}
 
-  \item \emph{Alpha and beta values get small for long sequences. If you look at the
-    \emph{\texttt{get\_alpha}} function, you can see that there is normalization code.
-    Why is the sum of the logs of the normalization factors the log likelihood of
-    the returned observation sequence?}
+  \item \emph{Alpha and beta values get small for long sequences. If
+    you look at the \emph{\texttt{get\_alpha}} function, you can see
+    that there is normalization code.  Why is the sum of the logs of
+    the normalization factors the log likelihood of the returned
+    observation sequence?}
 
-    $\log(a\cdot b)=\log(a)+\log(b)$. Taking logs of small alpha and beta values
-    make them less prone to encoding error.
+    The sum of the logs of the normalization factors is the log of the
+    product of the normalization factors at each step.
 
+    Note that, since the calculations are linear in the alphas,
+    normalizing at each step, then multiplying the factors, gives the
+    same result as not normalizing until the end, then taking the
+    resulting normalization factor. But the result of that would be
+    \begin{align*}
+      \sum_{x_t}\alpha_t(x_t)&=\sum_{x_t}P(O_1=o_1,\ldots,O_t=o_t,X_t=x_t)\\
+      &=P(O_1=o_1,\ldots,O_t=o_t)
+    \end{align*}
+    which is just the likelihood of the sequence.
   \end{enumerate}
 
 \item
   \begin{enumerate}
-  \item \emph{Run \texttt{\emph{classify.py}} on each data set to learn an HMM
-    for each city from the training data and use them to classify the test data.
-    Vary the number of hidden states from 1 to 6 and plot the final classification
-    accuracy vs the number of hidden states.}
+  \item \emph{Run \texttt{\emph{classify.py}} on each data set to
+    learn an HMM for each city from the training data and use them to
+    classify the test data.  Vary the number of hidden states from 1
+    to 6 and plot the final classification accuracy vs the number of
+    hidden states.}
 
     \begin{itemize}
     \item \texttt{weather\_boston\_la.data}:\\
