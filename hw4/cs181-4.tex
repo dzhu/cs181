@@ -264,16 +264,16 @@
     come up because it is much less common to reach 3:4 from the
     bottom right area without momentum.
 
-    \begin{itemize}
-    \item \emph{What probabilistic assumptions are we making about the nature of
-      the data in using a hidden Markov model?}
+    %% \begin{itemize}
+    %% \item \emph{What probabilistic assumptions are we making about the nature of
+    %%   the data in using a hidden Markov model?}
 
-    \item \emph{How well do these assumptions match the actual domain?}
+    %% \item \emph{How well do these assumptions match the actual domain?}
 
-    \item \emph{To what extent was, or was not, performance hurt by making such
-      assumptions?}
+    %% \item \emph{To what extent was, or was not, performance hurt by making such
+    %%   assumptions?}
 
-    \end{itemize}
+    %% \end{itemize}
   \end{enumerate}
 \end{enumerate}
 \section*{Problem 4}
@@ -480,19 +480,19 @@ gamma:
     results. When do more hidden states help? When are they not needed? What is
     it about the observations that makes more states unnecessary?}
 
-    More hidden states help out ........................
-    
-    TODO
+    As with essentially any learning process, adding more hidden
+    states allows the model to capture more complexity in the
+    underlying process. Eventually overfitting starts to set in.
 
-    In general, though, we prefer simpler models even if they are slightly
-    worse. Also, as a tradeoff, more hidden states means much more time to process, 
-    as Baum-Welch takes more time per iteration as well as more iterations to
-    converge with more hidden states.     
+    In general, though, we prefer simpler models even if they are
+    slightly worse. Also, as a tradeoff, more hidden states means much
+    more time to process, as Baum-Welch takes more time per iteration
+    as well as more iterations to converge with more hidden states.
 
   \item \emph{The data was generated synthetically. How many hidden states do you
     think were in our generating model? Why?}
 
-    TODO
+    Probably 9, since using 9 states in our HMM produced the highest likelihood.
 
   \end{enumerate}
 \end{enumerate}
