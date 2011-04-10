@@ -206,8 +206,8 @@
     There are four possible observations, one for each color.
 
     Each state can transition to any one corresponding to an adjacent
-    color with probability $\frac14$, or to itself with the remaining
-    probability.
+    colored square with probability $\frac14$, or to itself with the
+    remaining probability.
 
     Each state leads to the observation of the corresponding color
     with probability $.925$, and to each of the other colors with
@@ -223,16 +223,57 @@
     explanations for the observations, and for failures, think of
     modifications to lead to success.}
 
-    \begin{itemize}
-    \item \emph{What probabilistic assumptions are we making about the nature of
-      the data in using a hidden Markov model?}
+    In general, the main assumption that we make when modeling with an
+    HMM is, well, that the process satisfies the Markov assumption,
+    which is that the next position of the robot is independent of
+    previous positions, given the current position. We also assume
+    that the transition probabilities and observation probabilities
+    are the same for each time step (stationarity).
 
-    \item \emph{How well do these assumptions match the actual domain?}
+    Below is a plot of the test errors on each sequence for momentum
+    and no-momentum data, sorted. Both methods produce very broadly
+    (somewhat uniformly) spread out results, with two high-error
+    outliers each.
+    \begin{center}
+      \includegraphics[scale=.5]{robot_cumul_perf.png}
+    \end{center}
 
-    \item \emph{To what extent was, or was not, performance hurt by making such
-      assumptions?}
+    For no-momentum data, the overall test performance was .8119. This
+    satisfies all of our assumptions. The highest test error was 74 of
+    200 states, on test sequence number 158. In this sequence, the
+    robot spent two-thirds of its time in the bottom right quadrant of
+    the board. Of the errors, 25 were arose from the robot being in
+    3:1, but the algorithm outputting 4:2. Seven came from the reverse
+    situation, altogether accounting for 32 of 74 errors. It makes
+    sense that these two would be confused often, since the colors of
+    the squares that are adjacent to them are similar. I think the
+    particular direction of confusion is influenced by the fact that
+    4:2 has only two neighbors, while 3:1 has 3. Thus, for example,
+    for a sequence of moves like 3:2,3:1,4:1, the sequence 3:2,4:2,4:1
+    is actually more likely.
 
-    \end{itemize}
+    For momentum data, the overall test performance was .8667. In this
+    case, the Markov assumption is not satisfied, since the choice of
+    direction depends on the last choice of direction, whereas our
+    model takes only position into account in its states. The highest
+    error was 57 of 200, in test sequence number 122. Much like the
+    worst case for no-momentum data, the robot spent 119 turns in the
+    bottom right quadrant, and also 41 in 2:1. In this case, there
+    were 11 errors of 3:1$\to$4:2 and 10 due to 3:4$\to$4:2. The first
+    kind comes up for the same reason as before. The second one might
+    come up because it is much less common to reach 3:4 from the
+    bottom right area without momentum.
+
+    %% \begin{itemize}
+    %% \item \emph{What probabilistic assumptions are we making about the nature of
+    %%   the data in using a hidden Markov model?}
+
+    %% \item \emph{How well do these assumptions match the actual domain?}
+
+    %% \item \emph{To what extent was, or was not, performance hurt by making such
+    %%   assumptions?}
+
+    %% \end{itemize}
   \end{enumerate}
 \end{enumerate}
 \section*{Problem 4}
@@ -439,19 +480,19 @@ gamma:
     results. When do more hidden states help? When are they not needed? What is
     it about the observations that makes more states unnecessary?}
 
-    More hidden states help out ........................
-    
-    TODO
+    As with essentially any learning process, adding more hidden
+    states allows the model to capture more complexity in the
+    underlying process. Eventually overfitting starts to set in.
 
-    In general, though, we prefer simpler models even if they are slightly
-    worse. Also, as a tradeoff, more hidden states means much more time to process, 
-    as Baum-Welch takes more time per iteration as well as more iterations to
-    converge with more hidden states.     
+    In general, though, we prefer simpler models even if they are
+    slightly worse. Also, as a tradeoff, more hidden states means much
+    more time to process, as Baum-Welch takes more time per iteration
+    as well as more iterations to converge with more hidden states.
 
   \item \emph{The data was generated synthetically. How many hidden states do you
     think were in our generating model? Why?}
 
-    TODO
+    Probably 9, since using 9 states in our HMM produced the highest likelihood.
 
   \end{enumerate}
 \end{enumerate}
