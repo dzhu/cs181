@@ -422,8 +422,11 @@ gamma:
 
     Firstly we see that log likelihoods are all very negative, so that likelihood
     is a very small fraction. This may seem surprising given that even with one 
-    hidden state, the HMM classifies the test data perfectly. But we must keep
-    in mind that likelihoods tend to get very small anyway. This example shows how
+    hidden state, the HMM classifies the test data perfectly. But these are so 
+    negative because log likelihood of a dataset is the sum of the log likelihood
+    of each item. Because likelihood is (almost) never 1, i.e. log likelihood is always
+    negative, we end up with the sum of a lot of negative numbers. 
+    This example shows how
     important it is to use logs, since otherwise, there would be difficulty
     representing these numbers distinctly. 
 
