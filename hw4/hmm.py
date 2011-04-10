@@ -233,8 +233,6 @@ def compute_maximization_step(N, M, N_ho, N_h1h2, N_h1, N_h, model, debug=False)
         model[1][s, :] = N_h1h2[s, :] / sum(N_h1h2[s])
     for s in range(0, N):
         model[2][s, :] = N_ho[s, :] / N_h[s]
-
-    print model
     
 # Note: This implementation is as presented in the Rabiner '89 HMM tutorial.
 # Variable definitions

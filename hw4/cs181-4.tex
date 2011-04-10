@@ -282,22 +282,107 @@
   states, observations, and the model parameters necessary.}
 
   There are hidden states corresponding to states of the world that we can't
-  see. Observations are things like ``rain'', ``clouds'', ``sun'', ``fog'', etc. 
+  see. They're hidden, so (at least in this case) we don't know what they are. 
+  Observations are things like ``rain'', ``clouds'', ``sun'', ``fog'', etc -- 
+  i.e., observable weather. 
   The model parameters necessary are the initial probabilities of being in a
   certain state, the transition probability between states, and the probability
   of getting a particular observation given a particular states. 
 
 \item
   \begin{enumerate}
-    \setcounter{enumiii}2
+    \setcounter{enumii}2
   \item \emph{Use the two unit tests \emph{\texttt{test\_bw\_beta\_all\_equal}}
     and
     \emph{\texttt{test\_bw\_gamma\_first\_col\_equal}} to answer the following questions;
     include outputs in writeup.}
 
     \begin{enumerate}[(1)]
-    \item \emph{Why are the betas all equal for each time step?}
+    \item \emph{Why are the betas all equal for each time step?} 
+
+    The test gives the following output:
+\begin{verbatim}
+beta:
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+[  0.333333  0.333333  0.333333  ]
+\end{verbatim}
+
+    We remark that this is not a generally true fact, i.e. betas are not 
+    necessarily all the same in all time steps for a general HMM. 
+    But in this particular case they are. The model this is run on has three states
+    and a transition matrix in which every value is equal, i.e. the probabilities
+    of going from any state $a$ to any state $b$ are all equal. 
+    Additionally, the observation model is such that the probability of any
+    given observation is equal, if we don't know anything about what 
+    state it's in, i.e. $P(O_t=o_t)=P(O_T=o_t')$. 
+
+    Now we look at the equation for $\beta$. 
+    $$\beta(x_t)=\sum_{x_{t+1}} P(X_{t+1}=x_{t+1}|X_t=x_t)P(O_{t+1}=o_{t+1}|X_{t+1}=x_{t+1})\beta (x_{t+1})$$
+    The $\beta(x_T)$'s are initialized to all be equal, so by induction (we're
+    hypothesizing that the $\beta(x_t)$'s are the same, always) we can pull that
+    term out of the sum. Furthermore, since the transition matrix has equal
+    entries, the first term $P(X_{t+1}=x_{t+1}|X_t=x_t)$ is also a constant
+    that we can pull out of the sum. Then we're left with some constants times
+    $\sum_{x_{t+1}} P(O_{t+1}=o_{t+1}|X_{t+1}=x_{t+1})$; by marginalization
+    and the fact that $P(O_t=o_t)=P(O_t=o_t')$, this part is also equal across
+    all $x_i$. Hence we have that each $\beta(x_i)$ at any given time period
+    is just the product of three constants which are the same over all $x_i$.
+    
+    
     \item \emph{Why are the gamma values for the first state the same for all time periods?}
+
+    Again, this does not appear to be a generally true fact. The outcomes
+    we get from running on this simple model are as follows:
+
+\begin{verbatim}
+gamma:
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.166667  0.500000  ]
+[  0.333333  0.500000  0.166667  ]
+[  0.333333  0.166667  0.500000  ]
+[  0.333333  0.166667  0.500000  ]
+[  0.333333  0.166667  0.500000  ]
+[  0.333333  0.166667  0.500000  ]
+\end{verbatim}
+
+    In lecture we defined $\gamma_t(s)=P(X_t=s|O_1=o_1,\ldots,O_T=o_t)$. 
+    Intuitively it makes sense that $\gamma_t(s)$ are all equal, i.e. that
+    the probability of the HMM being at the first state at some time $t$,
+    given all observations, is the same: the transition matrix has equal 
+    values everywhere, so only the current $X_t$ matters rather than the
+    entire sequence, and $P(O=1|X_t=1)=P(O=0|X_t=1)$, i.e. all outcomes
+    are equally likely in the first state, and also they are equally likely
+    if they are not in the first state. So if $\gamma_t(s)$ only depends
+    on how likely we are to observe some $o_t$, and if all outcomes are
+    equally likely given $x_1$ and given not-$x_1$, intuitively how likely 
+    the $t$th state is $x_1$ should all be the same. 
+
+    More rigorously, we can take a look at the $\alpha$ values as well, 
+    since $\gamma_t(s)=\frac{\alpha_t(s)\beta_t(s)}{\sum_{s'}\alpha_t(s')\beta_t(s')}$:
+    since $\beta_t(s')$ is always 1/3 for all $s'$, we then just have
+    $$\gamma_t(s)=\frac{\alpha_t(s)}{\sum_{s'}\alpha(t,s')}$$
+    Considering the recursive formula for $\alpha$, 
+    $$\alpha_t(x_t)=P(o_t|x_t)\sum_{x_{t-1}}P(x_t|x_{t-1})\alpha(x_{t-1})$$ we
+    see that again we pull $P(x_t|x_{t-1})$ out of the sum as it is
+    equal everywhere. It suffices to show $\alpha_t(1)/(\alpha_t(2)+\alpha_t(3))$
+    remains constant, i.e. 
+    $$\frac{P(o_t|1)\sum \alpha(x_{t-1})}{P(o_t|X_t=2)\sum\alpha(x_{t-1})+P(o_t|X_t=3)\sum \alpha(x_{t-1})}=\frac{P(o_t|X_t=1)}{P(o_t|X_t=2)+P(o_t|X_t=3)}$$
+    This remains constant as $P(O_t=1|X_t=1)=P(O_t=0|X_t=1)$, and the other two 
+    always sum up to the same thing ($P(O_t=0|X_t=2)=P(O_t=1|X_t=3)$ and vice versa). 
+
     \end{enumerate}
 
   \item \emph{Alpha and beta values get small for long sequences. If you look at the
@@ -317,15 +402,97 @@
     Vary the number of hidden states from 1 to 6 and plot the final classification
     accuracy vs the number of hidden states.}
 
+    \begin{itemize}
+    \item \texttt{weather\_boston\_la.data}:\\ 
+
+    \begin{tabular}{|cc|}
+    \hline
+    Number hidden states & Accuracy (fraction)\\
+    \hline
+    1 & 1.000\\
+    2 & 1.000\\
+    3 & 1.000\\
+    4 & 1.000\\
+    5 & 1.000\\
+    6 & 1.000\\
+    \hline
+    \end{tabular}
+
+    It appears that the difference in weather between Boston and LA are 
+    easily representable by an HMM, even with only one state. 
+
+    \item \texttt{weather\_boston\_sea.data}:\\
+
+    \begin{tabular}{|cc|}
+    \hline
+    Number hidden states & Accuracy (fraction)\\
+    \hline
+    1 & 0.470\\
+    2 & 0.910\\
+    3 & 0.890\\
+    4 & 0.900\\
+    5 & 0.895\\
+    6 & 0.885\\
+    \hline
+    \end{tabular}
+
+    Presumably worse performance for Boston vs Seattle can be attributed
+    to weather that is less obvious to classify. 
+
+    \item \texttt{weather\_all.data}:\\
+
+    \begin{tabular}{|cc|}
+    \hline
+    Number hidden states & Accuracy (fraction)\\
+    \hline
+    1 & 0.460\\
+    2 & 0.703\\
+    3 & 0.667\\
+    4 & 0.740\\
+    5 & 0.878\\
+    6 & 0.878\\
+    \hline
+    \end{tabular}
+
+    \end{itemize}
+
   \item \emph{Plot $\log(P(D|\Theta))$ for training the model for Boston with
     varying numbers of hidden states. Do you see any patterns?}
+
+    \includegraphics[scale=0.5]{4civ_plot.png}
+
+    Firstly we see that log likelihoods are all very negative, so that likelihood
+    is a very small fraction. This may seem surprising given that even with one 
+    hidden state, the HMM classifies the test data perfectly. But these are so 
+    negative because log likelihood of a dataset is the sum of the log likelihood
+    of each item. Because likelihood is (almost) never 1, i.e. log likelihood is always
+    negative, we end up with the sum of a lot of negative numbers. 
+    This example shows how
+    important it is to use logs, since otherwise, there would be difficulty
+    representing these numbers distinctly. 
+
+    As for patterns in the data, there seems to be a local maximum at 3. It starts
+    out around -12897 with 1 hidden state, then drops precipitously to -12908 with
+    two hidden states; at 3 hidden states we have a local maximum with log likelihood
+    around -12896; it drops again to near -12900 and then climbs steadily up. 
 
   \item \emph{By looking at the data and the learned models, try to explain your
     results. When do more hidden states help? When are they not needed? What is
     it about the observations that makes more states unnecessary?}
 
+    More hidden states help out ........................
+    
+    TODO
+
+    In general, though, we prefer simpler models even if they are slightly
+    worse. Also, as a tradeoff, more hidden states means much more time to process, 
+    as Baum-Welch takes more time per iteration as well as more iterations to
+    converge with more hidden states.     
+
   \item \emph{The data was generated synthetically. How many hidden states do you
     think were in our generating model? Why?}
+
+    TODO
 
   \end{enumerate}
 \end{enumerate}
