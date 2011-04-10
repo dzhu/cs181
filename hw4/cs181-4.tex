@@ -427,14 +427,27 @@ gamma:
     important it is to use logs, since otherwise, there would be difficulty
     representing these numbers distinctly. 
 
-   TODO: REST OF THIS QUESTION 
+    As for patterns in the data, there seems to be a local maximum at 3. It starts
+    out around -12897 with 1 hidden state, then drops precipitously to -12908 with
+    two hidden states; at 3 hidden states we have a local maximum with log likelihood
+    around -12896; it drops again to near -12900 and then climbs steadily up. 
 
   \item \emph{By looking at the data and the learned models, try to explain your
     results. When do more hidden states help? When are they not needed? What is
     it about the observations that makes more states unnecessary?}
 
+    More hidden states help out ........................
+    
+    TODO
+
+    However, as a tradeoff, more hidden states means much more time to process, 
+    as Baum-Welch takes more time per iteration as well as more iterations to
+    converge with more hidden states.     
+
   \item \emph{The data was generated synthetically. How many hidden states do you
     think were in our generating model? Why?}
+
+    TODO
 
   \end{enumerate}
 \end{enumerate}
