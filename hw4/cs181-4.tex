@@ -231,11 +231,10 @@
     are the same for each time step (stationarity).
 
     Below is a plot of the test errors on each sequence for momentum
-    and no-momentum data, sorted. Both methods produce very broadly
-    (somewhat uniformly) spread out results, with two high-error
-    outliers each.
+    and no-momentum data, sorted by error. Both methods produce very
+    broadly spread out results, with two high-error outliers each.
     \begin{center}
-      \includegraphics[scale=.5]{robot_cumul_perf.png}
+      \includegraphics[scale=.45]{robot_cumul_perf.png}
     \end{center}
 
     For no-momentum data, the overall test performance was .8119. This
@@ -294,13 +293,14 @@
 \item \emph{Describe the HMM for modeling this weather problem in terms of hidden
   states, observations, and the model parameters necessary.}
 
-  There are hidden states corresponding to states of the world that we can't
-  see. They're hidden, so (at least in this case) we don't know what they are.
-  Observations are things like ``rain'', ``clouds'', ``sun'', ``fog'', etc --
-  i.e., observable weather.
-  The model parameters necessary are the initial probabilities of being in a
-  certain state, the transition probability between states, and the probability
-  of getting a particular observation given a particular states.
+  There are hidden states corresponding to states of the world that we
+  can't see. They're hidden, so (at least in this case) we don't know
+  what they are.  Observations are things like ``rain'', ``clouds'',
+  ``sun'', ``fog'', etc --- i.e., observable weather.  The model
+  parameters necessary are the initial probabilities of being in a
+  certain state, the transition probability between states, and the
+  probability of getting a particular observation given a particular
+  states.
 
 \item
   \begin{enumerate}
@@ -501,11 +501,11 @@ gamma:
     numbers distinctly.
 
     As for patterns in the data, there seems to be a local maximum at
-    3. It starts out around -12897 with 1 hidden state, then drops
-    precipitously to -12908 with two hidden states; at 3 hidden states
-    we have a local maximum with log likelihood around -12896; it
-    drops again to near -12900, reaches a maximum at 9 states, and
-    seems not to do much after that.
+    3. It starts out around $-12897$ with 1 hidden state, then drops
+    precipitously to $-12908$ with two hidden states; at 3 hidden
+    states we have a local maximum with log likelihood around
+    $-12896$; it drops again to near $-12900$, reaches a maximum at 9
+    states, and seems not to do much after that.
 
   \item \emph{By looking at the data and the learned models, try to explain your
     results. When do more hidden states help? When are they not needed? What is
