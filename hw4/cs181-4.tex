@@ -264,6 +264,19 @@
     come up because it is much less common to reach 3:4 from the
     bottom right area without momentum.
 
+    It seems counterintuitive that the robot does better on data with
+    momentum, since it is not encodable as a Markov assumption. However,
+    adding in momentum makes the robot's path more deterministic, which
+    can be evidenced in the transition probabilities: they are less even
+    in the momentum case, indicating that certain paths are more likely
+    than others. As a concrete example, regarding the world in the problem
+    set, if the robot is at 3:3 it is less likely to move to the left,
+    since it could only have gotten there from the left, top, or bottom:
+    in these cases it would be 85\% likely to not move, go down, or go up,
+    respectively. The same reasoning works in other places, especially
+    in blocks that are adjacent to black squares or boundaries of the 
+    world. 
+
     %% \begin{itemize}
     %% \item \emph{What probabilistic assumptions are we making about the nature of
     %%   the data in using a hidden Markov model?}
