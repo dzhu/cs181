@@ -206,8 +206,8 @@
     There are four possible observations, one for each color.
 
     Each state can transition to any one corresponding to an adjacent
-    color with probability $\frac14$, or to itself with the remaining
-    probability.
+    colored square with probability $\frac14$, or to itself with the
+    remaining probability.
 
     Each state leads to the observation of the corresponding color
     with probability $.925$, and to each of the other colors with
@@ -222,6 +222,47 @@
     how well HMMs work on these problems and why. Think of
     explanations for the observations, and for failures, think of
     modifications to lead to success.}
+
+    In general, the main assumption that we make when modeling with an
+    HMM is, well, that the process satisfies the Markov assumption,
+    which is that the next position of the robot is independent of
+    previous positions, given the current position. We also assume
+    that the transition probabilities and observation probabilities
+    are the same for each time step (stationarity).
+
+    Below is a plot of the test errors on each sequence for momentum
+    and no-momentum data, sorted. Both methods produce very broadly
+    (somewhat uniformly) spread out results, with two high-error
+    outliers each.
+    \begin{center}
+      \includegraphics[scale=.5]{robot_cumul_perf.png}
+    \end{center}
+
+    For no-momentum data, the overall test performance was .8119. This
+    satisfies all of our assumptions. The highest test error was 74 of
+    200 states, on test sequence number 158. In this sequence, the
+    robot spent two-thirds of its time in the bottom right quadrant of
+    the board. Of the errors, 25 were arose from the robot being in
+    3:1, but the algorithm outputting 4:2. Seven came from the reverse
+    situation, altogether accounting for 32 of 74 errors. It makes
+    sense that these two would be confused often, since the colors of
+    the squares that are adjacent to them are similar. I think the
+    particular direction of confusion is influenced by the fact that
+    4:2 has only two neighbors, while 3:1 has 3. Thus, for example,
+    for a sequence of moves like 3:2,3:1,4:1, the sequence 3:2,4:2,4:1
+    is actually more likely.
+
+    For momentum data, the overall test performance was .8667. In this
+    case, the Markov assumption is not satisfied, since the choice of
+    direction depends on the last choice of direction, whereas our
+    model takes only position into account in its states. The highest
+    error was 57 of 200, in test sequence number 122. Much like the
+    worst case for no-momentum data, the robot spent 119 turns in the
+    bottom right quadrant, and also 41 in 2:1. In this case, there
+    were 11 errors of 3:1$\to$4:2 and 10 due to 3:4$\to$4:2. The first
+    kind comes up for the same reason as before. The second one might
+    come up because it is much less common to reach 3:4 from the
+    bottom right area without momentum.
 
     \begin{itemize}
     \item \emph{What probabilistic assumptions are we making about the nature of
