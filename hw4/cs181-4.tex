@@ -361,8 +361,73 @@ gamma:
     Vary the number of hidden states from 1 to 6 and plot the final classification
     accuracy vs the number of hidden states.}
 
+    \begin{itemize}
+    \item \texttt{weather\_boston\_la.data}:\\ 
+
+    \begin{tabular}{|cc|}
+    \hline
+    Number hidden states & Accuracy (fraction)\\
+    \hline
+    1 & 1.000\\
+    2 & 1.000\\
+    3 & 1.000\\
+    4 & 1.000\\
+    5 & 1.000\\
+    6 & 1.000\\
+    \hline
+    \end{tabular}
+
+    It appears that the difference in weather between Boston and LA are 
+    easily representable by an HMM, even with only one state. 
+
+    \item \texttt{weather\_boston\_sea.data}:\\
+
+    \begin{tabular}{|cc|}
+    \hline
+    Number hidden states & Accuracy (fraction)\\
+    \hline
+    1 & 0.470\\
+    2 & 0.910\\
+    3 & 0.890\\
+    4 & 0.900\\
+    5 & 0.895\\
+    6 & 0.885\\
+    \hline
+    \end{tabular}
+
+    Presumably worse performance for Boston vs Seattle can be attributed
+    to weather that is less obvious to classify. 
+
+    \item \texttt{weather\_all.data}:\\
+
+    \begin{tabular}{|cc|}
+    \hline
+    Number hidden states & Accuracy (fraction)\\
+    \hline
+    1 & 0.460\\
+    2 & 0.703\\
+    3 & 0.667\\
+    4 & 0.740\\
+    5 & 0.878\\
+    6 & 0.878\\
+    \hline
+    \end{tabular}
+
+    \end{itemize}
+
   \item \emph{Plot $\log(P(D|\Theta))$ for training the model for Boston with
     varying numbers of hidden states. Do you see any patterns?}
+
+    \includegraphics[scale=0.5]{4civ_plot.png}
+
+    Firstly we see that log likelihoods are all very negative, so that likelihood
+    is a very small fraction. This may seem surprising given that even with one 
+    hidden state, the HMM classifies the test data perfectly. But we must keep
+    in mind that likelihoods tend to get very small anyway. This example shows how
+    important it is to use logs, since otherwise, there would be difficulty
+    representing these numbers distinctly. 
+
+   TODO: REST OF THIS QUESTION 
 
   \item \emph{By looking at the data and the learned models, try to explain your
     results. When do more hidden states help? When are they not needed? What is
