@@ -3,8 +3,13 @@
 \usepackage{tikz}
 \usepackage{geometry}
 \usepackage{enumerate}
-\renewcommand{\labelenumi}{(\alph{enumi})}
-\renewcommand{\labelenumii}{(\roman{enumii})}
+%\renewcommand{\labelenumi}{(\alph{enumi})}
+%\renewcommand{\labelenumii}{(\roman{enumii})}
+\usepackage{color}
+\definecolor{Yellow}{rgb}{1,1,0}
+\newcommand{\edit}[1]{\colorbox{Yellow}{#1}}
+
+
 \geometry{verbose,letterpaper,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
 
 \title{CS181: MDPs and Reinforcement Learning}
@@ -16,51 +21,89 @@
 \begin{enumerate}
 \item 
 \begin{enumerate}
-\item \emph{Given a probability distribution and utility function, write
+\item {Given a probability distribution and utility function, write
   equations showing how to determine the optimal action, given the
   current score.}
 
-\item \emph{One of your colleagues proposes the following utility function:}
+  Let $U(s')$ be the utility function and $P(s'|s,a)$ the probability 
+  of going to $s'$ from $s$, given action $a$. 
+  Then the optimal action is
+  $\pi(s,U,P)=\arg\max_{a\in A} \sum U(s')P(s'|s,a)$
+
+%  Let $A$ denote the set of places on the target to aim for. 
+%  Let $a$ denote some action in $A$ and $s$ denote your current score. 
+%  Then let $Q(s,a)=R(s,a)+\sum_{s'}P(s'|s,a) B(s')$
+%  where $U(s,a)$ is the utility function and $B(s')$ is the
+%  best score possibly obtained with $s'$ as a current score. 
+%  $B(s')$ can be obtained through expectimax or value iteration. 
+%  The best action to take with $s$ as a current score is 
+%  $\pi^*(s)=\argmax_{a\in A} Q(s,a)$. 
+
+\item {One of your colleagues proposes the following utility function:}
   \begin{align*}
   U(points,score)=
   \begin{cases}
-  \item points & \text{ if } points \leq score\\
-  \item 0 & \text{ otherwise}
+  points & \text{ if } points \leq score\\
+  0 & \text{ otherwise}
   \end{cases}
   \end{align*}
-  \emph{In other words, the utility is equivalent to your change in score. What
+  {In other words, the utility is equivalent to your change in score. What
   do you think of this proposal? If a dart player is designed using this
   proposal, what decisions would you expect it to make well, and what
   decisions would you expect it to make poorly?}
 
-
+  This proposal is myopic. It would work well if lower point values were at least 
+  as easily obtained as larger ones. However, this may not be the case, i.e. if 
+  you started out with 10 points, and you could hit 5 and 9 with high probability,
+  but 1 with extremely low probability, then it is better to aim for 5 and 5 
+  rather than use the proposal which would suggest 9 and 1. 
   \end{enumerate}
 
 \item
   \begin{enumerate}
-  \item \emph{What are the states and actions of your MDP model?
+  \item {What are the states and actions of your MDP model?
   Complete the \texttt{get\_states()} function in \texttt{darts.py}. (you may use
   the \texttt{test get states} unit test at this point)}
 
-  \item \emph{Define the reward function: what reward or punishment
+  The states are integers from 0 to 301. The actions are aiming for a
+  particular section on the dartboard.  
+
+  \item {Define the reward function: what reward or punishment
   do you receive for each state and action? What role does the discount
   factor play? Once you have specified this function, complete the
   reward function \texttt{R()} in \texttt{darts.py}. (see also the 
   \texttt{test R} unit test)}
 
-  \item \emph{Construct the transition function, using the probability
-  distribution described above. That is, complete the transition function 
-  \texttt{T()} in \texttt{mdp.py}. (validate with the \texttt{test T} unit test)}
+  Given a state $s$ and action $a$, if $s=0$, reward is 1; if $s\neq 0$,
+  reward is 0, since we win when we have a score of 0.
+  (I think it should be 0 vs -1 for rewards, but the tests say that's wrong.)
 
-  \item \emph{We have implemented the infinite horizon value iteration
+  If discount factor is 1, we weight all time periods equally. This is
+  not so good because it would mean we didn't care whether we won early
+  or late. If discount factor is low, it means that we'd much rather win
+  now than later, i.e. earlier winning is better than later. 
+  If discount factor is 0, it means we don't care at all about future
+  winning, which is bad, since it only acts nontrivially if we are one
+  step away from winning. 
+
+  \setcounter{enumii}3
+  \item {We have implemented the infinite horizon value iteration
   algorithm in \texttt{mdp.py}. Why might we choose to use an infinite rather
   than finite horizon to find an optimal policy in the dartboards scenario? 
   You may now get your first results by running the \texttt{Warm-up} task.}
 
-  \item \emph{Describe the intuition behind an optimal policy resulting
+  Discounting is a good thing, and infinite horizon does discounting.  
+  Finite horizon case needs to go 
+  through all $k$-remaining-step calculations, whereas infinite horizon
+  doesn't need to (it iterates and stops when it converges). Infinite
+  horizon then may converge faster. \edit{I DON"T KNOW????} 
+  Also, $k$ can get up to 301 (if we keep hitting 1) so that infinite
+  horizon is not unreasonable. 
+  
+  \item {Describe the intuition behind an optimal policy resulting
   from value iteration using the small game.}
 
-  \item \emph{Still referring to the small game, how does the optimal
+  \item {Still referring to the small game, how does the optimal
   policy vary as you change the discount factor? What is common
   across optimal policies?}
 
@@ -70,16 +113,16 @@
 
 \item 
   \begin{enumerate}
-  \item \emph{Prove that if policy iteration terminates with the policy
+  \item {Prove that if policy iteration terminates with the policy
   $\pi^*$, $\pi^*$ is an optimal stationary policy.}
 
-  \item \emph{Prove that if $\pi^1$ is the policy before a policy iteration
+  \item {Prove that if $\pi^1$ is the policy before a policy iteration
   phase, and $\pi^2$ is the policy after the phase, then for every state $s$,
   $V^{\pi^2}(s)\geq V^{\pi^1}(s)$. [Hint: first try to prove $V^{\pi^2}(\hat s)\geq V^{\pi^1}(\hat s)$
   when the action is only improved in state $\hat s$. Then argue this property
   holds for all states.]}
 
-  \item \emph{Deduce that policy iteration always terminates with an
+  \item {Deduce that policy iteration always terminates with an
   optimal stationary policy.}
 
   \item 
@@ -88,17 +131,17 @@
 
 \item 
   \begin{enumerate}
-  \item \emph{Implement two exploration / exploitation strategies for deciding how to act
+  \item {Implement two exploration / exploitation strategies for deciding how to act
   in each epoch based on the current result of value iterations: these should be different.
   Run the next tasks and create a graph of relationship between performance and epoch
   size. How do these graphs compare for both strategies?}
 
-  \item \emph{Implement the model-free $Q$ learning algorithm as well as two exploration/
+  \item {Implement the model-free $Q$ learning algorithm as well as two exploration/
   exploitation strategies that may be the same asin part (a). Pick a learning rate. Write 
   code. Use the \texttt{Q-learning} task with the medium size game to compare the 
   performance of your algorithm for both exploration / exploitation strategies.}
 
-  \item \emph{Compare the performance of the model-based and model-free algorithms. Why 
+  \item {Compare the performance of the model-based and model-free algorithms. Why 
   do you think these algorithms performed relatively well or poorly?}
 
 
