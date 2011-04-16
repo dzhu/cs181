@@ -1,0 +1,108 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{geometry}
+\usepackage{enumerate}
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\geometry{verbose,letterpaper,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
+
+\title{CS181: MDPs and Reinforcement Learning}
+\author{Danny Zhu \& Tianhui Cai}
+\let\b\mathbf
+
+\begin{document}
+\maketitle
+\begin{enumerate}
+\item 
+\begin{enumerate}
+\item \emph{Given a probability distribution and utility function, write
+  equations showing how to determine the optimal action, given the
+  current score.}
+
+\item \emph{One of your colleagues proposes the following utility function:}
+  \begin{align*}
+  U(points,score)=
+  \begin{cases}
+  \item points & \text{ if } points \leq score\\
+  \item 0 & \text{ otherwise}
+  \end{cases}
+  \end{align*}
+  \emph{In other words, the utility is equivalent to your change in score. What
+  do you think of this proposal? If a dart player is designed using this
+  proposal, what decisions would you expect it to make well, and what
+  decisions would you expect it to make poorly?}
+
+
+  \end{enumerate}
+
+\item
+  \begin{enumerate}
+  \item \emph{What are the states and actions of your MDP model?
+  Complete the \texttt{get\_states()} function in \texttt{darts.py}. (you may use
+  the \texttt{test get states} unit test at this point)}
+
+  \item \emph{Define the reward function: what reward or punishment
+  do you receive for each state and action? What role does the discount
+  factor play? Once you have specified this function, complete the
+  reward function \texttt{R()} in \texttt{darts.py}. (see also the 
+  \texttt{test R} unit test)}
+
+  \item \emph{Construct the transition function, using the probability
+  distribution described above. That is, complete the transition function 
+  \texttt{T()} in \texttt{mdp.py}. (validate with the \texttt{test T} unit test)}
+
+  \item \emph{We have implemented the infinite horizon value iteration
+  algorithm in \texttt{mdp.py}. Why might we choose to use an infinite rather
+  than finite horizon to find an optimal policy in the dartboards scenario? 
+  You may now get your first results by running the \texttt{Warm-up} task.}
+
+  \item \emph{Describe the intuition behind an optimal policy resulting
+  from value iteration using the small game.}
+
+  \item \emph{Still referring to the small game, how does the optimal
+  policy vary as you change the discount factor? What is common
+  across optimal policies?}
+
+
+
+  \end{enumerate}
+
+\item 
+  \begin{enumerate}
+  \item \emph{Prove that if policy iteration terminates with the policy
+  $\pi^*$, $\pi^*$ is an optimal stationary policy.}
+
+  \item \emph{Prove that if $\pi^1$ is the policy before a policy iteration
+  phase, and $\pi^2$ is the policy after the phase, then for every state $s$,
+  $V^{\pi^2}(s)\geq V^{\pi^1}(s)$. [Hint: first try to prove $V^{\pi^2}(\hat s)\geq V^{\pi^1}(\hat s)$
+  when the action is only improved in state $\hat s$. Then argue this property
+  holds for all states.]}
+
+  \item \emph{Deduce that policy iteration always terminates with an
+  optimal stationary policy.}
+
+  \item 
+
+  \end{enumerate}
+
+\item 
+  \begin{enumerate}
+  \item \emph{Implement two exploration / exploitation strategies for deciding how to act
+  in each epoch based on the current result of value iterations: these should be different.
+  Run the next tasks and create a graph of relationship between performance and epoch
+  size. How do these graphs compare for both strategies?}
+
+  \item \emph{Implement the model-free $Q$ learning algorithm as well as two exploration/
+  exploitation strategies that may be the same asin part (a). Pick a learning rate. Write 
+  code. Use the \texttt{Q-learning} task with the medium size game to compare the 
+  performance of your algorithm for both exploration / exploitation strategies.}
+
+  \item \emph{Compare the performance of the model-based and model-free algorithms. Why 
+  do you think these algorithms performed relatively well or poorly?}
+
+
+  \end{enumerate}
+
+\end{enumerate}
+\end{document}
