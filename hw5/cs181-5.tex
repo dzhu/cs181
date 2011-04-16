@@ -75,7 +75,8 @@
   \texttt{test R} unit test)}
 
   Given a state $s$ and action $a$, if $s=0$, reward is 1; if $s\neq 0$,
-  reward is 0, since we win when we have a score of 0.
+  reward is 0, since we win when we have a score of 0. This does not
+  depend on action. 
   (I think it should be 0 vs -1 for rewards, but the tests say that's wrong.)
 
   If discount factor is 1, we weight all time periods equally. This is
@@ -92,13 +93,9 @@
   than finite horizon to find an optimal policy in the dartboards scenario? 
   You may now get your first results by running the \texttt{Warm-up} task.}
 
-  Discounting is a good thing, and infinite horizon does discounting.  
-  Finite horizon case needs to go 
-  through all $k$-remaining-step calculations, whereas infinite horizon
-  doesn't need to (it iterates and stops when it converges). Infinite
-  horizon then may converge faster. \edit{I DON"T KNOW????} 
-  Also, $k$ can get up to 301 (if we keep hitting 1) so that infinite
-  horizon is not unreasonable. 
+  There may be infinite steps, i.e. say we have one point left to go
+  and we keep not getting 1 point. 
+  Also, discounting is a good thing, and infinite horizon does discounting.  
   
   \item {Describe the intuition behind an optimal policy resulting
   from value iteration using the small game.}
@@ -116,16 +113,44 @@
   \item {Prove that if policy iteration terminates with the policy
   $\pi^*$, $\pi^*$ is an optimal stationary policy.}
 
+  Policy iteration consists of repeating the following: given a $\pi(s)$,
+  convert it to a set of $V(s)$ that agrees with it, then take the
+  argmax of $Q(s,a)=R(s,a)+\gamma \sum_{s'} P(s'|s,a)V(s')$. This step
+  is basically the same as one step of value iteration, which converges
+  to a unique fixed point, i.e. between different steps, $V$ necessarily
+  changes unless we have reached the maximum. 
+
+  So if value iteration has $\pi^*$ as a 
+  stationary point, i.e. if we take the corresponding $V$, and through 
+  the step $\pi$ and hence $V$ doesn't change, then it must be optimal
+  by convergence / optimality of value iteration, i.e. if some $V$ is 
+  not optimal, on one step of value iteration $V$ necessarily will change,
+  so that $\pi$ necessarily changes on one step of policy iteration. 
+
   \item {Prove that if $\pi^1$ is the policy before a policy iteration
   phase, and $\pi^2$ is the policy after the phase, then for every state $s$,
   $V^{\pi^2}(s)\geq V^{\pi^1}(s)$. [Hint: first try to prove $V^{\pi^2}(\hat s)\geq V^{\pi^1}(\hat s)$
   when the action is only improved in state $\hat s$. Then argue this property
   holds for all states.]}
 
+  Assume not, i.e. that $V^{\pi^2}(\hat s)<V^{\pi^1}(\hat s)$ for some $s$.
+  Given $\pi_1$, by definition $V_1:=V^{\pi^2}$ is such that
+  $V_1(s)=R(s,\pi_1(s))+\gamma \sum_{s'}P(s'|s,\pi_1(s))V_1(s')$.
+  By definition of $V_2:=V^{\pi^2}$, $V_2(s)=\max_a \left[R(s,a)+\gamma \sum_{s'}R(s'|s,a)V_1(s)\right]$.
+  Then the claim is that (for contradiction)
+  $$\max_a \left[R(s,a)+\gamma \sum_{s'}R(s'|s,a)V_1(s)\right] < R(s,\pi_1(s))+\gamma \sum_{s'}P(s'|s,\pi_1(s))V_1(s')$$
+  But this is impossible, because for $a$ we can just take $\pi(s)$ to obtain
+  an equality, a contradiction. 
+
+
   \item {Deduce that policy iteration always terminates with an
   optimal stationary policy.}
-
-  \item 
+  
+  There are a finite number of policies, and each iteration either produces
+  the same policy (in which case we're done, and by part (a) it's optimal)
+  or we get a policy (approximately) strictly better (approximately being, 
+  if we have a sensible ordering so we don't oscillate between policies), so
+  that there are a finite number of steps to go through. 
 
   \end{enumerate}
 

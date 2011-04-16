@@ -34,7 +34,6 @@ def get_target(score):
 # define transition matrix/ function
 def T(a, s, s_prime):
   total_prob = 0.0
-  print a
   for w in [x-2 for x in range(5)]:
     wedgefactor = 0.0
     if abs(w)==0: 
@@ -57,7 +56,6 @@ def T(a, s, s_prime):
 
       ring = abs(a.ring + r)
       if throw.location_to_score(throw.location(ring,wedge))==(s-s_prime):
-        print " %d %d   %d %d    : %d     %f " % (ring, wedge, r, w, s-s_prime, ringfactor * wedgefactor)
         total_prob += ringfactor * wedgefactor
     
   return total_prob
