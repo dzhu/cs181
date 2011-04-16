@@ -41,9 +41,9 @@ def R(s,a):
   # takes a state s and action a
   # returns the reward for completing action a in state s
   if s==0:
-    return 0.0;
+    return 1.0;
   else:
-    return -1.0;
+    return 0.0;
 
 # Play a single game 
 def play(method):

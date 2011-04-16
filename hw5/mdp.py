@@ -33,7 +33,34 @@ def get_target(score):
 
 # define transition matrix/ function
 def T(a, s, s_prime):
-  return 0
+  total_prob = 0.0
+  print a
+  for w in [x-2 for x in range(5)]:
+    wedgefactor = 0.0
+    if abs(w)==0: 
+      wedgefactor = 0.4
+    if abs(w)==1:
+      wedgefactor = 0.2
+    if abs(w)==2:
+      wedgefactor = 0.1
+    
+    wedge = (a.wedge + w) % throw.NUM_WEDGES
+    # this area
+    for r in [x-2 for x in range(5)]:
+      ringfactor = 0.0
+      if abs(r)==0: 
+        ringfactor = 0.4
+      if abs(r)==1:
+        ringfactor = 0.2
+      if abs(r)==2:
+        ringfactor = 0.1
+
+      ring = abs(a.ring + r)
+      if throw.location_to_score(throw.location(ring,wedge))==(s-s_prime):
+        print " %d %d   %d %d    : %d     %f " % (ring, wedge, r, w, s-s_prime, ringfactor * wedgefactor)
+        total_prob += ringfactor * wedgefactor
+    
+  return total_prob
 
 
 def infiniteValueIteration(gamma):
