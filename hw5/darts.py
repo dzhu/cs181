@@ -18,7 +18,7 @@ EPOCH_SIZE = 10
 # list of all possible states.
 def get_states():
   # should return a **list** of states. Each state should be an integer.
-  return []
+  return range(302)
 
 # Returns a list of all possible actions, or targets, which include both a
 # wedge number and a ring.
@@ -40,8 +40,10 @@ def get_actions():
 def R(s,a):
   # takes a state s and action a
   # returns the reward for completing action a in state s
-  return 0.0;
-
+  if s==0:
+    return 0.0;
+  else:
+    return -1.0;
 
 # Play a single game 
 def play(method):

@@ -20,6 +20,20 @@
   equations showing how to determine the optimal action, given the
   current score.}
 
+  Let $U(s')$ be the utility function and $P(s'|s,a)$ the probability 
+  of going to $s'$ from $s$, given action $a$. 
+  Then the optimal action is
+  $\pi(s,U,P)=\argmax_{a\in A} \sum U(s')P(s'|s,a)$
+
+%  Let $A$ denote the set of places on the target to aim for. 
+%  Let $a$ denote some action in $A$ and $s$ denote your current score. 
+%  Then let $Q(s,a)=R(s,a)+\sum_{s'}P(s'|s,a) B(s')$
+%  where $U(s,a)$ is the utility function and $B(s')$ is the
+%  best score possibly obtained with $s'$ as a current score. 
+%  $B(s')$ can be obtained through expectimax or value iteration. 
+%  The best action to take with $s$ as a current score is 
+%  $\pi^*(s)=\argmax_{a\in A} Q(s,a)$. 
+
 \item \emph{One of your colleagues proposes the following utility function:}
   \begin{align*}
   U(points,score)=
@@ -33,7 +47,11 @@
   proposal, what decisions would you expect it to make well, and what
   decisions would you expect it to make poorly?}
 
-
+  This proposal is myopic. It would work well if lower point values were at least 
+  as easily obtained as larger ones. However, this may not be the case, i.e. if 
+  you started out with 10 points, and you could hit 5 and 9 with high probability,
+  but 1 with extremely low probability, then it is better to aim for 5 and 5 
+  rather than use the proposal which would suggest 9 and 1. 
   \end{enumerate}
 
 \item
@@ -42,11 +60,27 @@
   Complete the \texttt{get\_states()} function in \texttt{darts.py}. (you may use
   the \texttt{test get states} unit test at this point)}
 
+  The states are integers from 0 to 301. The actions are aiming for a
+  particular section on the dartboard.  
+
   \item \emph{Define the reward function: what reward or punishment
   do you receive for each state and action? What role does the discount
   factor play? Once you have specified this function, complete the
   reward function \texttt{R()} in \texttt{darts.py}. (see also the 
   \texttt{test R} unit test)}
+
+  Given a state $s$ and action $a$, if $s=0$, reward is 0; if $s\neq 0$,
+  reward is -1, since score goes up (in a bad way) with each subsequent
+  throw. If discount factor is 1, we weight all time periods equally.
+  This is pretty reasonable, considering the punishment for each extra
+  throw is the same. Since $R(s,a)$ doesn't depend on $a$, even if we
+  did discount with factor $\neq 0$, then we still get the same argmax
+  for $a$ since all the $Q(s,a)$ for varying $a$ will have the same
+  $R(s,a)$ factor and only differ in the discounted term. 
+
+  On the other hand, if discount factor is 0, we ignore everything in 
+  future time periods and only look at $R(s,a)$ for the current state.
+  This is pretty unreasonable. 
 
   \item \emph{Construct the transition function, using the probability
   distribution described above. That is, complete the transition function 
