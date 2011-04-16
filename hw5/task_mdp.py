@@ -21,25 +21,25 @@ class SimpleThrow(tftask.ChartTask):
     
     def task(self):
         throw.init_board()
-	      throw.use_simple_thrower()
+	throw.use_simple_thrower()
         y1= darts.test(1, "mdp")
         
         throw.init_board()
         throw.use_simple_thrower()
         y2=darts.test(5, "mdp")    	
 	
-	      throw.init_board()
-	      throw.use_simple_thrower()
+	throw.init_board()
+	throw.use_simple_thrower()
         y3=darts.test(10, "mdp")    	
 		    	
-	      listNames = ["1 game", "5 games", "10 games"]
-	      listData = [y1, y2, y3]
-	      chart = {"chart": {"defaultSeriesType": "column"},
+	listNames = ["1 game", "5 games", "10 games"]
+	listData = [y1, y2, y3]
+	chart = {"chart": {"defaultSeriesType": "column"},
                  "xAxis": {"categories": listNames},
                  "yAxis": {"title": {"text": "#Throws"}},
                  "title": {"text": "Average #throws to finish vs. #games"}, 
                  "series": [ {"name": "Average policy performance", 
-	                            "data": listData} ] }
+	                      "data": listData} ] }
         return chart
 
 class ModelBasedOne(tftask.ChartTask):
@@ -56,17 +56,17 @@ class ModelBasedOne(tftask.ChartTask):
         throw.wedges = [ 4, 6, 2, 7, 1, 8, 3, 5 ]
         throw.START_SCORE = 100
         throw.init_board()
-	      random.seed()
-	      throw.init_thrower()
+	random.seed()
+	throw.init_thrower()
          
         num_games=10
         epochs = [25,35,50];   	
 		    	
-	      listNames = map(lambda x: "Epoch "+`x`, epochs);
-	      y = map(lambda x: modelbased.modelbased(darts.GAMMA, x, num_games,1), epochs);
-	      listData = y
+	listNames = map(lambda x: "Epoch "+`x`, epochs);
+	y= map(lambda x: modelbased.modelbased(darts.GAMMA, x, num_games,1), epochs);
+	listData = y
 	
-	      chart = {"chart": {"defaultSeriesType": "line"},
+	chart = {"chart": {"defaultSeriesType": "line"},
                  "xAxis": {"categories": listNames},
                  "yAxis": {"title": {"text": "#Throws"}},
                  "title": {"text": "Average #throws to finish vs. #games"}, 
@@ -126,13 +126,13 @@ class QLearning(tftask.ChartTask):
         
          
         num_games=10
-        modelfree.ACTIVE_STRATEGY = 1;	
+        modelfree.ACTIVE_STRATEGY = 2;	
         y1=  darts.test(num_games, "modelfree")
         modelfree.ACTIVE_STRATEGY = 2;	
-	      y2=  darts.test(num_games, "modelfree")
-	      listNames = ["Strategy 1","Strategy 2"]
-	      y= [y1, y2]
-	      listData = y
+	y2=  darts.test(num_games, "modelfree")
+	listNames = ["Strategy 1","Strategy 2"]
+	y= [y1, y2]
+	listData = y
 	
 	chart = {"chart": {"defaultSeriesType": "line"},
                  "xAxis": {"categories": listNames},

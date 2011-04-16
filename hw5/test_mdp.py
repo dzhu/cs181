@@ -18,7 +18,7 @@ class MDPTest(unittest.TestCase):
         self.assertTrue(0.75* x < len(darts.get_states()));
 
     def test_R(self):
-        self.assertEqual(darts.R(9,0), 0)
+        self.assertEqual(darts.R(10,0), 0)
         self.assertTrue (darts.R(0,0) > 0)
     
     def test_T(self) :
