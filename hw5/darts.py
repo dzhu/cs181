@@ -10,7 +10,7 @@ import mdp
 import modelbased
 import modelfree
 
-GAMMA = .5
+GAMMA = .1
 EPOCH_SIZE = 10
 
 
@@ -18,7 +18,7 @@ EPOCH_SIZE = 10
 # list of all possible states.
 def get_states():
   # should return a **list** of states. Each state should be an integer.
-  return range(302)
+  return range(throw.START_SCORE+1)
 
 # Returns a list of all possible actions, or targets, which include both a
 # wedge number and a ring.
