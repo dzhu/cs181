@@ -60,7 +60,7 @@ class ModelBasedOne(tftask.ChartTask):
 	throw.init_thrower()
          
         num_games=10
-        epochs = [25,35,50];   	
+        epochs = [50];#25,35,50];   	
 		    	
 	listNames = map(lambda x: "Epoch "+`x`, epochs);
 	y= map(lambda x: modelbased.modelbased(darts.GAMMA, x, num_games,1), epochs);
@@ -93,7 +93,7 @@ class ModelBasedTwo(tftask.ChartTask):
 	throw.init_thrower()
          
         num_games=10
-        epochs = [25,35,50];   	
+        epochs = [25];#[25,35,50];   	
 		    	
 	listNames = map(lambda x: "Epoch "+`x`, epochs);
 	y= map(lambda x: modelbased.modelbased(darts.GAMMA, x, num_games,2), epochs);

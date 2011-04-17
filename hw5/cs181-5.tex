@@ -100,11 +100,24 @@
   \item {Describe the intuition behind an optimal policy resulting
   from value iteration using the small game.}
 
+  \edit{????? intuition???}
+
   \item {Still referring to the small game, how does the optimal
   policy vary as you change the discount factor? What is common
   across optimal policies?}
 
+  \edit{I'm not sure what they mean by this.. how do we know what the optimal policy is?}
 
+  The following results (number of throws) were obtained, averaging 5 runs for each row.
+  \begin{tabular}{r|c c c}
+  $\gamma$ & 1 game avg & 5 games avg & 10 games avg \\
+  \hline
+  0.1 & 4 & 3.24 & 4.34 \\
+  0.5 & 4.2 & 4.56 & 5.36 \\
+  0.9 & 5.8 & 4.76 & 5.6 \\
+  \end{tabular}
+  These results agree with the earlier analysis that too low $\gamma$
+  does not solve for fewer throws. 
 
   \end{enumerate}
 
@@ -160,6 +173,9 @@
   in each epoch based on the current result of value iterations: these should be different.
   Run the next tasks and create a graph of relationship between performance and epoch
   size. How do these graphs compare for both strategies?}
+
+  Strategy 1: explore 20\% of the time. Strategy 2: explore (1/iteration+5)100\% of the time. 
+  \edit{Please get data / graphs}
 
   \item {Implement the model-free $Q$ learning algorithm as well as two exploration/
   exploitation strategies that may be the same asin part (a). Pick a learning rate. Write 
