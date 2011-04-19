@@ -80,12 +80,15 @@
   \edit{(I think it should be 0 vs -1 for rewards, but the tests say that's wrong.)}
 
   If discount factor is 1, we weight all time periods equally. This is
-  not so good because it would mean we didn't care whether we won early
-  or late. If discount factor is low, it means that we'd much rather win
+  not so good because it would mean we would care less about whether we
+  win early or win late. 
+  If discount factor is low, it means that we'd much rather win
   now than later, i.e. earlier winning is better than later. 
   If discount factor is 0, it means we don't care at all about future
   winning, which is bad, since it only acts nontrivially if we are one
   step away from winning. 
+
+  \edit{UNSURE, AND DATA DOES NOT AGERE}
 
   \setcounter{enumii}3
   \item {We have implemented the infinite horizon value iteration
@@ -95,18 +98,35 @@
 
   There may be infinite steps, i.e. say we have one point left to go
   and we keep not getting 1 point. 
-  Also, discounting is a good thing, and infinite horizon does discounting.  
   
   \item {Describe the intuition behind an optimal policy resulting
   from value iteration using the small game.}
 
-  \edit{????? intuition???}
+  It seems like for the large part, the policy tries to throw a dart at 
+  the wedge that will produce exactly the score it needs to get to 0.
+  There are exceptions, though; when score is 7 or 8, it aims to get 2 or 3
+  instead of 7 or 8, since it is impossible to obtain a score of 7 or 8
+  in one throw. This seems to make sense for the smaller sums because
+  if it can get to 0 in one hit, it will try to. The 2 and 3 are probably
+  picked because it is relatively easy to get from a score of 6
+  to 0. 
+
+  \edit{????? check?}
 
   \item {Still referring to the small game, how does the optimal
   policy vary as you change the discount factor? What is common
   across optimal policies?}
 
-  \edit{I'm not sure what they mean by this.. how do we know what the optimal policy is?}
+  It appears that with varying $\gamma$, the policy for when score 
+  is between 1 and 6 is the same, with the exception of when $\gamma=0$,
+  in which case the policy is 6 or each state (i.e. there is no differentiation
+  between states because the mdp doesn't look ahead at all). The policy
+  appears to be the same for other $\gamma$ not equal to 0.5, with the
+  exception of when it is 0.9 or 1.0, in which case it assigns targets
+  that would have output values 1 and 1 for 7 and 8. 
+  \edit{EXPLAIN THE ABOVE}
+
+  \edit{these results dont' match the above analysis}
 
   The following results (number of throws) were obtained, averaging 5 runs for each row.
   \begin{tabular}{r|c c c}
@@ -126,19 +146,14 @@
   \item {Prove that if policy iteration terminates with the policy
   $\pi^*$, $\pi^*$ is an optimal stationary policy.}
 
-  Policy iteration consists of repeating the following: given a $\pi(s)$,
-  convert it to a set of $V(s)$ that agrees with it, then take the
-  argmax of $Q(s,a)=R(s,a)+\gamma \sum_{s'} P(s'|s,a)V(s')$. This step
-  is basically the same as one step of value iteration, which converges
-  to a unique fixed point, i.e. between different steps, $V$ necessarily
-  changes unless we have reached the maximum. 
+  This basically holds by definition. An optimal stationary policy is
+  defined to be one that satisfies the Bellman equations, i.e $\pi$ such that
+  $\pi(s)=\arg\max_{a} \left[R(s,a)+\gammma \sum_{s'} P(s'|s,a)V^{\pi}(s')\right]$.
+  Policy iteration terminates with $\pi$ if it does not change after an
+  iteration, i.e. 
+  $\pi(s)=\arg\max_a Q^\pi (s,a)=\arg\max_a \left[R(s,a)+\gammma \sum_{s'} P(s'|s,a)V^{\pi}(s')\right]$ 
+  which is exactly the condition above.   
 
-  So if value iteration has $\pi^*$ as a 
-  stationary point, i.e. if we take the corresponding $V$, and through 
-  the step $\pi$ and hence $V$ doesn't change, then it must be optimal
-  by convergence / optimality of value iteration, i.e. if some $V$ is 
-  not optimal, on one step of value iteration $V$ necessarily will change,
-  so that $\pi$ necessarily changes on one step of policy iteration. 
 
   \item {Prove that if $\pi^1$ is the policy before a policy iteration
   phase, and $\pi^2$ is the policy after the phase, then for every state $s$,
@@ -146,14 +161,23 @@
   when the action is only improved in state $\hat s$. Then argue this property
   holds for all states.]}
 
-  Assume not, i.e. that $V^{\pi^2}(\hat s)<V^{\pi^1}(\hat s)$ for some $s$.
-  Given $\pi_1$, by definition $V_1:=V^{\pi^2}$ is such that
-  $V_1(s)=R(s,\pi_1(s))+\gamma \sum_{s'}P(s'|s,\pi_1(s))V_1(s')$.
-  By definition of $V_2:=V^{\pi^2}$, $V_2(s)=\max_a \left[R(s,a)+\gamma \sum_{s'}R(s'|s,a)V_1(s)\right]$.
-  Then the claim is that (for contradiction)
-  $$\max_a \left[R(s,a)+\gamma \sum_{s'}R(s'|s,a)V_1(s)\right] < R(s,\pi_1(s))+\gamma \sum_{s'}P(s'|s,\pi_1(s))V_1(s')$$
-  But this is impossible, because for $a$ we can just take $\pi(s)$ to obtain
-  an equality, a contradiction. 
+  Let's call these policies $\pi$ and $\pi'$ for ease of notation (aka typing).
+  Then $\pi'(s)=\arg\max_a Q^\pi (s,a)$, so that by considering 
+  $V^\pi(s)=R(s,\pi(s))+\gamma \sum_{s'}P(s'|s,\i(s))V^\pi(s')$ and 
+  $Q^\pi(s,\pi'(s))=R(s,\pi'(s))+\gamma \sum_{s'} P(s'|s,\pi'(s)) V^\pi(s')$,
+  then we have $V^\pi(s)\leq Q^\pi(s,\pi'(s))$
+  by definition of argmax, as it is choosing the best next action $\pi'$. 
+
+  Now, we expand out $V^\pi(s)\leq Q^\pi(s,\pi'(s))$:
+  \begin{align*}
+  V^\pi(s) & \leq Q^\pi(s,\pi'(s)) \\
+  & = R(s,\pi'(s))+\gamma \sum_{s'} P(s'|s,a)V^\pi(s') \\
+  & \leq R(s,\pi'(s))+\gamma \sum_{s'} P(s'|s,a) Q^\pi(s,\pi'(s))\\
+  & \ldots \\
+  & = V^{\pi'}(s)
+  \end{align*}
+  by an expanded definition of $V^{\pi'}$. 
+
 
 
   \item {Deduce that policy iteration always terminates with an
