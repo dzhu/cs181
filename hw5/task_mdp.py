@@ -126,7 +126,7 @@ class QLearning(tftask.ChartTask):
         
          
         num_games=10
-        modelfree.ACTIVE_STRATEGY = 2;	
+        modelfree.ACTIVE_STRATEGY = 1;
         y1=  darts.test(num_games, "modelfree")
         modelfree.ACTIVE_STRATEGY = 2;	
 	y2=  darts.test(num_games, "modelfree")
