@@ -34,6 +34,8 @@ class location:
     def __init__(self, _ring, _wedge):
         self.ring = _ring
         self.wedge = _wedge
+    def __str__(self):
+        return 'Location(ring=%d wedge=%d)' % (self.ring, self.wedge)
 
 # Initialize the wedges and angles arrays #/
 
@@ -198,7 +200,6 @@ def polar_to_rectangular(pol):
 # Convert between dartboard locations and polar coordinates #
 
 def location_to_polar(loc):
-    
     theta = angles[loc.wedge] * 2 * pi / NUM_WEDGES
     ring = loc.ring
     if ring == CENTER:
