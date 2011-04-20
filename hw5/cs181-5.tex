@@ -128,12 +128,15 @@
     doesn't look ahead at all). The policy appears to be the same for
     other $\gamma$ not equal to 0.5, with the exception of when it is
     0.9 or 1.0, in which case it assigns targets that would have
-    output values 1 and 1 for 7 and 8.  \edit{EXPLAIN THE ABOVE}
+    output values 1 and 1 for 7 and 8. This might be because, with
+    less discounting, the strategy is more inclined to take a slower,
+    more conservative route to 0.
 
-    \edit{these results don't match the above analysis}
+    %\edit{these results don't match the above analysis}
 
     The following results (number of throws) were obtained, averaging
     5 runs for each row.
+
     \begin{tabular}{r|c c c}
       $\gamma$ & 1 game avg & 5 games avg & 10 games avg \\
       \hline
@@ -141,6 +144,7 @@
       0.5 & 4.2 & 4.56 & 5.36 \\
       0.9 & 5.8 & 4.76 & 5.6 \\
     \end{tabular}
+
     These results agree with the earlier analysis that too low
     $\gamma$ does not solve for fewer throws.
   \end{enumerate}
