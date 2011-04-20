@@ -121,11 +121,22 @@
     policy vary as you change the discount factor? What is common
     across optimal policies?}
 
-    It appears that with varying $\gamma$, the policy for when score
-    is between 1 and 6 is the same, with the exception of when
-    $\gamma=0$, in which case the policy is 6 or each state
+    Results of varying $\gamma$ are included in {\tt
+      varying_gamma.txt}. In each line, the first number is $\gamma$;
+    the triples of numbers after that represent the policies for
+    states $0,1,\cdots,9$; in each triple the first number is the
+    ring, the second the wedge, and the third the point value of the
+    target region.
+
+    It appears that with varying $\gamma$, the policy for score
+    between 1 and 6 (and also 9) is always to go for a wedge with
+    value equal to the remaining number of points, with the exception
+    of when $\gamma=0$, in which case the policy is 6 for each state
     (i.e. there is no differentiation between states because the mdp
-    doesn't look ahead at all). The policy appears to be the same for
+    doesn't look ahead at all). However, the actual target wedge
+    changes for scores 2 and 6 as $\gamma$ varies.
+
+    The policy appears to be the same for
     other $\gamma$ not equal to 0.5, with the exception of when it is
     0.9 or 1.0, in which case it assigns targets that would have
     output values 1 and 1 for 7 and 8. This might be because, with
