@@ -122,7 +122,7 @@
     across optimal policies?}
 
     Results of varying $\gamma$ are included in {\tt
-      varying_gamma.txt}. In each line, the first number is $\gamma$;
+      varying\_gamma.txt}. In each line, the first number is $\gamma$;
     the triples of numbers after that represent the policies for
     states $0,1,\cdots,9$; in each triple the first number is the
     ring, the second the wedge, and the third the point value of the
@@ -146,18 +146,54 @@
     %\edit{these results don't match the above analysis}
 
     The following results (number of throws) were obtained, averaging
-    5 runs for each row.
+    25 runs for each row.
 
-    \begin{tabular}{r|c c c}
-      $\gamma$ & 1 game avg & 5 games avg & 10 games avg \\
-      \hline
-      0.1 & 4 & 3.24 & 4.34 \\
-      0.5 & 4.2 & 4.56 & 5.36 \\
-      0.9 & 5.8 & 4.76 & 5.6 \\
-    \end{tabular}
+    %% \begin{tabular}{r|c c c}
+    %%   $\gamma$ & 1 game avg & 5 games avg & 10 games avg \\
+    %%   \hline
+    %%   0.1 & 4 & 3.24 & 4.34 \\
+    %%   0.5 & 4.2 & 4.56 & 5.36 \\
+    %%   0.9 & 5.8 & 4.76 & 5.6 \\
+    %% \end{tabular}
 
-    These results agree with the earlier analysis that too low
-    $\gamma$ does not solve for fewer throws.
+    \begin{center}
+      \begin{tabular}{|c|c|}\hline
+        $\gamma$ & average score \\\hline
+        .1 & 4.76 \\
+        .2 & 5.24 \\
+        .3 & 3.96 \\
+        .4 & 4.48 \\
+        .5 & 5.68 \\
+        .6 & 4.96 \\
+        .7 & 4.68 \\
+        .8 & 5.08 \\
+        .9 & 6.28 \\
+        1 & 4.4 \\\hline
+      \end{tabular}
+    \end{center}
+
+    %% On the other hand, running 1000 trials for each value of $\gamma$ gave
+    %% \begin{center}
+    %%   \begin{tabular}{|c|c|}\hline
+    %%     $\gamma$ & average score \\\hline
+    %%     .1 & 4.807 \\
+    %%     .2 & 4.625 \\
+    %%     .3 & 5.033 \\
+    %%     .4 & 5.041 \\
+    %%     .5 & 4.772 \\
+    %%     .6 & 4.862 \\
+    %%     .7 & 4.756 \\
+    %%     .8 & 4.605 \\
+    %%     .9 & 4.896 \\
+    %%     1 & 5.018 \\\hline
+    %%   \end{tabular}
+    %% \end{center}
+
+
+    %% These results agree with the earlier analysis that too low
+    %% $\gamma$ does not solve for fewer throws.
+
+
   \end{enumerate}
 
 \item 
@@ -267,7 +303,9 @@
     At that point, there were still many other trials that had not
     finished running yet, so the high end stretches up still further.
 
-    \edit{Why does this happen?}
+    This might be because the chance of exploration decreases too
+    fast, so that some states are never learned well, and the
+    algorithm gets stuck making a useless choice repeatedly.
 
   \item \emph{Implement the model-free $Q$ learning algorithm as well
     as two exploration/ exploitation strategies that may be the same
