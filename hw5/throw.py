@@ -37,6 +37,11 @@ class location:
     def __str__(self):
         return 'Location(ring=%d wedge=%d)' % (self.ring, self.wedge)
 
+    def __hash__(self):
+        return 10000 * self.ring + self.wedge
+    def __eq__(self, other):
+        return self.ring == other.ring and self.wedge == other.wedge
+
 # Initialize the wedges and angles arrays #/
 
 

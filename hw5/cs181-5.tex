@@ -80,8 +80,7 @@
 
     Given a state $s$ and action $a$, if $s=0$, reward is 1; if $s\neq
     0$, reward is 0, since we win when we have a score of 0. This does
-    not depend on action.  \edit{(I think it should be 0 vs -1 for
-      rewards, but the tests say that's wrong.)}
+    not depend on action.
 
     If the discount factor is 1, we weight all time periods
     equally. This is not so good because it would mean we didn't care
@@ -92,7 +91,7 @@
     since we will then only act nontrivially if we are one step away
     from winning.
 
-    \edit{UNSURE, AND DATA DOES NOT AGERE}
+    %\edit{UNSURE, AND DATA DOES NOT AGERE}
 
     \setcounter{enumii}3
   \item \emph{We have implemented the infinite horizon value iteration
@@ -105,7 +104,7 @@
     one point left to go and we keep scoring more than 1 point. It
     therefore makes sense to use an infinite horizon, rather than
     choosing some bound on the future.
-    
+
   \item \emph{Describe the intuition behind an optimal policy
     resulting from value iteration using the small game.}
 
@@ -131,7 +130,7 @@
     0.9 or 1.0, in which case it assigns targets that would have
     output values 1 and 1 for 7 and 8.  \edit{EXPLAIN THE ABOVE}
 
-    \edit{these results dont' match the above analysis}
+    \edit{these results don't match the above analysis}
 
     The following results (number of throws) were obtained, averaging
     5 runs for each row.
@@ -233,19 +232,52 @@
 
     Strategy 1: explore with probability .2.
 
+    \begin{center}
+      \includegraphics[scale=.4]{strat1.png}
+    \end{center}
+
+    For each epoch size, we plotted the average number of throws over
+    250 games. The systematic change seems to be very small,
+    especially compared to the random variation, but it looks like the
+    number decreases up to an epoch size of about 150, then increases
+    slightly again.
+
     Strategy 2: explore with probability (1/(iteration+5)).
-    \edit{Please get data / graphs}
+
+    With this strategy, we had the interesting effect that many runs
+    would end quickly, but many would take much, much longer. For
+    example, 30 minutes of computation (running games in parallel)
+    produced the following game lengths:
+    \[16, 19, 20, 21, 21, 22, 22, 22, 24, 24, 24, 25, 29, 31, 33, 36, 43, 46, 48, 55, 557, 1622, 3134\]
+    At that point, there were still many other trials that had not
+    finished running yet, so the high end stretches up still further.
+
+    \edit{Why does this happen?}
 
   \item \emph{Implement the model-free $Q$ learning algorithm as well
     as two exploration/ exploitation strategies that may be the same
-    asin part (a). Pick a learning rate. Write code. Use the
+    as in part (a). Pick a learning rate. Write code. Use the
     \texttt{Q-learning} task with the medium size game to compare the
     performance of your algorithm for both exploration / exploitation
     strategies.}
 
+    Strategy 1: explore with probability .1.
+
+    Strategy 2: explore with probability 100/(iteration+500).
+
+    We chose $\alpha=.1$; running some trials indicated that it did
+    not affect the performance noticeably. (That seems quite odd.) The
+    first strategy almost always beats the second, with scores around
+    22 compared to scores of around 30.
+
   \item \emph{Compare the performance of the model-based and
     model-free algorithms. Why do you think these algorithms performed
     relatively well or poorly?}
+
+    The model-based algorithm seemed to perform much better. The
+    system in use here is relatively simple and easily captured by a
+    model, so that being able to incorporate the use of a model into
+    the planning algorithm provides an advantage.
 
   \end{enumerate}
 

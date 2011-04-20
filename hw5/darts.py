@@ -57,7 +57,7 @@ def play(method):
         
     targets = []
     results = []
-    while(True):
+    while score > 0:
         turns = turns + 1
         result = throw.throw(target)
         targets.append(target)
@@ -66,9 +66,7 @@ def play(method):
         if raw_score <= score:
             score = int(score - raw_score)
         else:
-            cc=1
-        if score == 0:
-            break
+            cc=1 #???
 
         if method == "mdp":
             target = mdp.get_target(score)
