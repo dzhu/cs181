@@ -10,7 +10,7 @@ import mdp
 import modelbased
 import modelfree
 
-GAMMA = .5
+GAMMA = 0.8
 EPOCH_SIZE = 10
 
 
@@ -54,10 +54,13 @@ def play(method):
         target = mdp.start_game(GAMMA)
     else:
         target = modelfree.start_game()
-        
+
+    for s in range(score+1):
+      print "%d %d" % (s,throw.location_to_score(mdp.get_target(s)))
+
     targets = []
     results = []
-    while score > 0:
+    while(True):
         turns = turns + 1
         result = throw.throw(target)
         targets.append(target)
@@ -66,10 +69,13 @@ def play(method):
         if raw_score <= score:
             score = int(score - raw_score)
         else:
-            cc=1 #???
+            cc=1
+        if score == 0:
+            break
 
         if method == "mdp":
             target = mdp.get_target(score)
+            print throw.location_to_score(target)
         else:
             target = modelfree.get_target(score)
             
@@ -95,4 +101,3 @@ if __name__ =="__main__":
 
 
 
->>>>>>> 466e63d77b87f66e1c5fc02097004127f9a1d45b:hw5/darts.py

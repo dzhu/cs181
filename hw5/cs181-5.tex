@@ -80,8 +80,7 @@
 
     Given a state $s$ and action $a$, if $s=0$, reward is 1; if $s\neq
     0$, reward is 0, since we win when we have a score of 0. This does
-    not depend on action.  \edit{(I think it should be 0 vs -1 for
-      rewards, but the tests say that's wrong.)}
+    not depend on action.
 
     If the discount factor is 1, we weight all time periods
     equally. This is not so good because it would mean we didn't care
@@ -92,7 +91,7 @@
     since we will then only act nontrivially if we are one step away
     from winning.
 
-    \edit{UNSURE, AND DATA DOES NOT AGERE}
+    %\edit{UNSURE, AND DATA DOES NOT AGERE}
 
     \setcounter{enumii}3
   \item \emph{We have implemented the infinite horizon value iteration
@@ -105,15 +104,15 @@
     one point left to go and we keep scoring more than 1 point. It
     therefore makes sense to use an infinite horizon, rather than
     choosing some bound on the future.
-    
+
   \item \emph{Describe the intuition behind an optimal policy
     resulting from value iteration using the small game.}
 
     It seems like for the large part, the policy tries to throw a dart
     at the wedge that will produce exactly the score it needs to get
     to 0.  There are exceptions, though; when score is 7 or 8, it aims
-    to get 2 or 3 instead of 7 or 8, since it is impossible to obtain
-    a score of 7 or 8 in one throw. This seems to make sense for the
+    to get 2 or 3 instead of 7 or 8, since it is harder to obtain a
+    score of 7 or 8 in one throw. This seems to make sense for the
     smaller sums because if it can get to 0 in one hit, it will try
     to. The 2 and 3 are probably picked because it is relatively easy
     to get from a score of 6 to 0.
@@ -122,28 +121,79 @@
     policy vary as you change the discount factor? What is common
     across optimal policies?}
 
-    It appears that with varying $\gamma$, the policy for when score
-    is between 1 and 6 is the same, with the exception of when
-    $\gamma=0$, in which case the policy is 6 or each state
+    Results of varying $\gamma$ are included in {\tt
+      varying\_gamma.txt}. In each line, the first number is $\gamma$;
+    the triples of numbers after that represent the policies for
+    states $0,1,\cdots,9$; in each triple the first number is the
+    ring, the second the wedge, and the third the point value of the
+    target region.
+
+    It appears that with varying $\gamma$, the policy for score
+    between 1 and 6 (and also 9) is always to go for a wedge with
+    value equal to the remaining number of points, with the exception
+    of when $\gamma=0$, in which case the policy is 6 for each state
     (i.e. there is no differentiation between states because the mdp
-    doesn't look ahead at all). The policy appears to be the same for
+    doesn't look ahead at all). However, the actual target wedge
+    changes for scores 2 and 6 as $\gamma$ varies.
+
+    The policy appears to be the same for
     other $\gamma$ not equal to 0.5, with the exception of when it is
     0.9 or 1.0, in which case it assigns targets that would have
-    output values 1 and 1 for 7 and 8.  \edit{EXPLAIN THE ABOVE}
+    output values 1 and 1 for 7 and 8. This might be because, with
+    less discounting, the strategy is more inclined to take a slower,
+    more conservative route to 0.
 
-    \edit{these results dont' match the above analysis}
+    %\edit{these results don't match the above analysis}
 
     The following results (number of throws) were obtained, averaging
-    5 runs for each row.
-    \begin{tabular}{r|c c c}
-      $\gamma$ & 1 game avg & 5 games avg & 10 games avg \\
-      \hline
-      0.1 & 4 & 3.24 & 4.34 \\
-      0.5 & 4.2 & 4.56 & 5.36 \\
-      0.9 & 5.8 & 4.76 & 5.6 \\
-    \end{tabular}
-    These results agree with the earlier analysis that too low
-    $\gamma$ does not solve for fewer throws.
+    25 runs for each row.
+
+    %% \begin{tabular}{r|c c c}
+    %%   $\gamma$ & 1 game avg & 5 games avg & 10 games avg \\
+    %%   \hline
+    %%   0.1 & 4 & 3.24 & 4.34 \\
+    %%   0.5 & 4.2 & 4.56 & 5.36 \\
+    %%   0.9 & 5.8 & 4.76 & 5.6 \\
+    %% \end{tabular}
+
+    \begin{center}
+      \begin{tabular}{|c|c|}\hline
+        $\gamma$ & average score \\\hline
+        .1 & 4.76 \\
+        .2 & 5.24 \\
+        .3 & 3.96 \\
+        .4 & 4.48 \\
+        .5 & 5.68 \\
+        .6 & 4.96 \\
+        .7 & 4.68 \\
+        .8 & 5.08 \\
+        .9 & 6.28 \\
+        1 & 4.4 \\\hline
+      \end{tabular}
+    \end{center}
+
+    %% On the other hand, running 1000 trials for each value of $\gamma$ gave
+    %% \begin{center}
+    %%   \begin{tabular}{|c|c|}\hline
+    %%     $\gamma$ & average score \\\hline
+    %%     .1 & 4.807 \\
+    %%     .2 & 4.625 \\
+    %%     .3 & 5.033 \\
+    %%     .4 & 5.041 \\
+    %%     .5 & 4.772 \\
+    %%     .6 & 4.862 \\
+    %%     .7 & 4.756 \\
+    %%     .8 & 4.605 \\
+    %%     .9 & 4.896 \\
+    %%     1 & 5.018 \\\hline
+    %%   \end{tabular}
+    %% \end{center}
+
+
+    %% These results agree with the earlier analysis that too low
+    %% $\gamma$ does not solve for fewer throws.
+
+
   \end{enumerate}
 
 \item 
@@ -153,11 +203,11 @@
 
     This basically holds by definition. An optimal stationary policy
     is defined to be one that satisfies the Bellman equations, i.e
-    $\pi$ such that $\pi(s)=\arg\max_{a} \left[R(s,a)+\gammma
+    $\pi$ such that $\pi(s)=\arg\max_{a} \left[R(s,a)+\gamma
       \sum_{s'} P(s'|s,a)V^{\pi}(s')\right]$.  Policy iteration
     terminates with $\pi$ if it does not change after an iteration,
     i.e.  $\pi(s)=\arg\max_a Q^\pi (s,a)=\arg\max_a
-    \left[R(s,a)+\gammma \sum_{s'} P(s'|s,a)V^{\pi}(s')\right]$ which
+    \left[R(s,a)+\gamma \sum_{s'} P(s'|s,a)V^{\pi}(s')\right]$ which
     is exactly the condition above.
 
     %% Policy iteration consists of repeating the following: given a
@@ -233,19 +283,54 @@
 
     Strategy 1: explore with probability .2.
 
+    \begin{center}
+      \includegraphics[scale=.4]{strat1.png}
+    \end{center}
+
+    For each epoch size, we plotted the average number of throws over
+    250 games. The systematic change seems to be very small,
+    especially compared to the random variation, but it looks like the
+    number decreases up to an epoch size of about 150, then increases
+    slightly again.
+
     Strategy 2: explore with probability (1/(iteration+5)).
-    \edit{Please get data / graphs}
+
+    With this strategy, we had the interesting effect that many runs
+    would end quickly, but many would take much, much longer. For
+    example, 30 minutes of computation (running games in parallel)
+    produced the following game lengths:
+    \[16, 19, 20, 21, 21, 22, 22, 22, 24, 24, 24, 25, 29, 31, 33, 36, 43, 46, 48, 55, 557, 1622, 3134\]
+    At that point, there were still many other trials that had not
+    finished running yet, so the high end stretches up still further.
+
+    This might be because the chance of exploration decreases too
+    fast, so that some states are never learned well, and the
+    algorithm gets stuck making a useless choice repeatedly.
 
   \item \emph{Implement the model-free $Q$ learning algorithm as well
     as two exploration/ exploitation strategies that may be the same
-    asin part (a). Pick a learning rate. Write code. Use the
+    as in part (a). Pick a learning rate. Write code. Use the
     \texttt{Q-learning} task with the medium size game to compare the
     performance of your algorithm for both exploration / exploitation
     strategies.}
 
+    Strategy 1: explore with probability .1.
+
+    Strategy 2: explore with probability 100/(iteration+500).
+
+    We chose $\alpha=.1$; running some trials indicated that it did
+    not affect the performance noticeably. (That seems quite odd.) The
+    first strategy almost always beats the second, with scores around
+    22 compared to scores of around 30.
+
   \item \emph{Compare the performance of the model-based and
     model-free algorithms. Why do you think these algorithms performed
     relatively well or poorly?}
+
+    The model-based algorithm seemed to perform much better. The
+    system in use here is relatively simple and easily captured by a
+    model, so that being able to incorporate the use of a model into
+    the planning algorithm provides an advantage.
 
   \end{enumerate}
 
