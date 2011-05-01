@@ -203,7 +203,7 @@
 
     This basically holds by definition. An optimal stationary policy
     is defined to be one that satisfies the Bellman equations, i.e
-    $\pi$ such that $\pi(s)=\arg\max_{a} \left[R(s,a)+\gammma
+    $\pi$ such that $\pi(s)=\arg\max_{a} \left[R(s,a)+\gamma
       \sum_{s'} P(s'|s,a)V^{\pi}(s')\right]$.  Policy iteration
     terminates with $\pi$ if it does not change after an iteration,
     i.e.  $\pi(s)=\arg\max_a Q^\pi (s,a)=\arg\max_a
