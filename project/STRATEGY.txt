@@ -45,7 +45,7 @@ TASKS
   - In any case, we should be able to find the probability that a plant in general
     is poisonous or nutritious with no priors...
 
-* Eat vs not eat, given an observation
+* Eat vs not eat, given one observation
   - POMDP problem. States: {poisonous, nutritions}; actions: {eat, not eat}
   - Section 10 notes give us an example of how to do this:
       max_a \sum_s P(o|s)P(s)R(s,a)
@@ -58,9 +58,16 @@ TASKS
 * Eat vs not eat, given not observing
   - as before, except we don't get P(o|s). 
 
-* Decide whether to observe
-  - Learn a separate MDP problem: states = {# energy units left}, actions = {observe or not}
-  - we do this once we answer the other problems, because then we choose whether to
+* Eat vs not eat, given N observations
+  - finite state controller or use finite history
+  - probably we have to train this
+  - I temporarily forgot that you can request multiple observations. 
+  - Presumably we do something with the confidence values for each observation. 
+
+* Decide whether, and how many times to observe
+  - Learn a separate MDP problem: states = {# energy units left x aggregate confidence}, actions = {observe or not}
+  - Problem: aggregate confidence is tricky to calibrate, as earlier. 
+  - Probably we do this once we answer the other problems, because then we choose whether to
     eat or not eat on a fixed algorithm.
 
 * Where to move next
