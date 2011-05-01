@@ -1,0 +1,84 @@
+==Draft of strategy to be implemented==
+
+Caveat:
+- There's a lot of stuff here, choose which ones we'll implement?
+- We need to implement at least two different methods to solve two
+  different problems. 
+
+Decisions to be made:
+- whether to request observation of plant
+- whether to eat plant
+- where to go next
+
+Factors that we know that we can consider:
+- current location, and 
+- locations already visited
+- energy left
+- number of (nutritious/poisonous) plants eaten/observed
+
+TASKS
+* Given an observation, determine whether a plant is nutritious or poisonous
+  - we also want an estimation of how confident we are, per observation
+  - IMPLEMENTATION OPTIONS: probably we should use a neural network. 
+    SVMs seem hard and dtrees are wrong. 
+  - plant observation training can be done off-line: run the game, except
+    walk across the board until you find a plant, always observe, and
+    always eat to get training / validation data. Keep final tree 
+    configuration when done. 
+  - problem with neural nets: getting confidence estimates will be from
+    activation of output notes... but those aren't actually confidence
+    estimates. We'll need to calibrate these too 
+      - TODO: think of something clever. 
+      - possibly use nonparametric models, i.e. histogram, to find
+        actual accuracy vs neural net activation, i.e. P(o|s). 
+        (This will take a lot of runs / training)
+
+* Given a plant in a certain place, how likely is it to be nutritious
+  - It would be nice to have a prior on how likely a plant in a given place is 
+    good to eat.
+  - The world is unfortunately infinitely big. 
+  - We're given the opportunity to learn off-line. But the world is infinitely 
+    big. 
+  - TODO: think of something clever. 
+  - Ideas: train on data to find whether, given a plant is (nutritious/poisonous),
+    whether, if it has any neighboring plants, those are (nutritious/poisonous) 
+  - In any case, we should be able to find the probability that a plant in general
+    is poisonous or nutritious with no priors...
+
+* Eat vs not eat, given an observation
+  - POMDP problem. States: {poisonous, nutritions}; actions: {eat, not eat}
+  - Section 10 notes give us an example of how to do this:
+      max_a \sum_s P(o|s)P(s)R(s,a)
+    where P(o|s) is from our (calibrated) confidence estimate, 
+    P(s) is the prior on how likely a plant is to be poisonous or
+    nutritious (unclear). On the most basic level it's probably just going to 
+    be (# nutritious)/(# plants total observed) in off-line learning.
+    R(s,a) is defined given game parameters. 
+
+* Eat vs not eat, given not observing
+  - as before, except we don't get P(o|s). 
+
+* Decide whether to observe
+  - Learn a separate MDP problem: states = {# energy units left}, actions = {observe or not}
+  - we do this once we answer the other problems, because then we choose whether to
+    eat or not eat on a fixed algorithm.
+
+* Where to move next
+  - At the very least we shouldn't backtrack, because that seems dumb. 
+  - The world is infinite, so hitting walls shouldn't be an issue.
+  - Infinite world also possibly means it's harder to deal with if they
+    generally put more nutritious plants in one area, etc. 
+  - It's possible that good/bad plants are clustered together. Then we could
+    try doing an MDP where states = {has just seen (nutritions/poisonous) plant x energy left}
+    and actions = {directions}. 
+
+
+ISSUES
+* I feel like we haven't used clustering. At all. 
+* Maybe we should use, like, Dyna-Q or other weird things like that
+
+
+
+
+
+
