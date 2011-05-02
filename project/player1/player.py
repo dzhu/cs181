@@ -3,11 +3,13 @@ import game_interface as game
 
 import sys
 
+outfile = 'log'
+
 class MoveGenerator():
   '''You can keep track of state by updating variables in the MoveGenerator
   class.'''
   def __init__(self):
-    self.log = open('log', 'w')
+    self.log = open(outfile, 'w')
     self.last_life = None
 
   def get_move(self, view):
@@ -32,7 +34,7 @@ class MoveGenerator():
 
 class ExploreMoveGenerator():
   def __init__(self):
-    self.log = open('log', 'w')
+    self.log = open(outfile, 'w')
     self.last_life = None
     self.last_image = None
     self.is_plant = False
@@ -67,7 +69,7 @@ class ExploreMoveGenerator():
       elif dlife == -self.plant_penalty - self.life_per_turn:
         print 0,
       else:
-        print 2,
+        raise Exception
 
       print ''.join(map(str, self.last_image))
 
@@ -76,10 +78,16 @@ class ExploreMoveGenerator():
         self.targetx, self.targety = self.next_target(self.targetx, self.targety)
 
     dx, dy = self.targetx - x, self.targety - y
-    if abs(dx) < abs(dy):
-      move = game.DOWN if dy < 0 else game.UP
+    if abs(dx) < abs(dy): #(ternary operators would be nice, but are not in 2.5)
+      if dy < 0:
+        move = game.DOWN
+      else:
+        move = game.UP
     else:
-      move = game.LEFT if dx < 0 else game.RIGHT
+      if dx < 0:
+        move = game.LEFT
+      else:
+        move =  game.RIGHT
 
     self.last_image = view.GetImage() if (x, y) not in self.seen_pos else None
 
@@ -90,6 +98,8 @@ class ExploreMoveGenerator():
 
     self.log.flush()
     sys.stdout = sys.__stdout__
+
+    if self.targetx > 25: raise Exception
     return move, True
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
