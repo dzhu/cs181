@@ -120,7 +120,7 @@ def decide_observe___VI(view, info, is_nutritious):
       for p in range(H):
         # for each action:
         # EAT
-        Q_eat[n][p] = expected_reward_eat( (n,p), view ) # TODO: define this function. 
+        Q_eat[n][p] = expected_reward_eat(n, p, view) # TODO: define this function. 
         # NOT EAT 
         Q_not_eat[n][p] = 0
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
@@ -142,18 +142,18 @@ def T( s, observe_nutritious, eat ): #TODO: learn this offline.
   # TODO: implement
   return 0.0
 
-def expected_reward_eat(info, view):
-  # TODO: implement
-  # if it's poisonous, you get ---
-  # if it's nutritious, you get ---
-  # 
-  return 0.5
+def expected_reward_eat(n, p, view):
+  prior_n = prior_nutritious(view)
+  prior_p = 1 - prior_n
+
+  prior_n
+  
+
+
+net = nn.read_from_file('net.pic')
 
 def is_nutritious_by_NN(plant_image):
-  #TODO: implement
-  n = nn.read_from_file('net.pic')
-  
-  return True
+  return nn.feed_forward(net, plant_image) > .5
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
                         starting_life, life_per_turn):
