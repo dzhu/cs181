@@ -63,8 +63,9 @@ Factors that we know that we can consider:
   - But if you get ambiguous results, you should decide to not eat as a default?
     I.e set some sort of threshold (which we would train), i.e. when you decide 
     for sure whether or not it's poisonous then you just eat or leave it alone. 
+  - I.e. we want both readings. Ratio and difference not enough.
 
-  - States: { energy left, number of observations, aggregate confidence: nutritious - poisonous readings }
+  - States: { energy left, # nutritious readings, # poisonous readings }
   - Actions: { observe, not observe }
   - Rewards: amount of life given such an action??? This seems like it would use Q-learning...
 
@@ -76,7 +77,7 @@ Factors that we know that we can consider:
   - This just happens: we use the result we get once we decide to stop observing
     possibly in addition to a prior. (????)
   - Maximize expected utility: max_a \sum_s P(o|s)P(s)R(s,a)
-    P(o|s) is from an aggregate of confidence estimates (calibrated??)
+    P(o|s) is from an aggregate of confidence estimates (INTERPOLATE)
     P(s) is the prior on how likely a plant is to be poisonous or
     nutritious (locationwise hopefully; if not --  
     (# nutritious)/(# plants total observed) from off-line learning?)
