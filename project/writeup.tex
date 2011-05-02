@@ -5,8 +5,9 @@
 \begin{document}
 \maketitle
 
+
 In order to map out the frequency with which nutritious and poisonous
-plants appear, we wrote a strategy ({\tt
+plants appeared in the space, we wrote a strategy ({\tt
   player1.ExploreMoveGenerator}) that moved around the origin in a
 spiral pattern, systematically covering all of the spaces near the
 origin. By running a few thousand trials, we produced a plot of the
@@ -14,4 +15,16 @@ frequencies, shown in figure~\ref{fig:plant_freq}. It appears that
 poisonous plants occur with a constant frequency of about .15, while
 nuritious plants have some distribution peaking at the same value at
 the origin and decreasing with distance away from the origin.
+
+We used a neural network to distinguish the plants, implemented using
+an adapted version of the code from assignment 2 (included as {\tt
+  nn.py}. Based on image data gathered from the same spiral runs
+described above, we gathered 82000 images of nutritious plants and
+273000 images of poisonous plants. We used 72000 for the training data
+and 6000 each for test and validation sets. After a little
+experimentation, it looked like having a hidden layer didn't help
+performance, so we went with a simple two-layer neural network. After
+20 epochs of training, we obtained a network with a test performance
+of $68.3\%$.
+
 \end{document}
