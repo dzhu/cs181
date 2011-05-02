@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import player1.player
 import player2.player
 import game_interface
