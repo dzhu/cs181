@@ -18,7 +18,7 @@ world-generation are fixed between the games we get and the actual
 tests.
 
 Hence, of the decisions to be made, (1) and (4) can be learned off-line, 
-while (2) and (3) have to be learned on-line, as parameters can change.
+while (2) is learned on-line, as parameters can change. (3) is kind of a duh.
 
 Factors that we know that we can consider:
 - current location, and 
@@ -55,25 +55,32 @@ Factors that we know that we can consider:
     is poisonous or nutritious (i.e. count.) 
 
 2   Decide whether or not to observe
-  - POMDP problem. Learn on-line. 
-  - States: { energy left x aggregate confidence }; actions: { observe, not observe }
+  - Learn on-line, as parameters change. 
+
+  - Intuition: if you are almost out of energy, and a plant appears nutritious
+    after one observation, you're more likely to eat it anyway, i.e. accept
+    fewer observations as okay. 
+  - But if you get ambiguous results, you should decide to not eat as a default?
+    I.e set some sort of threshold (which we would train), i.e. when you decide 
+    for sure whether or not it's poisonous then you just eat or leave it alone. 
+
+  - States: { energy left, number of observations, aggregate confidence: nutritious - poisonous readings }
+  - Actions: { observe, not observe }
+  - Rewards: amount of life given such an action??? This seems like it would use Q-learning...
+
   - Problem: aggregate confidence is tricky to calibrate. 
   - Probably we do this once we answer the other problems, because then we choose whether to
     eat or not eat on a fixed algorithm.
-  - Solve with: some on-line learning algorithm. TODO*****
 
 3   Decide whether or not to eat
-  - POMDP problem. Learn on-line. 
-  - MDP? States: { aggregate confidence?? }
-  - Finite state controller, finite history?? 
-
-  - Section 10 notes give us an example of how to do this:
-      max_a \sum_s P(o|s)P(s)R(s,a)
+  - This just happens: we use the result we get once we decide to stop observing
+    possibly in addition to a prior. (????)
+  - Maximize expected utility: max_a \sum_s P(o|s)P(s)R(s,a)
     P(o|s) is from an aggregate of confidence estimates (calibrated??)
     P(s) is the prior on how likely a plant is to be poisonous or
     nutritious (locationwise hopefully; if not --  
-    (# nutritious)/(# plants total observed) from off-line learning)
-    R(s,a) is defined given game parameters. NO
+    (# nutritious)/(# plants total observed) from off-line learning?)
+    R(s,a) is defined given game parameters. 
 
 4   Where to move next
   - Infinite world means it's harder to figure out distributions in which they
