@@ -1,5 +1,6 @@
 import common
 import game_interface as game
+import nn
 
 import sys
 
@@ -35,6 +36,9 @@ class MoveGenerator():
 class ExploreMoveGenerator():
   def __init__(self):
     self.log = open(outfile, 'w')
+
+    self.plant_net = nn.read_from_file('net.pic')
+
     self.last_life = None
     self.last_image = None
     self.is_plant = False
@@ -69,7 +73,7 @@ class ExploreMoveGenerator():
       elif dlife == -self.plant_penalty - self.life_per_turn:
         print 0,
       else:
-        raise Exception
+        print 2,#raise Exception
 
       print ''.join(map(str, self.last_image))
 
@@ -89,7 +93,13 @@ class ExploreMoveGenerator():
       else:
         move =  game.RIGHT
 
-    self.last_image = view.GetImage() if (x, y) not in self.seen_pos else None
+    if (x, y) not in self.seen_pos and view.GetPlantInfo() == game.STATUS_UNKNOWN_PLANT:
+      self.last_image = view.GetImage()
+    else:
+      self.last_image = None
+
+    eat = self.last_image and nn.feed_forward(self.plant_net, self.last_image)[0] > .5
+    #if self.last_image: print nn.feed_forward(self.plant_net, self.last_image)[0]
 
     self.seen_pos.add((x, y))
     self.last_life = view.GetLife()
@@ -100,7 +110,7 @@ class ExploreMoveGenerator():
     sys.stdout = sys.__stdout__
 
     if self.targetx > 25: raise Exception
-    return move, True
+    return move, eat
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
                           starting_life, life_per_turn):

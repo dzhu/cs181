@@ -45,7 +45,7 @@ def check_if_game_over_single_player(l1, l2, options, game, rounds):
       game_interface.curses_debug(1, debug_str)
     else:
       print debug_str
-    #sys.stdin.read(1)
+    sys.stdin.read(1)
     if options.display:
       game_interface.curses_close()
     return True
@@ -139,7 +139,7 @@ def main(argv):
   (options, args) = parser.parse_args(argv[1:])
 
   try:
-    options.display = False
+    #options.display = False
     run(options)
   except KeyboardInterrupt:
     if options.display:

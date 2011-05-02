@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import math
+import pickle
 import random
 from itertools import imap
 from operator import mul
@@ -10,6 +11,18 @@ try:
     psyco.full()
 except ImportError:
     pass
+
+
+def read_from_file(fn):
+    f = open(fn)
+    net = pickle.load(f)
+    f.close()
+    return net
+
+def write_to_file(net, fn):
+    f = open(fn, 'w')
+    pickle.dump(net, f)
+    f.close()
 
 def sigmoid(dblX):
     """The sigmoid function.  Given input dblX, sigmoid(dblX).
@@ -384,7 +397,7 @@ def experiment(opts):
     def load(sFilename):
         if sFilename in dictSeen:
             return dictSeen[sFilename]
-        sys.stderr.write("Loading %s..." % sFilename)
+        sys.stderr.write("Loading %s... " % sFilename)
         listInst = load_data(sFilename,opts.max_inst)
         sys.stderr.write("done.\n")
         dictSeen[sFilename] = listInst
@@ -422,7 +435,7 @@ def experiment(opts):
         #   1 - errors * 1.0 / len(listInstTrain),
         #   validation_correct * 1.0 / len(listInstVal)))
 
-        print '%f %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
+        print 'train %f vali %f' % (1 - errors * 1.0 / len(listInstTrain), validation_correct * 1.0 / len(listInstVal))
 
         if opts.stopping_condition:
             validation_accuracy = validation_correct / float(len(listInstVal))
@@ -437,7 +450,9 @@ def experiment(opts):
         #print inst.iLabel, iGuess
         cCorrect += int(inst.iLabel == iGuess)
 #    print "correct:",cCorrect, "out of", len(listInstTest),
-    print "(%.1f%%)" % (100.0*float(cCorrect)/float(len(listInstTest)))
+    print "test %f" % (float(cCorrect)/float(len(listInstTest)))
+
+    print_net(net)
 
 def main(argv):
     import optparse
