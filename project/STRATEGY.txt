@@ -6,62 +6,73 @@ Caveat:
   different problems. 
 
 Decisions to be made:
+- whether we think a plant is nutritious given an observation
 - whether to request observation of plant
 - whether to eat plant
 - where to go next
 
+We're given that the distributions for plant image generation and 
+world-generation are fixed between the games we get and the actual
+tests.
+
+Hence, of the decisions to be made, (1) and (4) can be learned off-line, 
+while (2) and (3) have to be learned on-line, as parameters can change.
+
 Factors that we know that we can consider:
 - current location, and 
-- locations already visited
+- locations already visited (or a subset thereof), and
+- whether there were good plants at those locations
 - energy left
 - number of (nutritious/poisonous) plants eaten/observed
 
 TASKS
 * Given an observation, determine whether a plant is nutritious or poisonous
-  - we also want an estimation of how confident we are, per observation
+  - we also want an estimation of how confident we are. On a crude level 
+    we can just use success rate, but it would be better if we knew confidence
+    PER observation
   - IMPLEMENTATION OPTIONS: probably we should use a neural network. 
-    SVMs seem hard and dtrees are wrong. 
-  - plant observation training can be done off-line: run the game, except
-    walk across the board until you find a plant, always observe, and
-    always eat to get training / validation data. Keep final tree 
-    configuration when done. 
+    (SVMs seem hard and dtrees are wrong.)
+  - Since this is learned off-line, do testing and validation and save
+    the resulting neural network that classifies best. 
   - problem with neural nets: getting confidence estimates will be from
-    activation of output notes... but those aren't actually confidence
-    estimates. We'll need to calibrate these too 
+    activation of output notes, which aren't actually confidence estimates. 
       - TODO: think of something clever. 
-      - possibly use nonparametric models, i.e. histogram, to find
+      - possibly histogram to find relation between 
         actual accuracy vs neural net activation, i.e. P(o|s). 
         (This will take a lot of runs / training)
 
 * Given a plant in a certain place, how likely is it to be nutritious
   - It would be nice to have a prior on how likely a plant in a given place is 
-    good to eat.
-  - The world is unfortunately infinitely big. 
-  - We're given the opportunity to learn off-line. But the world is infinitely 
-    big. 
-  - TODO: think of something clever. 
-  - Ideas: train on data to find whether, given a plant is (nutritious/poisonous),
-    whether, if it has any neighboring plants, those are (nutritious/poisonous) 
-  - In any case, we should be able to find the probability that a plant in general
-    is poisonous or nutritious with no priors...
+    good to eat. The world is unfortunately infinitely big, so hypotheses like
+    "higher density of good plants at (5,10)" are difficult to test, as there
+    are infinitely many of them. 
+  - But we can learn this off-line. 
+  - TODO: think of something clever.
+  - Possible hypothesis: nutritious plants clump together, or poisonous plants
+    are spaced apart. 
+  - At worst, we should be able to find the probability that a plant in general
+    is poisonous or nutritious (i.e. count.) 
 
-* Eat vs not eat, given an observation
-  - POMDP problem. States: {poisonous, nutritions}; actions: {eat, not eat}
-  - Section 10 notes give us an example of how to do this:
+* Eat vs not eat, observe vs not observe?
+  - POMDP problem. Learn on-line. 
+  - Maybe split it up into two problems: 
+    - observe vs not observe (in multiple iterations), where states are 
+      {energy left x aggregate confidence}
+      value iteration, q-learning, etc??
+      Problem: aggregate confidence is tricky to calibrate. 
+      Probably we do this once we answer the other problems, because then we choose whether to
+      eat or not eat on a fixed algorithm.
+    - eat vs not eat, given observations (finite state controller or finite history?)
+
+  - For eat/not eat, section 10 notes give us an example of how to do this:
       max_a \sum_s P(o|s)P(s)R(s,a)
     where P(o|s) is from our (calibrated) confidence estimate, 
     P(s) is the prior on how likely a plant is to be poisonous or
     nutritious (unclear). On the most basic level it's probably just going to 
     be (# nutritious)/(# plants total observed) in off-line learning.
     R(s,a) is defined given game parameters. 
+  - Problem: this isn't one of the on-line learning algorithms we've talked about. 
 
-* Eat vs not eat, given not observing
-  - as before, except we don't get P(o|s). 
-
-* Decide whether to observe
-  - Learn a separate MDP problem: states = {# energy units left}, actions = {observe or not}
-  - we do this once we answer the other problems, because then we choose whether to
-    eat or not eat on a fixed algorithm.
 
 * Where to move next
   - At the very least we shouldn't backtrack, because that seems dumb. 
@@ -69,7 +80,7 @@ TASKS
   - Infinite world also possibly means it's harder to deal with if they
     generally put more nutritious plants in one area, etc. 
   - It's possible that good/bad plants are clustered together. Then we could
-    try doing an MDP where states = {has just seen (nutritions/poisonous) plant x energy left}
+    try doing an MDP where states = {has just seen (nutritions/poisonous) plant in some set of neighboring locations x energy left}
     and actions = {directions}. 
 
 
