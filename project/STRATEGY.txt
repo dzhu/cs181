@@ -66,7 +66,7 @@ Factors that we know that we can consider:
   - I.e. we want both readings. Ratio and difference not enough.
 
   - One option: finite state controller. 
-
+  - ***IDEA**** use exploration / exploitation to figure out how many states it should have???!
   - Another option: MDP
     - a new problem begins every time you encounter a new plant. 
     - States: { energy left, # nutritious readings, # poisonous readings }
