@@ -70,6 +70,83 @@ def decide_observe(view, info):
     return (False, 0)
   return (True, info+1)
 
+########### specific implementations: finite state controller ##############
+
+def init_observation_info__FSC(view):
+  return (0,0) # (nutritions observations, poisonous observations)
+
+def decide_observe___FSC(view, info, is_nutritious):
+  # if the total cost incurred from observing exceeds benefit from eating, stop.
+  if (move_generator.observation_cost * (info[0]+info[1]+1) > move_generator.plant_bonus):
+    return (False, info)
+  # if you're about to die -- TODO: consider other bounds? would we pursue a different
+  # strategy given different quantities of energy?
+  if (move_generator.observation_cost >= view.GetLife()):
+    return (False, info)
+  # stopping condition
+  if (abs(info[0]-info[1])>2): # maybe 2 should be 3 or something 
+    return (False, info)
+  is_nutritious = is_nutritious_by_NN(view.getImage())
+  if (is_nutritious):
+    return (True, (info[0]+1,info[1]))
+  return (True, (info[0],info[1]+1))
+
+########### specific implementations: MDP, value iteration  #################
+
+def init_observation_info__VI(view):
+  return 1
+
+def decide_observe___VI(view, info, is_nutritious):
+  # run a finite state value iteration
+  # horizon H: the max number of observations you will make before doing dumb things
+  H = (int)(move_generator.plant_bonus / move_generator.observation_cost)
+  # TODO: bound H or use the other strategy, since states are O(H^2)
+  # Store the k-step-to-go value and policy for each state and each k
+  # states are: energy left x number nutritious observations x number poisonous observations
+  
+  V = [ [ 0 for p in range(H) ] for n in range(H) ] 
+  # for k=1 to H (approximately)
+  for k in range(H): 
+    V_old = V
+    V = [ [ 0 for p in range(H) ] for n in range(H) ] 
+    Q_eat     = [ [ 0 for p in range(H) ] for n in range(H) ] 
+    Q_not_eat = [ [ 0 for p in range(H) ] for n in range(H) ] 
+    pistar = [ [ 0 for p in range(H) ] for n in range(H) ] # 0 for don't eat, 1 for eat TODO change to enums
+    # for every state
+    for n in range(H):
+      for p in range(H):
+        # for each action:
+        # EAT
+        Q_eat[n][p] = expected_reward_eat( (n,p) ) # TODO: define this function. 
+        # NOT EAT 
+        Q_not_eat[n][p] = 0
+        # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
+        # so for every neighboring state, i.e. n+1 or p+1
+        Q_eat[n][p] +=     T( (n,p), True,  True )
+        Q_eat[n][p] +=     T( (n,p), False, True )
+        Q_not_eat[n][p] += T( (n,p), True,  False)
+        Q_not_eat[n][p] += T( (n,p), False, False)
+
+        # optimal policy
+        if (Q_eat[n][p] > Q_not_eat[n][p]):
+          pistar[n][p] = 1
+          V[n][p] = Q_eat[n][p]
+        else: 
+          V[n][p] = Q_not_eat[n][p]
+        # new V
+
+def T( s, observe_nutritious, eat ): #TODO: learn this offline. 
+  # TODO: implement
+  return 0.0
+
+def expected_reward_eat(info):
+  # TODO: implement
+  return 0.5
+
+def is_nutritious_by_NN(plant_image):
+  #TODO: implement
+  return True
+
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
                         starting_life, life_per_turn):
   '''Called before any moves are made.  Allows you to make customizations based
