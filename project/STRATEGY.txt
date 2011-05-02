@@ -6,10 +6,12 @@ Caveat:
   different problems. 
 
 Decisions to be made:
-- whether we think a plant is nutritious given an observation
-- whether to request observation of plant
-- whether to eat plant
-- where to go next
+1 whether we think a plant is nutritious
+  a given an observation
+  b given location
+2 whether to request observation of plant
+3 whether to eat plant
+4 where to go next
 
 We're given that the distributions for plant image generation and 
 world-generation are fixed between the games we get and the actual
@@ -25,8 +27,7 @@ Factors that we know that we can consider:
 - energy left
 - number of (nutritious/poisonous) plants eaten/observed
 
-TASKS
-* Given an observation, determine whether a plant is nutritious or poisonous
+1a  Given an observation, determine whether a plant is nutritious or poisonous
   - we also want an estimation of how confident we are. On a crude level 
     we can just use success rate, but it would be better if we knew confidence
     PER observation
@@ -41,7 +42,7 @@ TASKS
         actual accuracy vs neural net activation, i.e. P(o|s). 
         (This will take a lot of runs / training)
 
-* Given a plant in a certain place, how likely is it to be nutritious
+1b  Given a plant in a certain place, how likely is it to be nutritious
   - It would be nice to have a prior on how likely a plant in a given place is 
     good to eat. The world is unfortunately infinitely big, so hypotheses like
     "higher density of good plants at (5,10)" are difficult to test, as there
@@ -53,31 +54,29 @@ TASKS
   - At worst, we should be able to find the probability that a plant in general
     is poisonous or nutritious (i.e. count.) 
 
-* Eat vs not eat, observe vs not observe?
+2   Decide whether or not to observe
   - POMDP problem. Learn on-line. 
-  - Maybe split it up into two problems: 
-    - observe vs not observe (in multiple iterations), where states are 
-      {energy left x aggregate confidence}
-      value iteration, q-learning, etc??
-      Problem: aggregate confidence is tricky to calibrate. 
-      Probably we do this once we answer the other problems, because then we choose whether to
-      eat or not eat on a fixed algorithm.
-    - eat vs not eat, given observations (finite state controller or finite history?)
+  - States: { energy left x aggregate confidence }; actions: { observe, not observe }
+  - Problem: aggregate confidence is tricky to calibrate. 
+  - Probably we do this once we answer the other problems, because then we choose whether to
+    eat or not eat on a fixed algorithm.
+  - Solve with: some on-line learning algorithm. TODO*****
 
-  - For eat/not eat, section 10 notes give us an example of how to do this:
+3   Decide whether or not to eat
+  - POMDP problem. Learn on-line. 
+  - MDP? States: { aggregate confidence?? }
+  - Finite state controller, finite history?? 
+
+  - Section 10 notes give us an example of how to do this:
       max_a \sum_s P(o|s)P(s)R(s,a)
-    where P(o|s) is from our (calibrated) confidence estimate, 
+    P(o|s) is from an aggregate of confidence estimates (calibrated??)
     P(s) is the prior on how likely a plant is to be poisonous or
-    nutritious (unclear). On the most basic level it's probably just going to 
-    be (# nutritious)/(# plants total observed) in off-line learning.
-    R(s,a) is defined given game parameters. 
-  - Problem: this isn't one of the on-line learning algorithms we've talked about. 
+    nutritious (locationwise hopefully; if not --  
+    (# nutritious)/(# plants total observed) from off-line learning)
+    R(s,a) is defined given game parameters. NO
 
-
-* Where to move next
-  - At the very least we shouldn't backtrack, because that seems dumb. 
-  - The world is infinite, so hitting walls shouldn't be an issue.
-  - Infinite world also possibly means it's harder to deal with if they
+4   Where to move next
+  - Infinite world means it's harder to figure out distributions in which they
     generally put more nutritious plants in one area, etc. 
   - It's possible that good/bad plants are clustered together. Then we could
     try doing an MDP where states = {has just seen (nutritions/poisonous) plant in some set of neighboring locations x energy left}
