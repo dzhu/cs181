@@ -65,9 +65,22 @@ Factors that we know that we can consider:
     for sure whether or not it's poisonous then you just eat or leave it alone. 
   - I.e. we want both readings. Ratio and difference not enough.
 
-  - States: { energy left, # nutritious readings, # poisonous readings }
-  - Actions: { observe, not observe }
-  - Rewards: amount of life given such an action??? This seems like it would use Q-learning...
+  - One option: finite state controller. 
+
+  - Another option: MDP
+    - States: { energy left, # nutritious readings, # poisonous readings }
+    - Actions: { observe, not observe }
+    - Rewards: change in energy (after you die, you never get further positive changes
+      in energy)??? Or 1 if you live that step and 0 if you die that step???
+
+    - Do we have a transition matrix? I.e. given some number of nutritious readings and
+      poisonous readings, how likely is the next reading to be poisonous or nutritious?
+      We can learn this off-line, but amount of energy left will be separate. 
+    - There is no initial probability distribution.
+
+    - infinite horizon MDP: use policy (or value) iteration. 
+
+    - Problem: constrain to finite??? largeness of number of states
 
   - Problem: aggregate confidence is tricky to calibrate. 
   - Probably we do this once we answer the other problems, because then we choose whether to
