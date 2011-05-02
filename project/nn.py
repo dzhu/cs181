@@ -359,11 +359,11 @@ def print_net(net):
         for pcpt in layer.listPcpt:
             print pcpt
 
-def num_correct(net, listInst, decoder):
+def num_correct(net, listInst):
   cCorrect = 0
   for inst in listInst:
     listDblOut = feed_forward(net,inst.listDblFeatures)
-    iGuess = decoder(listDblOut)
+    iGuess = int(round(listDblOut[0]))
     #if opts.fShowGuesses:
     #print inst.iLabel, iGuess
     cCorrect += int(inst.iLabel == iGuess)
@@ -396,23 +396,11 @@ def experiment(opts):
     if opts.hidden_units:
       print 'Adding a hidden layer with %d units' % opts.hidden_units
       config.append(opts.hidden_units)
-    if opts.encoding == 'binary':
-      config.append(4)
-      print '[binary]'
-    else:
-      config.append(10)
-      print '[distributed]'
+    config.append(1)
 
     net = init_net(config)
     dblAlpha = opts.learning_rate
-    print '%f' % dblAlpha
-
-    if opts.encoding == 'binary':
-      encoder = binary_encode_label
-      decoder = binary_decode_net_output
-    else:
-      encoder = distributed_encode_label
-      decoder = distributed_decode_net_output
+    print 'alpha: %f' % dblAlpha
 
     # for stopping condition - to see if current validation error is less than previous
     last_five_validation_accuracies = [0.0,0.0,0.0,0.0,0.0]
@@ -421,13 +409,13 @@ def experiment(opts):
         # Compute the error
         errors = 0
         for inst in listInstTrain:
-            listDblOut = update_net(net,inst,dblAlpha, encoder(inst.iLabel))
-            iGuess = decoder(listDblOut)
+            listDblOut = update_net(net,inst,dblAlpha, [inst.iLabel])
+            iGuess = int(round(listDblOut[0]))
             #print inst.iLabel, iGuess
             if iGuess != inst.iLabel:
               errors += 1
         # Get validation error
-        validation_correct = num_correct(net, listInstVal, decoder)
+        validation_correct = num_correct(net, listInstVal)
         # sys.stderr.write(
         # "Round %d complete.  Training Accuracy: %f, Validation Accuracy: %f\n" % (
         #   ixRound + 1,
@@ -444,7 +432,7 @@ def experiment(opts):
     cCorrect = 0
     for inst in listInstTest:
         listDblOut = feed_forward(net,inst.listDblFeatures)
-        iGuess = decoder(listDblOut)
+        iGuess = int(round(listDblOut[0]))
         #if opts.fShowGuesses:
         #print inst.iLabel, iGuess
         cCorrect += int(inst.iLabel == iGuess)
@@ -480,7 +468,7 @@ def main(argv):
                       help="number of hidden units to use.")
     parser.add_option("--num_inputs", action="store",
                       dest="num_inputs",
-                      default=(10*12), type=int,
+                      default=36, type=int,
                       help="number of inputs to use.")
     parser.add_option("--enable-stopping", action="store_true",
                       dest="stopping_condition", default=False,
