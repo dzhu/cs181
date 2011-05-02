@@ -27,7 +27,48 @@ def get_move(view):
   ask the view for observations of the image at the current location.  Each
   observation comes with an observation cost.
   '''
-  return move_generator.get_move(view)
+
+  hasPlant = view.GetPlantInfo()
+
+  # TODO: Decide on a direction, and whether or not to eat
+  dir = common.game_interface.UP
+  eat = False
+
+  if (hasPlant):
+    info = init_observation_info(view)
+    (should_observe_again, info) = decide_observe(view, info)
+    while (should_observe_again):
+      (should_observe_again, info) = decide_observe(view, info)
+
+    # Decide whether to eat
+    # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
+    # P(s) is the prior on how likely a plant is to be poisonous. etc. 
+    expected_utility_eat =    prob_obs_given_state(view, info, 1) * prior_nutritious(view) * move_generator.plant_bonus \
+                            + prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
+    eat = (expected_utility_eat > 0) # maybe this shouldn't be >0 
+  
+  return (dir, eat)
+
+def prob_obs_given_state(view, info, is_nutritious):
+  # TODO: implement
+  # P(o|s), i.e probability that observations return info given state is or is 
+  # not nutritious
+  return 1.0
+
+def prior_nutritious(view):
+  # return (# nutritious)/(total plants observed), probably from running offline...
+  # TODO: implement
+  return 0.5
+
+def init_observation_info(view):
+  #TODO: implement. reinitializes things for first observation of a given plant
+  return 0
+
+def decide_observe(view, info):
+  #TODO: implement
+  if (info == 5):
+    return (False, 0)
+  return (True, info+1)
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
                         starting_life, life_per_turn):
