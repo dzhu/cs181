@@ -1,5 +1,6 @@
 import common
 import nn
+import game_interface
 import math
 class MoveGenerator():
   '''You can keep track of state by updating variables in the MoveGenerator
@@ -31,7 +32,8 @@ def get_move(view):
   observation comes with an observation cost.
   '''
 
-  hasPlant = view.GetPlantInfo()
+  hasPlant = view.GetPlantInfo() == game_interface.STATUS_UNKNOWN_PLANT
+
 
   # TODO: Decide on a direction, and whether or not to eat
   dir = common.game_interface.UP
@@ -40,7 +42,7 @@ def get_move(view):
   if (hasPlant):
     info = init_observation_info(view)
     (should_observe_again, info) = decide_observe(view, info)
-    while (should_observe_again):
+    while should_observe_again:
       (should_observe_again, info) = decide_observe(view, info)
 
     # Decide whether to eat
@@ -103,6 +105,7 @@ def decide_observe__FSC(view, info):
   # stopping condition
   if (abs(info[0]-info[1])>2): # maybe 2 should be 3 or something 
     return (False, info)
+
   is_nutritious = is_nutritious_by_NN(view.GetImage())
   if (is_nutritious):
     return (True, (info[0]+1,info[1]))
@@ -171,6 +174,7 @@ def expected_reward_eat(n, p, view):
 net = nn.read_from_file('net.pic')
 
 def is_nutritious_by_NN(plant_image):
+  print plant_image
   return nn.feed_forward(net, plant_image) > .5
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
