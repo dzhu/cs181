@@ -21,8 +21,6 @@ def get_move(view, cmd, options, player_id):
   signal.alarm(1)
   try: 
     (mv, eat) = cmd(view)
-    # Clear the alarm.
-    signal.alarm(0)
   except TimeoutException:
     # Return a random value
     # Should probably log this to the interface
@@ -32,6 +30,9 @@ def get_move(view, cmd, options, player_id):
       game_interface.curses_debug(player_id, error_str)
     else:
       print error_str
+  finally:
+    signal.alarm(0)
+
   return (mv, eat)
 
 def check_if_game_over_single_player(l1, l2, options, game, rounds):
@@ -44,7 +45,7 @@ def check_if_game_over_single_player(l1, l2, options, game, rounds):
       game_interface.curses_debug(1, debug_str)
     else:
       print debug_str
-    sys.stdin.read(1)
+    #sys.stdin.read(1)
     if options.display:
       game_interface.curses_close()
     return True
@@ -135,9 +136,10 @@ def main(argv):
                     help="life spent per turn",type=int)
   parser.add_option("--single_player_mode", action="store_true", dest="single_player_mode",
                     help="if specified, run in single player mode. Ignore player 2.")
-  (options, args) = parser.parse_args()
+  (options, args) = parser.parse_args(argv[1:])
 
   try:
+    options.display = False
     run(options)
   except KeyboardInterrupt:
     if options.display:
