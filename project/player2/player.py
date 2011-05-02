@@ -1,6 +1,6 @@
 import common
 import nn
-
+import math
 class MoveGenerator():
   '''You can keep track of state by updating variables in the MoveGenerator
   class.'''
@@ -64,8 +64,22 @@ def prob_obs_given_state(view, info, is_nutritious):
 
 def prior_nutritious(view):
   # return (# nutritious)/(total plants observed), probably from running offline...
-  print view.GetXPos
-  return 0.5
+  # probability that given a location, it's poisonous is always 0.15
+  # probability that given a location, it's nutritious is approx
+# f2(x) = (f)/(h+exp(g*x+j))+a*x**2+d+c*x
+  
+  f = 0.547293
+  g = 0.553155
+  j = -6.93274
+  h = 9.40699
+  a = 3.30966e-05
+  d = 0.0861578
+  c = -0.00327286
+
+  r = (view.GetXPos()**2+view.GetYPos()**2)**(0.5)
+  f2 = f/(h+math.exp(g*r+j))+a*r**2+d+c*r
+
+  return f2/(f2+PROB_POISONOUS)
 
 def init_observation_info(view):
   return init_observation_info__FSC(view)
