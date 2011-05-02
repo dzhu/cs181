@@ -160,9 +160,13 @@ def expected_reward_eat(n, p, view):
   prior_n = prior_nutritious(view)
   prior_p = 1 - prior_n
 
-  prior_n
-  
+  prior_n *= prob_obs_given_state(view, (n, p), 1)
+  prior_p *= prob_obs_given_state(view, (n, p), 0)
 
+  prob_n = prior_n / (prior_n + prior_p)
+  prob_p = prior_p / (prior_n + prior_p)
+
+  return move_generator.plant_bonus * prob_n - move_generator.plant_penalty * prob_p
 
 net = nn.read_from_file('net.pic')
 
