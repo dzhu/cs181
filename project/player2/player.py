@@ -1,4 +1,5 @@
 import common
+import nn
 
 class MoveGenerator():
   '''You can keep track of state by updating variables in the MoveGenerator
@@ -19,6 +20,8 @@ class MoveGenerator():
     self.life_per_turn = life_per_turn
 
 move_generator = MoveGenerator()
+NN_ACCURACY = 0.68
+PROB_POISONOUS = 0.15
 
 def get_move(view):
   '''Returns a (move, bool) pair which specifies which move to take and whether
@@ -49,33 +52,33 @@ def get_move(view):
   
   return (dir, eat)
 
+# info is a pair of readings (# nutritious, # poisonous)
 def prob_obs_given_state(view, info, is_nutritious):
-  # TODO: implement
   # P(o|s), i.e probability that observations return info given state is or is 
-  # not nutritious
-  return 1.0
+  n = info[0]
+  p = info[1]
+  if is_nutritious:
+    return NN_ACCURACY**(n)*(1-NN_ACCURACY)**(p)
+  return NN_ACCURACY**(p)*(1-NN_ACCURACY)**(n)
+  
 
 def prior_nutritious(view):
   # return (# nutritious)/(total plants observed), probably from running offline...
-  # TODO: implement
+  print view.GetXPos
   return 0.5
 
 def init_observation_info(view):
-  #TODO: implement. reinitializes things for first observation of a given plant
-  return 0
+  return init_observation_info__FSC(view)
 
 def decide_observe(view, info):
-  #TODO: implement
-  if (info == 5):
-    return (False, 0)
-  return (True, info+1)
+  return decide_observe__FSC(view, info)
 
 ########### specific implementations: finite state controller ##############
 
 def init_observation_info__FSC(view):
   return (0,0) # (nutritions observations, poisonous observations)
 
-def decide_observe___FSC(view, info, is_nutritious):
+def decide_observe__FSC(view, info):
   # if the total cost incurred from observing exceeds benefit from eating, stop.
   if (move_generator.observation_cost * (info[0]+info[1]+1) > move_generator.plant_bonus):
     return (False, info)
@@ -86,7 +89,7 @@ def decide_observe___FSC(view, info, is_nutritious):
   # stopping condition
   if (abs(info[0]-info[1])>2): # maybe 2 should be 3 or something 
     return (False, info)
-  is_nutritious = is_nutritious_by_NN(view.getImage())
+  is_nutritious = is_nutritious_by_NN(view.GetImage())
   if (is_nutritious):
     return (True, (info[0]+1,info[1]))
   return (True, (info[0],info[1]+1))
@@ -117,7 +120,7 @@ def decide_observe___VI(view, info, is_nutritious):
       for p in range(H):
         # for each action:
         # EAT
-        Q_eat[n][p] = expected_reward_eat( (n,p) ) # TODO: define this function. 
+        Q_eat[n][p] = expected_reward_eat( (n,p), view ) # TODO: define this function. 
         # NOT EAT 
         Q_not_eat[n][p] = 0
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
@@ -139,12 +142,17 @@ def T( s, observe_nutritious, eat ): #TODO: learn this offline.
   # TODO: implement
   return 0.0
 
-def expected_reward_eat(info):
+def expected_reward_eat(info, view):
   # TODO: implement
+  # if it's poisonous, you get ---
+  # if it's nutritious, you get ---
+  # 
   return 0.5
 
 def is_nutritious_by_NN(plant_image):
   #TODO: implement
+  n = nn.read_from_file('net.pic')
+  
   return True
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
