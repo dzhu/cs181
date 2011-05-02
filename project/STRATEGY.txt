@@ -66,8 +66,9 @@ Factors that we know that we can consider:
   - I.e. we want both readings. Ratio and difference not enough.
 
   - One option: finite state controller. 
-
+  - ***IDEA**** use exploration / exploitation to figure out how many states it should have???!
   - Another option: MDP
+    - a new problem begins every time you encounter a new plant. 
     - States: { energy left, # nutritious readings, # poisonous readings }
     - Actions: { observe, not observe }
     - Rewards: change in energy (after you die, you never get further positive changes
@@ -76,11 +77,10 @@ Factors that we know that we can consider:
     - Do we have a transition matrix? I.e. given some number of nutritious readings and
       poisonous readings, how likely is the next reading to be poisonous or nutritious?
       We can learn this off-line, but amount of energy left will be separate. 
-    - There is no initial probability distribution.
+    - Learn offline a reward function, i.e. R(s,a) is expected reward??
 
-    - infinite horizon MDP: use policy (or value) iteration. 
+    - finite horizon!!! use value iteration!!!
 
-    - Problem: constrain to finite??? largeness of number of states
 
   - Problem: aggregate confidence is tricky to calibrate. 
   - Probably we do this once we answer the other problems, because then we choose whether to
