@@ -255,5 +255,11 @@ def get_move(view):
 #    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
 #    print eat 
 #    print "EATING: "
+  EAT = decide_eat(n,p,view.GetXPos(),view.GetYPos(),1)
+  print EAT
+#  for x in range(10):
+#    for y in range(10):
+#      print "%d %d %f" % (x,y,prior_nutritious(x,y))
+
   return (dir, decide_eat(n,p,view.GetXPos(),view.GetYPos(),1))
 
