@@ -27,12 +27,12 @@ NN_POISONOUS_ACCURACY = 0.68
 NN_NUTRITIOUS_ACCURACY = 0.57
 PROB_POISONOUS = 0.15
 
-def expected_utility_eat(n,p,x,y):
+def expected_utility_eat(n,p,x,y,badscale):
   B = prob_obs_given_state(n,p,True)*prior_nutritious(x,y) + prob_obs_given_state(n,p,False)*(1.0-prior_nutritious(x,y))
   return prob_obs_given_state(n,p, True) * prior_nutritious(x,y) / B * move_generator.plant_bonus \
-       - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) / B * move_generator.plant_penalty
-def decide_eat(n,p,x,y):
-  expected_utility = expected_utility_eat(n,p,x,y)  
+       - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) / B * move_generator.plant_penalty * badscale
+def decide_eat(n,p,x,y,badscale):
+  expected_utility = expected_utility_eat(n,p,x,y,badscale)  
   eat = (expected_utility > 0) 
   return eat
 
@@ -99,14 +99,18 @@ def init_observation_info__VI(view):
   return (0,0)
 
 def decide_observe__VI(n,p,x,y,view):
-
+# WE SHOULD NOT USE VI IF observation cost is 0. 
   H = int(move_generator.plant_bonus / move_generator.observation_cost)
   V = [ [ 0 for p in range(H) ] for n in range(H) ] 
 
   Q_not_obs = [ [ 0 for p in range(H) ] for n in range(H) ] 
   for n in range(H):
     for p in range(H):
-      Q_not_obs[n][p]=expected_reward_obs(n,p,x,y) # just the expected reward from the given (n,p)
+      badscale=1
+      if (view.GetLife() <= 3 * move_generator.observation_cost  ):
+        badscale=5
+      view.GetLife()
+      Q_not_obs[n][p]=expected_reward_obs(n,p,x,y,badscale) # just the expected reward from the given (n,p)
   # for k=1 to H (approximately)
 
   pistar = [ [ False for p in range(H) ] for n in range(H) ] 
@@ -165,12 +169,12 @@ def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline.
     P_nextP_np = NN_POISONOUS_ACCURACY * P_P_np + (1-NN_NUTRITIOUS_ACCURACY) * P_N_np
     return P_nextP_np
 
-def expected_reward_obs(n, p, x,y):
+def expected_reward_obs(n, p, x,y,badscale):
   # figure out whether we'd eat or not, using our policy.
   # then figure out expected reward given the fixed policy of whether we eat or not
-  eat = decide_eat(n,p,x,y)
+  eat = decide_eat(n,p,x,y,badscale)
   if eat:
-    return expected_utility_eat(n,p,x,y)
+    return expected_utility_eat(n,p,x,y,badscale)
   else:
     return 0
 
@@ -251,5 +255,5 @@ def get_move(view):
 #    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
 #    print eat 
 #    print "EATING: "
-  return (dir, decide_eat(n,p,view.GetXPos(),view.GetYPos()))
+  return (dir, decide_eat(n,p,view.GetXPos(),view.GetYPos(),1))
 
