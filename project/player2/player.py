@@ -26,11 +26,11 @@ NN_POISONOUS_ACCURACY = 0.68
 NN_NUTRITIOUS_ACCURACY = 0.57
 PROB_POISONOUS = 0.15
 
-def expected_utility_eat(n,p):
-  return prob_obs_given_state(view, info, 1) * prior_nutritious(view) * move_generator.plant_bonus \
-       - prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
-def decide_eat(n,p):
-  expected_utility = expected_utility_eat(n,p)  
+def expected_utility_eat(n,p,x,y):
+  return prob_obs_given_state(x,y, info, 1) * prior_nutritious(x,y) * move_generator.plant_bonus \
+       - prob_obs_given_state(x,y, info, 0) * (1.0 - prior_nutritious(x,y)) * move_generator.plant_penalty
+def decide_eat(n,p,x,y):
+  expected_utility = expected_utility_eat(n,p,x,y)  
   eat = (expected_utility_eat > 0) 
   return eat
 
@@ -48,22 +48,23 @@ def get_move(view):
   # TODO: Decide on a direction, and whether or not to eat
   dir = common.game_interface.UP
   eat = False
-
+  n=0
+  p=0
   if (hasPlant):
     info = init_observation_info(view)
-    (should_observe_again, info) = decide_observe(view, info)
+    (should_observe_again, n,p) = decide_observe(n,p,x,y,view)
     while should_observe_again:
-      (should_observe_again, info) = decide_observe(view, info)
+      (should_observe_again, n,p) = decide_observe(n,p,x,y,view)
     # Decide whether to eat
     # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
     # P(s) is the prior on how likely a plant is to be poisonous. etc. 
 #    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
 #    print eat 
 #    print "EATING: "
-  return (dir, decide_eat(info[0],info[1]))
+  return (dir, decide_eat(n,p),view.GetXPos(),view.GetYPos())
 
 # info is a pair of readings (# nutritious, # poisonous)
-def prob_obs_given_state(view, info, is_nutritious):
+def prob_obs_given_state(info, is_nutritious):
   # P(o|s), i.e probability that observations return info given state is or is 
   n = info[0]
   p = info[1]
@@ -72,7 +73,7 @@ def prob_obs_given_state(view, info, is_nutritious):
   return NN_POISONOUS_ACCURACY**(p)*(1-NN_POISONOUS_ACCURACY)**(n)
   
 
-def prior_nutritious(view):
+def prior_nutritious(x,y):
   # return (# nutritious)/(total plants observed), probably from running offline...
   # probability that given a location, it's poisonous is always 0.15
   # probability that given a location, it's nutritious is approx
@@ -91,33 +92,27 @@ def prior_nutritious(view):
 
   return f2/(f2+PROB_POISONOUS)
 
-if True:
-  init_observation_info = init_observation_info__FSC
-  decide_observe = decide_observe__FSC
-else:
-  init_observation_info = init_observation_info__VI
-  decide_observe = decide_observe__VI
 
 ########### specific implementations: finite state controller ##############
 
 def init_observation_info__FSC(view):
   return (0,0) # (nutritions observations, poisonous observations)
 
-def decide_observe__FSC(view, info):
+def decide_observe__FSC(n,p,x,y,view):
   # if the total cost incurred from observing exceeds benefit from eating, stop.
   # times 2, just because. arbitrary?
 #  if (move_generator.observation_cost * (info[0]+info[1]+1) * 2 > min(move_generator.plant_bonus,view.GetLife()) ):
 #    return (False, info)
   # don't waste too much energy
-  if (info[0]+info[1]>=5):
-     return (False, info)
+  if (n+p>=5):
+     return (False, n,p)
   # if you're about to die -- TODO: consider other bounds? would we pursue a different
   # strategy given different quantities of energy?
   if (move_generator.observation_cost * 2 >= view.GetLife() ):
-    return (False, info)
+    return (False, n,p)
   # stopping condition
-  if (abs(info[0]-info[1])>1): # maybe 2 should be 3 or something 
-    return (False, info)
+  if (abs(n-p)>1): # maybe 2 should be 3 or something 
+    return (False, n,p)
 
   is_nutritious = is_nutritious_by_NN(view.GetImage())
 #  if is_nutritious:
@@ -125,24 +120,25 @@ def decide_observe__FSC(view, info):
 #  else:
 #    print " @#HUUUFHD NOT GOOD"
   if (is_nutritious):
-    return (True, (info[0]+1,info[1]))
+    return (True, n+1,p)
   else:
-    return (True, (info[0],info[1]+1))
+    return (True, n,p+1)
 
 ########### specific implementations: MDP, value iteration  #################
 
+# run a finite state value iteration
+# horizon H: the max number of observations you will make before doing dumb things
+
+# TODO: bound H or use the other strategy, since states are O(H^2)
+# Store the k-step-to-go value and policy for each state and each k
+# states are: energy left x number nutritious observations x number poisonous observations
+# actions: observe or not observe. if you observe you move into a new state.
+
+H = (int)(move_generator.plant_bonus / move_generator.observation_cost)
 def init_observation_info__VI(view):
-  return 1
+  return (0,0)
 
-def decide_observe___VI(view, info, is_nutritious):
-  # run a finite state value iteration
-  # horizon H: the max number of observations you will make before doing dumb things
-  H = (int)(move_generator.plant_bonus / move_generator.observation_cost)
-  # TODO: bound H or use the other strategy, since states are O(H^2)
-  # Store the k-step-to-go value and policy for each state and each k
-  # states are: energy left x number nutritious observations x number poisonous observations
-  # actions: observe or not observe. if you observe you move into a new state.
-
+def decide_observe__VI(n,p,x,y,view):
   V = [ [ 0 for p in range(H) ] for n in range(H) ] 
 
   Q_not_obs = [ [ 0 for p in range(H) ] for n in range(H) ] 
@@ -154,7 +150,7 @@ def decide_observe___VI(view, info, is_nutritious):
     V_old = V
     V = [ [ 0 for p in range(H) ] for n in range(H) ] 
     Q_obs     = [ [ 0 for p in range(H) ] for n in range(H) ] 
-    pistar = [ [ 0 for p in range(H) ] for n in range(H) ] # 0 for don't eat, 1 for eat TODO change to enums
+    pistar = [ [ False for p in range(H) ] for n in range(H) ] 
     # for every state
     for n in range(H):
       for p in range(H):
@@ -162,8 +158,8 @@ def decide_observe___VI(view, info, is_nutritious):
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
         # so for every neighboring state, i.e. n+1 or p+1
         # and for each action. but the only action that doesn't terminate is observing.
-        Q_obs[n][p] += T( (n,p), True,  view ) * V_old[n+1][p]
-        Q_obs[n][p] += T( (n,p), False, view ) * V_old[n][p+1]
+        Q_obs[n][p] += T( (n,p), True,  x,y ) * V_old[n+1][p]
+        Q_obs[n][p] += T( (n,p), False, x,y ) * V_old[n][p+1]
 
         # optimal policy
         if (Q_obs[n][p] > Q_not_obs[n][p]):
@@ -172,8 +168,9 @@ def decide_observe___VI(view, info, is_nutritious):
         else: 
           V[n][p] = Q_not_obs[n][p]
         # new V
+  return pistar[n][p]
 
-def T( s, observe_nutritious, view ): #TODO: learn this offline. 
+def T( s, observe_nutritious, x, y ): #TODO: learn this offline. 
   # TODO: implement
   # this is the probability that the next observation will be poisonous (P) or nutritious (N) (depending on observe_nutritious)
   # given that we've already had (n,p) nutritious/poisonous observations.
@@ -184,8 +181,8 @@ def T( s, observe_nutritious, view ): #TODO: learn this offline.
   # Note that P( actually N | (n,p) ) = P( (n,p) | actually N ) P( actually N ) / P( (n,p) ), and we'll call that denominator B...
   
   # P( (n,p) | actually N )
-  P_np_N = prob_obs_given_state(view, s, True)
-  P_np_P = prob_obs_given_state(view, s, False)
+  P_np_N = prob_obs_given_state(x,y, s, True)
+  P_np_P = prob_obs_given_state(x,y, s, False)
   P_N = prior_nutritious(view)
   P_P = 1-P_N
   B = P_np_N*P_N + P_np_P*P_P
@@ -232,3 +229,9 @@ def init_point_settings(plant_bonus, plant_penalty, observation_cost,
   '''Called before any moves are made.  Allows you to make customizations based
   on the specific scoring parameters in the game.'''
   move_generator.init_point_settings(plant_bonus, plant_penalty, observation_cost, starting_life, life_per_turn)
+
+
+if False:
+  decide_observe = decide_observe__FSC
+else:
+  decide_observe = decide_observe__VI
