@@ -44,14 +44,14 @@ def get_move(view):
     (should_observe_again, info) = decide_observe(view, info)
     while should_observe_again:
       (should_observe_again, info) = decide_observe(view, info)
-
+      print info
     # Decide whether to eat
     # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
     # P(s) is the prior on how likely a plant is to be poisonous. etc. 
     expected_utility_eat =    prob_obs_given_state(view, info, 1) * prior_nutritious(view) * move_generator.plant_bonus \
                             + prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
     eat = (expected_utility_eat > 0) # maybe this shouldn't be >0 
-  
+    print info 
   return (dir, eat)
 
 # info is a pair of readings (# nutritious, # poisonous)
@@ -171,7 +171,9 @@ net = nn.read_from_file('net.pic')
 
 def is_nutritious_by_NN(plant_image):
   print plant_image
-  return nn.feed_forward(net, plant_image) > .5
+  res = nn.feed_forward(net, plant_image)
+  print res
+  print res > .5
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
                         starting_life, life_per_turn):
