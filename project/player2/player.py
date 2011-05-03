@@ -27,17 +27,18 @@ NN_NUTRITIOUS_ACCURACY = 0.57
 PROB_POISONOUS = 0.15
 
 def expected_utility_eat(n,p,x,y,badscale):
-  B = prob_obs_given_state(n,p,True)*prior_nutritious(x,y) + prob_obs_given_state(n,p,False)*(1.0-prior_nutritious(x,y))
-  return prob_obs_given_state(n,p, True) * prior_nutritious(x,y) / B * move_generator.plant_bonus \
-       - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) / B * move_generator.plant_penalty * badscale
+  p_n = prior_nutritious(x, y)
+  B = prob_obs_given_state(n,p,True)*p_n + prob_obs_given_state(n,p,False)*(1.0-p_n)
+
+  return prob_obs_given_state(n,p, True) * p_n / B * move_generator.plant_bonus \
+       - prob_obs_given_state(n,p, False) * (1.0 - p_n) / B * move_generator.plant_penalty * badscale
+
 def decide_eat(n,p,x,y,badscale):
-  expected_utility = expected_utility_eat(n,p,x,y,badscale)  
-  eat = (expected_utility > 0) 
-  return eat
+  return expected_utility_eat(n,p,x,y,badscale) > 0
 
 # info is a pair of readings (# nutritious, # poisonous)
 def prob_obs_given_state(n,p, is_nutritious):
-  # P(o|s), i.e probability that observations return info given state is or is 
+  # P(o|s), i.e probability that observations return info given state is or is
   if is_nutritious:
     return NN_NUTRITIOUS_ACCURACY**n * (1-NN_NUTRITIOUS_ACCURACY)**p
   return NN_POISONOUS_ACCURACY**p * (1-NN_POISONOUS_ACCURACY)**n
@@ -47,7 +48,7 @@ def prior_nutritious(x,y):
   # probability that given a location, it's poisonous is always 0.15
   # probability that given a location, it's nutritious is approx
 # f2(x) = (f)/(h+exp(g*x+j))+a*x**2+d+c*x
-  
+
   f = 0.547293
   g = 0.553155
   j = -6.93274
@@ -57,10 +58,9 @@ def prior_nutritious(x,y):
   c = -0.00327286
 
   r = math.sqrt(x**2 + y**2)
-  f2 = f/(h+math.exp(g*r+j))+a*r**2+d+c*r
+  f2 = f/(h+math.exp(g*r+j))+a*(r**2)+d+c*r
 
   return f2/(f2+PROB_POISONOUS)
-
 
 ########### specific implementations: finite state controller ##############
 
@@ -83,7 +83,7 @@ def decide_observe__FSC(n,p,x,y,view):
     return False
 
   # stopping condition
-  return abs(n-p) <= 1 # maybe 2 should be 3 or something 
+  return abs(n - p) <= 1 # maybe 2 should be 3 or something
 
 ########### specific implementations: MDP, value iteration  #################
 
@@ -99,32 +99,33 @@ def init_observation_info__VI(view):
   return (0,0)
 
 def decide_observe__VI(n,p,x,y,view):
-# WE SHOULD NOT USE VI IF observation cost is 0. 
+# WE SHOULD NOT USE VI IF observation cost is 0.
   H = int(move_generator.plant_bonus / move_generator.observation_cost)
-  V = [ [ 0 for p in range(H) ] for n in range(H) ] 
+  H = 5
+  V = [ [ 0 for p in range(H) ] for n in range(H) ]
 
-  Q_not_obs = [ [ 0 for p in range(H) ] for n in range(H) ] 
+  Q_not_obs = [ [ 0 for p in range(H) ] for n in range(H) ]
   for n in range(H):
     for p in range(H):
-      badscale=1
+      badscale = 1
       if view.GetLife() <= 3 * move_generator.observation_cost:
         badscale = 5
-      Q_not_obs[n][p]=expected_reward_obs(n,p,x,y,badscale) # just the expected reward from the given (n,p)
-  # for k=1 to H (approximately)
+      Q_not_obs[n][p] = expected_reward_obs(n,p,x,y,badscale) # just the expected reward from the given (n,p)
 
-  pistar = [ [ False for p in range(H) ] for n in range(H) ] 
-  for k in range(H): 
+  # for k=1 to H (approximately)
+  pistar = [ [ False for p in range(H) ] for n in range(H) ]
+  for k in range(H):
     V_old = V
-    V = [ [ 0 for p in range(H) ] for n in range(H) ] 
-    Q_obs  = [ [ 0 for p in range(H) ] for n in range(H) ] 
+    V = [ [ 0 for p in range(H) ] for n in range(H) ]
+    Q_obs  = [ [ 0 for p in range(H) ] for n in range(H) ]
     # for every state
     for n in range(H):
       for p in range(H):
-        Q_obs[n][p] = -move_generator.observation_cost #expected_reward_obs(n, p, x,y) # TODO: this guy
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
         # so for every neighboring state, i.e. n+1 or p+1
         # and for each action. but the only action that doesn't terminate is observing.
         if n+p+1<H:
+          Q_obs[n][p] = -move_generator.observation_cost #expected_reward_obs(n, p, x,y) # TODO: this guy
           Q_obs[n][p] += T( n,p, True,  x,y ) * V_old[n+1][p]
           Q_obs[n][p] += T( n,p, False, x,y ) * V_old[n][p+1]
 
@@ -133,12 +134,13 @@ def decide_observe__VI(n,p,x,y,view):
           if k == H-1:
             pistar[n][p] = True
           V[n][p] = Q_obs[n][p]
-        else: 
+        else:
           V[n][p] = Q_not_obs[n][p]
         # new V
+
   return pistar[n][p]
 
-def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline. 
+def T(n, p, observe_nutritious, x, y): #TODO: learn this offline.
   # TODO: implement
   # this is the probability that the next observation will be poisonous (P) or nutritious (N) (depending on observe_nutritious)
   # given that we've already had (n,p) nutritious/poisonous observations.
@@ -147,7 +149,7 @@ def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline.
   #                             = P( next is N | actually P ) P( actually P | (n,p) )
   #                             + P( next is N | actually N ) P( actually N | (n,p) )
   # Note that P( actually N | (n,p) ) = P( (n,p) | actually N ) P( actually N ) / P( (n,p) ), and we'll call that denominator B...
-  
+
   # P( (n,p) | actually N )
   P_np_N = prob_obs_given_state(n,p, True)
   P_np_P = prob_obs_given_state(n,p, False)
@@ -167,10 +169,7 @@ def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline.
 def expected_reward_obs(n, p, x,y,badscale):
   # figure out whether we'd eat or not, using our policy.
   # then figure out expected reward given the fixed policy of whether we eat or not
-  if decide_eat(n,p,x,y,badscale):
-    return expected_utility_eat(n,p,x,y,badscale)
-  else:
-    return 0
+  return max(0, expected_utility_eat(n,p,x,y,badscale))
 
 net = nn.read_from_file('net.pic')
 
@@ -183,7 +182,6 @@ def init_point_settings(plant_bonus, plant_penalty, observation_cost,
   on the specific scoring parameters in the game.'''
   move_generator.init_point_settings(plant_bonus, plant_penalty, observation_cost, starting_life, life_per_turn)
 
-
 if False:
   decide_observe = decide_observe__FSC
   init_observation_info = init_observation_info__FSC
@@ -193,13 +191,12 @@ else:
 
 def try_observe(n,p,should_observe):
   if not should_observe:
-    return (n,p)
+    return n, p
   if is_nutritious_by_NN(view.GetImage()):
-    n+=1
+    n += 1
   else:
-    p+=1
-  return (n,p)
-
+    p += 1
+  return n, p
 
 def next_target(x, y):
   if x >= -y and x <= y:
@@ -223,9 +220,6 @@ def get_move(view):
   '''
   global targetx, targety, seen_pos
 
-  hasPlant = view.GetPlantInfo() == game_interface.STATUS_UNKNOWN_PLANT
-
-
   # TODO: Decide on a direction, and whether or not to eat
   x = view.GetXPos()
   y = view.GetYPos()
@@ -245,27 +239,29 @@ def get_move(view):
     else:
       move =  game_interface.RIGHT
 
-
   seen_pos.add((x, y))
 
-  n=0
-  p=0
-  x=view.GetXPos()
-  y=view.GetYPos()
-  if (hasPlant):
+  n = 0
+  p = 0
+  x = view.GetXPos()
+  y = view.GetYPos()
+  if view.GetPlantInfo() == game_interface.STATUS_UNKNOWN_PLANT:
     info = init_observation_info(view)
     should_observe_again  = decide_observe(n,p,x,y,view)
-    (n,p)= try_observe(n,p,should_observe_again) 
+    n, p = try_observe(n,p,should_observe_again)
 
+    print 'n', n, 'p', p, 'observe again', should_observe_again
     while should_observe_again:
       (should_observe_again, n, p) = decide_observe(n,p,x,y,view)
-      (n,p) = try_observe(n,p,should_observe_again) 
+      n, p = try_observe(n, p, should_observe_again)
+      print n, p
 
     # Decide whether to eat
     # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
-    # P(s) is the prior on how likely a plant is to be poisonous. etc. 
+    # P(s) is the prior on how likely a plant is to be poisonous. etc.
 #    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
-#    print eat 
+#    print eat
 #    print "EATING: "
-  return (move, decide_eat(n,p,view.GetXPos(),view.GetYPos(),1))
+  eat = decide_eat(n, p, view.GetXPos(), view.GetYPos(), 1)
+  return (move, eat)
 

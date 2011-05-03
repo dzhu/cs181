@@ -10,6 +10,8 @@ import time
 import traceback
 from optparse import OptionParser
 
+DISP = 100
+
 class TimeoutException(Exception):
   def __init__(self):
     pass
@@ -37,7 +39,8 @@ def get_move(view, cmd, options, player_id):
 
 def check_if_game_over_single_player(l1, l2, options, game, rounds):
   if options.display:
-    game_interface.curses_init_round(game)
+    #if rounds % DISP == 0:
+      game_interface.curses_init_round(game)
   if l2 <= 0:
     debug_str = 'Single player mode: lasted %d rounds' % rounds
     # Need to end the game
@@ -111,11 +114,13 @@ def run(options):
 
     game.ExecuteMoves(mv1, eat1, mv2, eat2)
     if options.display:
-      game_interface.curses_draw_board(game)
-      game_interface.curses_init_round(game)
+      if player1_view.GetRound() % DISP == 0:
+        game_interface.curses_draw_board(game)
+        game_interface.curses_init_round(game)
     else:
-      print mv1, eat1, mv2, eat2
-      print player1_view.GetLife(), player2_view.GetLife()
+      pass
+      # print mv1, eat1, mv2, eat2
+      # print player1_view.GetLife(), player2_view.GetLife()
 
     if check_if_game_over(l1, l2, options, game, player1_view.GetRound()):
       break

@@ -109,7 +109,7 @@ class ExploreMoveGenerator():
     self.log.flush()
     sys.stdout = sys.__stdout__
 
-    if self.targetx > 25: raise Exception
+    #if self.targetx > 25: raise Exception
     return move, eat
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
