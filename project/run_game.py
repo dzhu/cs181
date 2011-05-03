@@ -38,15 +38,15 @@ def get_move(view, cmd, options, player_id):
 def check_if_game_over_single_player(l1, l2, options, game, rounds):
   if options.display:
     game_interface.curses_init_round(game)
-  if l1 <= 0:
+  if l2 <= 0:
     debug_str = 'Single player mode: lasted %d rounds' % rounds
     # Need to end the game
     if options.display:
       game_interface.curses_debug(1, debug_str)
     else:
       print debug_str
-    sys.stdin.read(1)
     if options.display:
+      sys.stdin.read(1)
       game_interface.curses_close()
     return True
   return False
@@ -72,8 +72,8 @@ def check_if_game_over(l1, l2, options, game, rounds):
     else:
       print 'Player 1 wins: %d v. %d' % (l1, l2)
   # Wait for input
-  sys.stdin.read(1)
   if options.display:
+    sys.stdin.read(1)
     game_interface.curses_close()
   return True
 

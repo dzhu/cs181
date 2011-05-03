@@ -450,7 +450,7 @@ def experiment(opts):
         #print inst.iLabel, iGuess
         cCorrect += int(inst.iLabel == iGuess)
 #    print "correct:",cCorrect, "out of", len(listInstTest),
-    print "test %f" % (float(cCorrect)/float(len(listInstTest)))
+    print "test %f %d/%d" % (float(cCorrect)/float(len(listInstTest)), cCorrect, len(listInstTest))
 
     print_net(net)
 
