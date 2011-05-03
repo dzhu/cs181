@@ -109,19 +109,18 @@ def decide_observe__VI(n,p,x,y,view):
   for k in range(H): 
     V_old = V
     V = [ [ 0 for p in range(H) ] for n in range(H) ] 
-    Q_obs     = [ [ 0 for p in range(H) ] for n in range(H) ] 
+    Q_obs  = [ [ 0 for p in range(H) ] for n in range(H) ] 
     pistar = [ [ False for p in range(H) ] for n in range(H) ] 
     # for every state
     for n in range(H):
       for p in range(H):
-        Q_obs[n][p] = expected_reward_obs(n, p, x,y) # TODO: this guy
+        Q_obs[n][p] = -move_generator.observation_cost #expected_reward_obs(n, p, x,y) # TODO: this guy
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
         # so for every neighboring state, i.e. n+1 or p+1
         # and for each action. but the only action that doesn't terminate is observing.
-        if n+1<H:
-          Q_obs[n][p] += -move_generator.observation_cost + T( n,p, True,  x,y ) * V_old[n+1][p]
-        if p+1<H:
-          Q_obs[n][p] += -move_generator.observation_cost + T( n,p, False, x,y ) * V_old[n][p+1]
+        if n+p+1<H:
+          Q_obs[n][p] += T( n,p, True,  x,y ) * V_old[n+1][p]
+          Q_obs[n][p] += T( n,p, False, x,y ) * V_old[n][p+1]
 
         # optimal policy
         if (Q_obs[n][p] > Q_not_obs[n][p]):
