@@ -22,7 +22,17 @@ class MoveGenerator():
 
 move_generator = MoveGenerator()
 NN_ACCURACY = 0.68
+NN_POISONOUS_ACCURACY = 0.68
+NN_NUTRITIOUS_ACCURACY = 0.57
 PROB_POISONOUS = 0.15
+
+def expected_utility_eat(n,p):
+  return prob_obs_given_state(view, info, 1) * prior_nutritious(view) * move_generator.plant_bonus \
+       - prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
+def decide_eat(n,p):
+  expected_utility = expected_utility_eat(n,p)  
+  eat = (expected_utility_eat > 0) 
+  return eat
 
 def get_move(view):
   '''Returns a (move, bool) pair which specifies which move to take and whether
@@ -47,13 +57,10 @@ def get_move(view):
     # Decide whether to eat
     # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
     # P(s) is the prior on how likely a plant is to be poisonous. etc. 
-    expected_utility_eat =    prob_obs_given_state(view, info, 1) * prior_nutritious(view) * move_generator.plant_bonus \
-                            - prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
-    eat = (expected_utility_eat > 0) # maybe this shouldn't be >0 
 #    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
 #    print eat 
 #    print "EATING: "
-  return (dir, eat)
+  return (dir, decide_eat(info[0],info[1]))
 
 # info is a pair of readings (# nutritious, # poisonous)
 def prob_obs_given_state(view, info, is_nutritious):
@@ -61,8 +68,8 @@ def prob_obs_given_state(view, info, is_nutritious):
   n = info[0]
   p = info[1]
   if is_nutritious:
-    return NN_ACCURACY**(n)*(1-NN_ACCURACY)**(p)
-  return NN_ACCURACY**(p)*(1-NN_ACCURACY)**(n)
+    return NN_NUTRITIOUS_ACCURACY**(n)*(1-NN_NUTRITIOUS_ACCURACY)**(p)
+  return NN_POISONOUS_ACCURACY**(p)*(1-NN_POISONOUS_ACCURACY)**(n)
   
 
 def prior_nutritious(view):
@@ -134,53 +141,84 @@ def decide_observe___VI(view, info, is_nutritious):
   # TODO: bound H or use the other strategy, since states are O(H^2)
   # Store the k-step-to-go value and policy for each state and each k
   # states are: energy left x number nutritious observations x number poisonous observations
-  
+  # actions: observe or not observe. if you observe you move into a new state.
+
   V = [ [ 0 for p in range(H) ] for n in range(H) ] 
+
+  Q_not_obs = [ [ 0 for p in range(H) ] for n in range(H) ] 
+  for n in range(H):
+    for p in range(H):
+      Q_not_obs[n][p]=expected_reward_obs(n,p,view) # just the expected reward from the given (n,p)
   # for k=1 to H (approximately)
   for k in range(H): 
     V_old = V
     V = [ [ 0 for p in range(H) ] for n in range(H) ] 
-    Q_eat     = [ [ 0 for p in range(H) ] for n in range(H) ] 
-    Q_not_eat = [ [ 0 for p in range(H) ] for n in range(H) ] 
+    Q_obs     = [ [ 0 for p in range(H) ] for n in range(H) ] 
     pistar = [ [ 0 for p in range(H) ] for n in range(H) ] # 0 for don't eat, 1 for eat TODO change to enums
     # for every state
     for n in range(H):
       for p in range(H):
-        # for each action:
-        # EAT
-        Q_eat[n][p] = expected_reward_eat(n, p, view) # TODO: define this function. 
-        # NOT EAT 
-        Q_not_eat[n][p] = 0
+        Q_obs[n][p] = expected_reward_obs(n, p, view) # TODO: this guy
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
         # so for every neighboring state, i.e. n+1 or p+1
-        Q_eat[n][p] +=     T( (n,p), True,  True ) * V_old[n+1][p]
-        Q_eat[n][p] +=     T( (n,p), False, True ) * V_old[n][p+1]
-        Q_not_eat[n][p] += T( (n,p), True,  False) * V_old[n+1][p]
-        Q_not_eat[n][p] += T( (n,p), False, False) * V_old[n][p+1]
+        # and for each action. but the only action that doesn't terminate is observing.
+        Q_obs[n][p] += T( (n,p), True,  view ) * V_old[n+1][p]
+        Q_obs[n][p] += T( (n,p), False, view ) * V_old[n][p+1]
 
         # optimal policy
-        if (Q_eat[n][p] > Q_not_eat[n][p]):
+        if (Q_obs[n][p] > Q_not_obs[n][p]):
           pistar[n][p] = 1
-          V[n][p] = Q_eat[n][p]
+          V[n][p] = Q_obs[n][p]
         else: 
-          V[n][p] = Q_not_eat[n][p]
+          V[n][p] = Q_not_obs[n][p]
         # new V
 
-def T( s, observe_nutritious, eat ): #TODO: learn this offline. 
+def T( s, observe_nutritious, view ): #TODO: learn this offline. 
   # TODO: implement
-  return 0.0
+  # this is the probability that the next observation will be poisonous (P) or nutritious (N) (depending on observe_nutritious)
+  # given that we've already had (n,p) nutritious/poisonous observations.
+  # P( next obsv is N | (n,p) ) = P( next is N | (n,p), actually P ) P( actually P | (n,p) )
+  #                             + P( next is N | (n,p), actually N ) P( actually N | (n,p) )
+  #                             = P( next is N | actually P ) P( actually P | (n,p) )
+  #                             + P( next is N | actually N ) P( actually N | (n,p) )
+  # Note that P( actually N | (n,p) ) = P( (n,p) | actually N ) P( actually N ) / P( (n,p) ), and we'll call that denominator B...
+  
+  # P( (n,p) | actually N )
+  P_np_N = prob_obs_given_state(view, s, True)
+  P_np_P = prob_obs_given_state(view, s, False)
+  P_N = prior_nutritious(view)
+  P_P = 1-P_N
+  B = P_np_N*P_N + P_np_P*P_P
+  P_N_np = P_np_N*P_N / B
+  P_P_np = P_np_P*P_P / B
 
-def expected_reward_eat(n, p, view):
-  prior_n = prior_nutritious(view)
-  prior_p = 1 - prior_n
+  if observe_nutritious:
+    P_nextN_np = (1-NN_POISONOUS_ACCURACY) * P_P_np + NN_NUTRITIOUS_ACCURACY * P_N_np
+    return P_nextN_np
+  else:
+    P_nextP_np = NN_POISONOUS_ACCURACY * P_P_np + (1-NN_NUTRITIOUS_ACCURACY) * P_N_np
+    return P_nextP_np
 
-  prior_n *= prob_obs_given_state(view, (n, p), 1)
-  prior_p *= prob_obs_given_state(view, (n, p), 0)
+def expected_reward_obs(n, p, view):
+  # figure out whether we'd eat or not, using our policy.
+  # then figure out expected reward given the fixed policy of whether we eat or not
+  eat = decide_eat(n,p)
+  if eat:
+    return expected_utility_eat(n,p)
+  else:
+    return 0
 
-  prob_n = prior_n / (prior_n + prior_p)
-  prob_p = prior_p / (prior_n + prior_p)
+#def expected_reward_eat(n, p, view):
+#  prior_n = prior_nutritious(view)
+#  prior_p = 1 - prior_n
+#
+#  prior_n *= prob_obs_given_state(view, (n, p), 1)
+#  prior_p *= prob_obs_given_state(view, (n, p), 0)
 
-  return move_generator.plant_bonus * prob_n - move_generator.plant_penalty * prob_p
+#  prob_n = prior_n / (prior_n + prior_p)
+#  prob_p = prior_p / (prior_n + prior_p)
+
+#  return move_generator.plant_bonus * prob_n - move_generator.plant_penalty * prob_p
 
 net = nn.read_from_file('net.pic')
 
