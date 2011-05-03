@@ -99,8 +99,8 @@ class ExploreMoveGenerator():
       else:
         move =  game.RIGHT
 
-    eat = (prior_nutritious(x,y)>=0.5)
-
+    prob_good = prior_nutritious(x,y)
+    eat = ( move_generator.plant_bonus*prob_good - move_generator.plant_penalty*(1-prob_good) >=0 )
     return move, eat
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
