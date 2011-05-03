@@ -30,17 +30,14 @@ def expected_utility_eat(n,p,x,y):
   return prob_obs_given_state(n,p, True) * prior_nutritious(x,y) * move_generator.plant_bonus \
        - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) * move_generator.plant_penalty
 def decide_eat(n,p,x,y):
-  expected_utility = expected_utility_eat(n,p,x,y)  
-  eat = (expected_utility > 0) 
-  return eat
+  return expected_utility_eat(n,p,x,y) > 0
 
 # info is a pair of readings (# nutritious, # poisonous)
 def prob_obs_given_state(n,p, is_nutritious):
   # P(o|s), i.e probability that observations return info given state is or is 
   if is_nutritious:
-    return NN_NUTRITIOUS_ACCURACY**(n)*(1-NN_NUTRITIOUS_ACCURACY)**(p)
-  return NN_POISONOUS_ACCURACY**(p)*(1-NN_POISONOUS_ACCURACY)**(n)
-  
+    return NN_NUTRITIOUS_ACCURACY**n * (1-NN_NUTRITIOUS_ACCURACY)**p
+  return NN_POISONOUS_ACCURACY**p * (1-NN_POISONOUS_ACCURACY)**n
 
 def prior_nutritious(x,y):
   # return (# nutritious)/(total plants observed), probably from running offline...
@@ -56,7 +53,7 @@ def prior_nutritious(x,y):
   d = 0.0861578
   c = -0.00327286
 
-  r = (x**2+y**2)**(0.5)
+  r = math.sqrt(x**2 + y**2)
   f2 = f/(h+math.exp(g*r+j))+a*r**2+d+c*r
 
   return f2/(f2+PROB_POISONOUS)
@@ -77,10 +74,10 @@ def decide_observe__FSC(n,p,x,y,view):
     return False
   # if you're about to die -- TODO: consider other bounds? would we pursue a different
   # strategy given different quantities of energy?
-  if (move_generator.observation_cost * 2 >= view.GetLife() ):
+  if move_generator.observation_cost * 2 >= view.GetLife():
     return False
   # stopping condition
-  if (abs(n-p)>1): # maybe 2 should be 3 or something 
+  if abs(n-p) > 1: # maybe 2 should be 3 or something 
     return False
   return True
 ########### specific implementations: MDP, value iteration  #################
@@ -131,7 +128,7 @@ def decide_observe__VI(n,p,x,y,view):
         else: 
           V[n][p] = Q_not_obs[n][p]
         # new V
-  print Q_not_obs
+  #print Q_not_obs
   return pistar[n][p]
 
 def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline. 
@@ -211,20 +208,55 @@ def try_observe(n,p,should_observe):
   else:
     p+=1
   return (n,p)
+
+
+def next_target(x, y):
+  if x >= -y and x <= y:
+    return x+1, y
+  elif x > y and x <= -y:
+    return x-1, y
+  elif y <= x and y > -x:
+    return x, y-1
+  else:
+    return x, y+1
+
+targetx = targety = 0
+seen_pos = set()
+
 def get_move(view):
   '''Returns a (move, bool) pair which specifies which move to take and whether
   or not the agent should try and eat the plant in the current square.  view is
-  an object whose interface is defined in python_game.h.  In particular, you can
+  an object whose interface is defined in python_game_interface.h.  In particular, you can
   ask the view for observations of the image at the current location.  Each
   observation comes with an observation cost.
   '''
+  global targetx, targety, seen_pos
 
   hasPlant = view.GetPlantInfo() == game_interface.STATUS_UNKNOWN_PLANT
 
 
   # TODO: Decide on a direction, and whether or not to eat
-  dir = common.game_interface.UP
-  eat = False
+  x = view.GetXPos()
+  y = view.GetYPos()
+  if x == targetx and y == targety:
+    while (targetx, targety) in seen_pos:
+      targetx, targety = next_target(targetx, targety)
+
+  dx, dy = targetx - x, targety - y
+  if abs(dx) < abs(dy): #(ternary operators would be nice, but are not in 2.5)
+    if dy < 0:
+      move = game_interface.DOWN
+    else:
+      move = game_interface.UP
+  else:
+    if dx < 0:
+      move = game_interface.LEFT
+    else:
+      move =  game_interface.RIGHT
+
+
+  seen_pos.add((x, y))
+
   n=0
   p=0
   x=view.GetXPos()
@@ -246,5 +278,5 @@ def get_move(view):
 #    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
 #    print eat 
 #    print "EATING: "
-  return (dir, decide_eat(n,p,view.GetXPos(),view.GetYPos()))
+  return (move, decide_eat(n,p,view.GetXPos(),view.GetYPos()))
 
