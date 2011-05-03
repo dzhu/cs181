@@ -27,8 +27,8 @@ NN_NUTRITIOUS_ACCURACY = 0.57
 PROB_POISONOUS = 0.15
 
 def expected_utility_eat(n,p,x,y):
-  return prob_obs_given_state(x,y, True) * prior_nutritious(x,y) * move_generator.plant_bonus \
-       - prob_obs_given_state(x,y, False) * (1.0 - prior_nutritious(x,y)) * move_generator.plant_penalty
+  return prob_obs_given_state(n,p, True) * prior_nutritious(x,y) * move_generator.plant_bonus \
+       - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) * move_generator.plant_penalty
 def decide_eat(n,p,x,y):
   expected_utility = expected_utility_eat(n,p,x,y)  
   eat = (expected_utility > 0) 
@@ -106,11 +106,12 @@ def decide_observe__VI(n,p,x,y,view):
     for p in range(H):
       Q_not_obs[n][p]=expected_reward_obs(n,p,x,y) # just the expected reward from the given (n,p)
   # for k=1 to H (approximately)
+
+  pistar = [ [ False for p in range(H) ] for n in range(H) ] 
   for k in range(H): 
     V_old = V
     V = [ [ 0 for p in range(H) ] for n in range(H) ] 
     Q_obs  = [ [ 0 for p in range(H) ] for n in range(H) ] 
-    pistar = [ [ False for p in range(H) ] for n in range(H) ] 
     # for every state
     for n in range(H):
       for p in range(H):
@@ -124,11 +125,13 @@ def decide_observe__VI(n,p,x,y,view):
 
         # optimal policy
         if (Q_obs[n][p] > Q_not_obs[n][p]):
-          pistar[n][p] = 1
+          if k==H-1:
+            pistar[n][p] = True
           V[n][p] = Q_obs[n][p]
         else: 
           V[n][p] = Q_not_obs[n][p]
         # new V
+  print Q_not_obs
   return pistar[n][p]
 
 def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline. 
