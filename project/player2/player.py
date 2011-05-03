@@ -84,11 +84,12 @@ def prior_nutritious(view):
 
   return f2/(f2+PROB_POISONOUS)
 
-def init_observation_info(view):
-  return init_observation_info__FSC(view)
-
-def decide_observe(view, info):
-  return decide_observe__FSC(view, info)
+if True:
+  init_observation_info = init_observation_info__FSC
+  decide_observe = decide_observe__FSC
+else:
+  init_observation_info = init_observation_info__VI
+  decide_observe = decide_observe__VI
 
 ########### specific implementations: finite state controller ##############
 
@@ -152,10 +153,10 @@ def decide_observe___VI(view, info, is_nutritious):
         Q_not_eat[n][p] = 0
         # add \sum_{s'} P(s'|s,a)V_{k-1}(s')
         # so for every neighboring state, i.e. n+1 or p+1
-        Q_eat[n][p] +=     T( (n,p), True,  True )
-        Q_eat[n][p] +=     T( (n,p), False, True )
-        Q_not_eat[n][p] += T( (n,p), True,  False)
-        Q_not_eat[n][p] += T( (n,p), False, False)
+        Q_eat[n][p] +=     T( (n,p), True,  True ) * V_old[n+1][p]
+        Q_eat[n][p] +=     T( (n,p), False, True ) * V_old[n][p+1]
+        Q_not_eat[n][p] += T( (n,p), True,  False) * V_old[n+1][p]
+        Q_not_eat[n][p] += T( (n,p), False, False) * V_old[n][p+1]
 
         # optimal policy
         if (Q_eat[n][p] > Q_not_eat[n][p]):
