@@ -44,14 +44,15 @@ def get_move(view):
     (should_observe_again, info) = decide_observe(view, info)
     while should_observe_again:
       (should_observe_again, info) = decide_observe(view, info)
-      print info
     # Decide whether to eat
     # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
     # P(s) is the prior on how likely a plant is to be poisonous. etc. 
     expected_utility_eat =    prob_obs_given_state(view, info, 1) * prior_nutritious(view) * move_generator.plant_bonus \
-                            + prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
+                            - prob_obs_given_state(view, info, 0) * (1.0 - prior_nutritious(view)) * move_generator.plant_penalty
     eat = (expected_utility_eat > 0) # maybe this shouldn't be >0 
-    print info 
+#    print "                                   %d %d ::: %d" % (info[0], info[1],expected_utility_eat)
+#    print eat 
+#    print "EATING: "
   return (dir, eat)
 
 # info is a pair of readings (# nutritious, # poisonous)
@@ -96,20 +97,29 @@ def init_observation_info__FSC(view):
 
 def decide_observe__FSC(view, info):
   # if the total cost incurred from observing exceeds benefit from eating, stop.
-  if (move_generator.observation_cost * (info[0]+info[1]+1) > move_generator.plant_bonus):
-    return (False, info)
+  # times 2, just because. arbitrary?
+#  if (move_generator.observation_cost * (info[0]+info[1]+1) * 2 > min(move_generator.plant_bonus,view.GetLife()) ):
+#    return (False, info)
+  # don't waste too much energy
+  if (info[0]+info[1]>=5):
+     return (False, info)
   # if you're about to die -- TODO: consider other bounds? would we pursue a different
   # strategy given different quantities of energy?
-  if (move_generator.observation_cost >= view.GetLife()):
+  if (move_generator.observation_cost * 2 >= view.GetLife() ):
     return (False, info)
   # stopping condition
-  if (abs(info[0]-info[1])>2): # maybe 2 should be 3 or something 
+  if (abs(info[0]-info[1])>1): # maybe 2 should be 3 or something 
     return (False, info)
 
   is_nutritious = is_nutritious_by_NN(view.GetImage())
+#  if is_nutritious:
+#    print " ?!?!?!? IS NUTRITIOUS??!?! TRUE " 
+#  else:
+#    print " @#HUUUFHD NOT GOOD"
   if (is_nutritious):
     return (True, (info[0]+1,info[1]))
-  return (True, (info[0],info[1]+1))
+  else:
+    return (True, (info[0],info[1]+1))
 
 ########### specific implementations: MDP, value iteration  #################
 
@@ -174,10 +184,9 @@ def expected_reward_eat(n, p, view):
 net = nn.read_from_file('net.pic')
 
 def is_nutritious_by_NN(plant_image):
-  print plant_image
+#  print plant_image
   res = nn.feed_forward(net, plant_image)
-  print res
-  print res > .5
+  return res[0] > .5
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
                         starting_life, life_per_turn):
