@@ -1,6 +1,6 @@
 import common
 import game_interface as game
-import nn
+#import nn
 import math
 import sys
 
@@ -56,7 +56,7 @@ class ExploreMoveGenerator():
   def __init__(self):
     self.log = open(outfile, 'w')
 
-    self.plant_net = nn.read_from_file('net.pic')
+#    self.plant_net = nn.read_from_file('net.pic')
 
     self.last_life = None
     self.last_image = None
