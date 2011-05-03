@@ -10,7 +10,8 @@ class MoveGenerator():
 
   def get_move(self, view):
     self.calls += 1
-    return common.get_move(view)
+#    return common.get_move(view)
+    get_move(view)
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
                           starting_life, life_per_turn):
@@ -27,8 +28,9 @@ NN_NUTRITIOUS_ACCURACY = 0.57
 PROB_POISONOUS = 0.15
 
 def expected_utility_eat(n,p,x,y):
-  return prob_obs_given_state(n,p, True) * prior_nutritious(x,y) * move_generator.plant_bonus \
-       - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) * move_generator.plant_penalty
+  B = prob_obs_given_state(n,p,True)*prior_nutritious(x,y) + prob_obs_given_state(n,p,False)*(1.0-prior_nutritious(x,y))
+  return prob_obs_given_state(n,p, True) * prior_nutritious(x,y) / B * move_generator.plant_bonus \
+       - prob_obs_given_state(n,p, False) * (1.0 - prior_nutritious(x,y)) / B * move_generator.plant_penalty
 def decide_eat(n,p,x,y):
   expected_utility = expected_utility_eat(n,p,x,y)  
   eat = (expected_utility > 0) 
@@ -122,7 +124,7 @@ def decide_observe__VI(n,p,x,y,view):
         if n+p+1<H:
           Q_obs[n][p] += T( n,p, True,  x,y ) * V_old[n+1][p]
           Q_obs[n][p] += T( n,p, False, x,y ) * V_old[n][p+1]
-
+          #print " ----- %f %f" % (T(n,p,True,x,y),T(n,p,False,x,y))
         # optimal policy
         if (Q_obs[n][p] > Q_not_obs[n][p]):
           if k==H-1:
@@ -131,7 +133,10 @@ def decide_observe__VI(n,p,x,y,view):
         else: 
           V[n][p] = Q_not_obs[n][p]
         # new V
-  print Q_not_obs
+  print "============================================================="
+  print [[  int(V[a][b]) for b in range(H) ] for a in range(H)]
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  print [[ int(Q_obs[a][b]) for b in range(H) ] for a in range(H)]
   return pistar[n][p]
 
 def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline. 
