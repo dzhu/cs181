@@ -133,10 +133,10 @@ def decide_observe__VI(n,p,x,y,view):
         else: 
           V[n][p] = Q_not_obs[n][p]
         # new V
-  print "============================================================="
-  print [[  int(V[a][b]) for b in range(H) ] for a in range(H)]
-  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  print [[ int(Q_obs[a][b]) for b in range(H) ] for a in range(H)]
+#  print "============================================================="
+#  print [[  int(V[a][b]) for b in range(H) ] for a in range(H)]
+#  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+#  print [[ int(Q_obs[a][b]) for b in range(H) ] for a in range(H)]
   return pistar[n][p]
 
 def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline. 
