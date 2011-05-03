@@ -38,7 +38,7 @@ def get_move(view, cmd, options, player_id):
 def check_if_game_over_single_player(l1, l2, options, game, rounds):
   if options.display:
     game_interface.curses_init_round(game)
-  if l1 <= 0:
+  if l2 <= 0:
     debug_str = 'Single player mode: lasted %d rounds' % rounds
     # Need to end the game
     if options.display:

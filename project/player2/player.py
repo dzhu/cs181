@@ -10,8 +10,7 @@ class MoveGenerator():
 
   def get_move(self, view):
     self.calls += 1
-#    return common.get_move(view)
-    get_move(view)
+    return common.get_move(view)
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
                           starting_life, life_per_turn):
@@ -73,17 +72,19 @@ def decide_observe__FSC(n,p,x,y,view):
   # times 2, just because. arbitrary?
 #  if (move_generator.observation_cost * (info[0]+info[1]+1) * 2 > min(move_generator.plant_bonus,view.GetLife()) ):
 #    return (False, info)
+
   # don't waste too much energy
-  if (n+p>=5):
+  if n + p >= 5:
     return False
+
   # if you're about to die -- TODO: consider other bounds? would we pursue a different
   # strategy given different quantities of energy?
   if move_generator.observation_cost * 2 >= view.GetLife():
     return False
+
   # stopping condition
-  if abs(n-p) > 1: # maybe 2 should be 3 or something 
-    return False
-  return True
+  return abs(n-p) <= 1 # maybe 2 should be 3 or something 
+
 ########### specific implementations: MDP, value iteration  #################
 
 # run a finite state value iteration
@@ -106,9 +107,8 @@ def decide_observe__VI(n,p,x,y,view):
   for n in range(H):
     for p in range(H):
       badscale=1
-      if (view.GetLife() <= 3 * move_generator.observation_cost  ):
-        badscale=5
-      view.GetLife()
+      if view.GetLife() <= 3 * move_generator.observation_cost:
+        badscale = 5
       Q_not_obs[n][p]=expected_reward_obs(n,p,x,y,badscale) # just the expected reward from the given (n,p)
   # for k=1 to H (approximately)
 
@@ -127,19 +127,15 @@ def decide_observe__VI(n,p,x,y,view):
         if n+p+1<H:
           Q_obs[n][p] += T( n,p, True,  x,y ) * V_old[n+1][p]
           Q_obs[n][p] += T( n,p, False, x,y ) * V_old[n][p+1]
-          #print " ----- %f %f" % (T(n,p,True,x,y),T(n,p,False,x,y))
+
         # optimal policy
         if (Q_obs[n][p] > Q_not_obs[n][p]):
-          if k==H-1:
+          if k == H-1:
             pistar[n][p] = True
           V[n][p] = Q_obs[n][p]
         else: 
           V[n][p] = Q_not_obs[n][p]
         # new V
-#  print "============================================================="
-#  print [[  int(V[a][b]) for b in range(H) ] for a in range(H)]
-#  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-#  print [[ int(Q_obs[a][b]) for b in range(H) ] for a in range(H)]
   return pistar[n][p]
 
 def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline. 
@@ -171,30 +167,15 @@ def T( n,p, observe_nutritious, x, y ): #TODO: learn this offline.
 def expected_reward_obs(n, p, x,y,badscale):
   # figure out whether we'd eat or not, using our policy.
   # then figure out expected reward given the fixed policy of whether we eat or not
-  eat = decide_eat(n,p,x,y,badscale)
-  if eat:
+  if decide_eat(n,p,x,y,badscale):
     return expected_utility_eat(n,p,x,y,badscale)
   else:
     return 0
 
-#def expected_reward_eat(n, p, view):
-#  prior_n = prior_nutritious(view)
-#  prior_p = 1 - prior_n
-#
-#  prior_n *= prob_obs_given_state(view, (n, p), 1)
-#  prior_p *= prob_obs_given_state(view, (n, p), 0)
-
-#  prob_n = prior_n / (prior_n + prior_p)
-#  prob_p = prior_p / (prior_n + prior_p)
-
-#  return move_generator.plant_bonus * prob_n - move_generator.plant_penalty * prob_p
-
 net = nn.read_from_file('net.pic')
 
 def is_nutritious_by_NN(plant_image):
-#  print plant_image
-  res = nn.feed_forward(net, plant_image)
-  return res[0] > .5
+  return nn.feed_forward(net, plant_image)[0] > .5
 
 def init_point_settings(plant_bonus, plant_penalty, observation_cost,
                         starting_life, life_per_turn):
@@ -213,8 +194,7 @@ else:
 def try_observe(n,p,should_observe):
   if not should_observe:
     return (n,p)
-  is_nutritious = is_nutritious_by_NN(view.GetImage())
-  if (is_nutritious):
+  if is_nutritious_by_NN(view.GetImage()):
     n+=1
   else:
     p+=1
@@ -278,11 +258,9 @@ def get_move(view):
     (n,p)= try_observe(n,p,should_observe_again) 
 
     while should_observe_again:
+      (should_observe_again, n, p) = decide_observe(n,p,x,y,view)
+      (n,p) = try_observe(n,p,should_observe_again) 
 
-
-      (should_observe_again, n,p) = decide_observe(n,p,x,y,view)
-
-      (n,p)= try_observe(n,p,should_observe_again) 
     # Decide whether to eat
     # max_a \sum_s P(o|s)P(s)R(s,a); states are poisonous or nutritious
     # P(s) is the prior on how likely a plant is to be poisonous. etc. 
