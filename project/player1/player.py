@@ -1,7 +1,7 @@
 import common
 import game_interface as game
 import nn
-
+import math
 import sys
 
 outfile = 'log'
@@ -33,6 +33,25 @@ class MoveGenerator():
     print >>self.log, plant_bonus, plant_penalty, observation_cost, starting_life, life_per_turn
     self.log.flush()
 
+
+def prior_nutritious(x,y):
+  # return (# nutritious)/(total plants observed), probably from running offline...
+  # probability that given a location, it's poisonous is always 0.15
+  # probability that given a location, it's nutritious is approx
+  # f2(x) = (f)/(h+exp(g*x+j))+a*x**2+d+c*x
+
+  f = 0.547293
+  g = 0.553155
+  j = -6.93274
+  h = 9.40699
+  a = 3.30966e-05
+  d = 0.0861578
+  c = -0.00327286
+  r = math.sqrt(x**2 + y**2)
+  f2 = f/(h+math.exp(g*r+j))+a*r**2+d+c*r
+
+  return f2/(f2+0.15)
+
 class ExploreMoveGenerator():
   def __init__(self):
     self.log = open(outfile, 'w')
@@ -57,25 +76,12 @@ class ExploreMoveGenerator():
     else:
       return x, y+1
 
+
+
   def get_move(self, view):
-    sys.stdout = self.log
 
     x, y = view.GetXPos(), view.GetYPos()
     #print x, y, self.targetx, self.targety
-
-    life = view.GetLife()
-
-    if self.last_image:
-      dlife = life - self.last_life
-      print self.lastx, self.lasty,
-      if dlife == self.plant_bonus - self.life_per_turn:
-        print 1,
-      elif dlife == -self.plant_penalty - self.life_per_turn:
-        print 0,
-      else:
-        print 2,#raise Exception
-
-      print ''.join(map(str, self.last_image))
 
     if x == self.targetx and y == self.targety:
       while (self.targetx, self.targety) in self.seen_pos:
@@ -93,23 +99,8 @@ class ExploreMoveGenerator():
       else:
         move =  game.RIGHT
 
-    if (x, y) not in self.seen_pos and view.GetPlantInfo() == game.STATUS_UNKNOWN_PLANT:
-      self.last_image = view.GetImage()
-    else:
-      self.last_image = None
+    eat = (prior_nutritious(x,y)>=0.5)
 
-    eat = self.last_image and nn.feed_forward(self.plant_net, self.last_image)[0] > .5
-    #if self.last_image: print nn.feed_forward(self.plant_net, self.last_image)[0]
-
-    self.seen_pos.add((x, y))
-    self.last_life = view.GetLife()
-    self.lastx = x
-    self.lasty = y
-
-    self.log.flush()
-    sys.stdout = sys.__stdout__
-
-    if self.targetx > 25: raise Exception
     return move, eat
 
   def init_point_settings(self, plant_bonus, plant_penalty, observation_cost,
@@ -123,7 +114,7 @@ class ExploreMoveGenerator():
     #print >>self.log, plant_bonus, plant_penalty, observation_cost, starting_life, life_per_turn
     self.log.flush()
 
-move_generator = MoveGenerator()
+#move_generator = MoveGenerator()
 move_generator = ExploreMoveGenerator()
 
 def get_move(view):
