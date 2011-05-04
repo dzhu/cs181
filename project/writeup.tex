@@ -1,11 +1,35 @@
 \documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
 \title{CS181: Final Project Writeup}
 \author{Danny Zhu \& Tianhui Cai}
 
 \begin{document}
 \maketitle
+First we document our observations, then we comment on
+a final strategy.
+
+\section{Plant image classification}
+
+We used a neural network to distinguish the plants, implemented using
+an adapted version of the code from assignment 2 (included as {\tt
+  nn.py}. Based on image data gathered from data-gathering runs in which
+a robot eats every plant in a spiral, hence gathering complete data,
+we gathered 82000 images of nutritious plants and
+273000 images of poisonous plants. We used 72000 each for the training data
+and 6000 each for test and validation sets. After a little
+experimentation, it looked like having a hidden layer didn't help
+performance, so we went with a simple two-layer neural network. After
+20 epochs of training, we obtained a network with a test performance
+of $68.3\%$.
 
 
+\fbox{TODO: plot performance between number of hidden neurons.}
+
+
+
+\section{Moving}
+\label{sec:moving}
 In order to map out the frequency with which nutritious and poisonous
 plants appeared in the space, we wrote a strategy ({\tt
   player1.ExploreMoveGenerator}) that moved around the origin in a
@@ -14,17 +38,158 @@ origin. By running a few thousand trials, we produced a plot of the
 frequencies, shown in figure~\ref{fig:plant_freq}. It appears that
 poisonous plants occur with a constant frequency of about .15, while
 nuritious plants have some distribution peaking at the same value at
-the origin and decreasing with distance away from the origin.
+the origin and decreasing with distance away from the origin. Note how
+it does not really look like a Gaussian, and also note the unusual
+thickness. We recognized that this was not a single gaussian, but 
+inaccurately made the assumption / simplification that the distribution
+of nutritous plants is constant between different games. 
 
-We used a neural network to distinguish the plants, implemented using
-an adapted version of the code from assignment 2 (included as {\tt
-  nn.py}. Based on image data gathered from the same spiral runs
-described above, we gathered 82000 images of nutritious plants and
-273000 images of poisonous plants. We used 72000 for the training data
-and 6000 each for test and validation sets. After a little
-experimentation, it looked like having a hidden layer didn't help
-performance, so we went with a simple two-layer neural network. After
-20 epochs of training, we obtained a network with a test performance
-of $68.3\%$.
+We used Gnuplot to interpolate a function that there is a nutritious
+plant at a location of distance $r$ from the origin:
+$$\rho(r)=\frac{0.547293}{9.40699+e^{0.553155r-6.93274}}+0.0861578-0.00327286r+3.30966\cdot10^{-5}r^2$$
+This function is also graphed in figure~\ref{fig:plant_freq}.
+\begin{centering}
+\begin{figure}[here]
+\includegraphics[scale=0.55]{nutritiousmodel.png}
+\caption{Density of nutritious plants vs distance from origin}
+\label{fig:plant_freq}
+\end{figure}
+\end{centering}
+
+Based on this model we decided to have the robot move in a spiral,
+i.e. define a series of targets spiralling out from the origin,
+aim for the robot to head towards a specified target, and update 
+the target to the next target only when a current target has been
+reached. 
+
+\section{Eating by expected reward}
+\label{sec:eating}
+We should eat if our expected gain is positive. 
+Let $(n,p)$ denote the number of nutritious and poisonous observations.
+Let $R_N$ and $R_P$ denote reward/punishment for nutritious or poisonous,
+respectively. Let $N,P$ denote the event that the plant is actually
+nutritious or poisonous, respectively. 
+Let $c_N$ denote the probability that our classifier correctly classifies
+a nutritious plant, and $c_P$ denote the probability that our classifier
+correctly classifies a poisonous plant. $P(N)$ and $P(P)=1-P(N)$ are our priors
+for nutritious vs poisonous given a plant's location using the formula
+in section~\ref{sec:moving}. 
+Expected gain is thus
+$$R_N P(N|(n,p)) +R_P  P(P|(n,p))$$ 
+$$= \frac{R_NP((n,p)|N) P(N)}{P((n,p)|N)P(N)+P((n,p)|P)P(P)} + \frac{R_PP((n,p)|N)P(N)}{P((n,p)|N)P(N)+P((n,p)|P)P(P)}$$
+$$= \frac{R_Nc_N^n(1-c_N)^p P(N)}{ c_N^n(1-c_N)^p P(N) +  c_P^n(1-c_P)^n P(P)} + \frac{R_P c_P^n(1-c_P)^n P(P) }{ c_N^n(1-c_N)^p P(N)+c_P^n(1-c_P)^n P(P)}$$
+Note that we don't include any ${n+p\choose n}$ term since we have one
+sequence of observations, rather than only the number of poisonous and nutritious
+observations. 
+This method is used in the MDP to decide whether or not to observe
+which we describe in a later section. 
+
+\fbox{TODO: DON"T JUST EAT IF IT SAYS NUTRITIOUS. THINK EXPECTED REWARD.}
+This just seems so un-thought-through. 
+
+\section{Observing}
+\subsection{Finite state controller}
+We can approach the observing/eating problem instead as a POMDP,
+and use a finite state controller to solve both observing and eating.
+The finite state controller hence has some $2N+1$ states, with
+each state representing $n-p$ where $(n,p)$ is the pair of  nutritious
+and poisonous observations; we eat if $n-p=N$, reject if $p-n=N$, and
+continue observing otherwise. 
+
+This appears to work best with $N=1$, i.e. we only look at a first
+observation; it appears that with higher $N$, i.e. $N=2$ even, too many
+observations are made.
+This has the additional shortcoming of not acting based on expected reward.
+ 
+\fbox{TODO:graph of average number observations are made with higher N}\\
+
+
+\fbox{TODO: add performance statistics}
+
+\subsection{More sophisticated(?) methods: finite-horizon MDP}
+We modeled the problem as a finite-horizon MDP.
+\begin{itemize}
+\item \emph{States:} $(n,p)$ pairs of observations. As before, we consider
+  sequences of observations in which there are $n$ nutritious and $p$
+  poisonous observations. 
+\item \emph{Actions:} observe or not observe
+\item \emph{Rewards:} expected change in energy, given the eating policy
+  described in section~\ref{sec:eating}. 
+\end{itemize}
+This is a finite-horizon MDP because the number of times you would
+observe a plant is at most (nutritious plant reward)/(observation cost),
+as you would be losing energy with probability 1 if you observed any more
+than that. Denote this horizon $H$.
+The transition model is predetermined: given $(n,p)$, if we observe,
+we can get to either $(n+1,p)$ or $(n,p+1)$; if we don't observe, we
+cannot reach any more states. 
+The transition probabilities are as follows:
+let $N',P'$ denote the events that the next observation is nutritious or poisonous,
+respectively; let $N,P$ denote the events that the plant is actually nutritious
+or poisonous, respectively; again let $(n,p)$ denote the current observations
+and let $P((n,p)|N)$ and $P((n,p)|P)$ be calculated as in section~\ref{sec:eating}.
+
+$$P(N'|(n,p))=P(N'|(n,p),P)P(P|(n,p))+P(N'|(n,p))P(N|(n,p))$$
+$$=P(N'|P)P(P|(n,p))+P(N'|N)P(N|(n,p))$$
+$$=\frac{P((1,0)|P)P((n,p)|P)P(P)}{P((n,p)|P)P(P)+P((n,p)|N)P(N)} + \frac{P((1,0)|N)P((n,p)|N)P(N)}{P((n,p)|P)P(P)+P((n,p)|N)P(N)}$$
+
+Note that we could have used an HMM with $(n,p)$ as observations 
+and nutritious and poisonous to determine these probabilities. 
+
+Hence we solve a dynamic programming problem at every plant we locate,
+as the expected rewards and transition probabilities are a function on
+the priors, which are location-dependent. This is generally not a time issue,
+at least given the default parameters, 
+as everything is polynomial in $H$: location is $O(H^3)$ and space is $O(H^2)$. 
+
+\fbox{TODO: is this equivalent to if we used an HMM? if so, we're in luck.}
+
+\subsection{MDP simplification}
+Running the MDP empirically showed that we never request an observation,
+and we always eat, until we get far enough from the center. 
+This initially seems strange, until you look at $V$ and $Q$ values and
+realize that the cost per observation is high enough relative to differences
+in expected energy gain, and furthermore that given that reward for eating a nutritious
+plant is twice the punishment for eating a poisonous plant, it is almost 
+never the case even if $(n,p)$ were not always (0,0), that we would decide
+not to eat until the prior $P(N)<1/3$ (explained below). 
+
+On different
+parameters, this is not always the case, i.e. if cost of observation is
+low enough and if plant reward and plant penalty are equal, sometimes it
+will request an observation. But given the default parameters, this is 
+equivalent to the strategy in which we eat or not eat using the
+strategy in section~\ref{sec:eating}, except with $(n,p)=(0,0)$, i.e. 
+just use 
+$$R_N P(N|(n,p)) +R_P  P(P|(n,p))=R_N P(N) + R_P P(P)$$ 
+where $R_N,R_P$ are reward / punishment for eating nutritious / poisonous
+and $P(N)$, $P(P)$ are the priors on location from section~\ref{sec:moving}. 
+
+\fbox{TODO: chart performance}
+
+
+\section{Final Strategy}
+We ended up submitting the strategy in which we move as before, but we
+decide to eat and observe by just always observing once and eating if 
+it is nutritious and not eating if it is poisonous. This actually seems
+like a terrible idea, especially given that reward for eating a nutritious
+plant may be very different (as it is in default parameters) from the
+punishment from eating a poisonous plant. It also totally does not agree
+with the results from the MDP. But empirically it appears to be better:
+
+\fbox{TODO: CHART PERFORMANCE.}
+
+\fbox{COMPARE STRATEGIES!}
+
+\section{Final remarks}
+It is surprising that simple strategies work fairly well, and that it is often
+the case that extra information does not end up being useful. 
+
+After finding out about how the worlds were generated, we realized that our
+biggest shortcoming came from making the assumption that the distribution of
+nutritious plants is constant over different runs, rather than involving
+three gaussians randomly placed within a certain area. Had we not made this
+assumption, we would have implemented a moving strategy that was learned on-line
+rather than off-line. 
 
 \end{document}
