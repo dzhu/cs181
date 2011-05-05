@@ -69,16 +69,24 @@ necessarily spend a lot of its time next to already-seen squares.
 
 \section{Eating by expected reward}
 \label{sec:eating}
-We should eat if our expected gain is positive.  Let $(n,p)$ denote
-the number of nutritious and poisonous observations.  Let $R_N$ and
-$R_P$ denote reward/punishment for nutritious or poisonous,
+We should eat if our expected gain is positive. Let $(n,p)$ denote the
+number of nutritious and poisonous observations. Let $R_N$ and $R_P$
+denote reward/punishment for nutritious or poisonous,
 respectively. Let $N,P$ denote the event that the plant is actually
-nutritious or poisonous, respectively.  Let $c_N$ denote the
+nutritious or poisonous, respectively. Let $c_N$ denote the
 probability that our classifier correctly classifies a nutritious
 plant, and $c_P$ denote the probability that our classifier correctly
-classifies a poisonous plant. $P(N)$ and $P(P)=1-P(N)$ are our priors
-for nutritious vs poisonous given a plant's location using the formula
-in section~\ref{sec:moving}.  Expected gain is thus
+classifies a poisonous plant. We estimated these values using the test
+performance of the network, although that neglects variation in rate
+of successful classifications between plants. (The appropriateness of
+this estimation depends on the image generation model: if it is
+independent of position, then it should be okay. But if generation
+were done by having a different underlying image for each plant, to
+which noise was applied, then that could be violated.)
+
+Finally, $P(N)$ and $P(P)=1-P(N)$ are our priors for a plant being
+nutritious or poisonous, given its location, using the formula from
+section~\ref{sec:moving}. The expected gain is thus
 
 \begin{align*}
   &R_N P(N|(n,p)) +R_P  P(P|(n,p))\\
@@ -87,32 +95,30 @@ in section~\ref{sec:moving}.  Expected gain is thus
 \end{align*}
 
 Note that we don't include any ${n+p\choose n}$ term since we have one
-sequence of observations, rather than only the number of poisonous and nutritious
-observations. 
-This method is used in the MDP to decide whether or not to observe
-which we describe in a later section. 
+sequence of observations, rather than only the number of poisonous and
+nutritious observations.  This method is used in the MDP to decide
+whether or not to observe which we describe in a later section.
 
-\fbox{TODO: DON"T JUST EAT IF IT SAYS NUTRITIOUS. THINK EXPECTED REWARD.}
-This just seems so un-thought-through. 
+%% \fbox{TODO: DON"T JUST EAT IF IT SAYS NUTRITIOUS. THINK EXPECTED REWARD.}
+%% This just seems so un-thought-through. 
 
 \section{Observing}
 \subsection{Finite state controller}
-We can approach the observing/eating problem instead as a POMDP,
-and use a finite state controller to solve both observing and eating.
-The finite state controller hence has some $2N+1$ states, with
-each state representing $n-p$ where $(n,p)$ is the pair of  nutritious
-and poisonous observations; we eat if $n-p=N$, reject if $p-n=N$, and
-continue observing otherwise. 
+We can approach the observing/eating problem instead as a POMDP, and
+use a finite state controller to solve both observing and eating.  The
+finite state controller hence has $2N+1$ states, with each state
+described by $n-p$ where $(n,p)$ is the pair of nutritious and
+poisonous observations; we eat if $n-p=N$, reject if $p-n=N$, and
+continue observing otherwise.
 
 This appears to work best with $N=1$, i.e. we only look at a first
-observation; it appears that with higher $N$, i.e. $N=2$ even, too many
-observations are made.
-This has the additional shortcoming of not acting based on expected reward.
+observation; it appears that with higher $N$, even $N=2$, too many
+observations are made. This has the additional shortcoming of not
+acting based on expected reward.
 
-\fbox{TODO:graph of average number observations are made with higher N}\\
+%\fbox{TODO:graph of average number observations are made with higher N}\\
 
-
-\fbox{TODO: add performance statistics}
+%\fbox{TODO: add performance statistics}
 
 \subsection{More sophisticated(?) methods: finite-horizon MDP}
 We modeled the problem as a finite-horizon MDP.
@@ -137,9 +143,9 @@ respectively; let $N,P$ denote the events that the plant is actually nutritious
 or poisonous, respectively; again let $(n,p)$ denote the current observations
 and let $P((n,p)|N)$ and $P((n,p)|P)$ be calculated as in section~\ref{sec:eating}.
 
-$$P(N'|(n,p))=P(N'|(n,p),P)P(P|(n,p))+P(N'|(n,p))P(N|(n,p))$$
-$$=P(N'|P)P(P|(n,p))+P(N'|N)P(N|(n,p))$$
-$$=\frac{P((1,0)|P)P((n,p)|P)P(P)}{P((n,p)|P)P(P)+P((n,p)|N)P(N)} + \frac{P((1,0)|N)P((n,p)|N)P(N)}{P((n,p)|P)P(P)+P((n,p)|N)P(N)}$$
+\[P(N'|(n,p))=P(N'|(n,p),P)P(P|(n,p))+P(N'|(n,p))P(N|(n,p))\]
+\[=P(N'|P)P(P|(n,p))+P(N'|N)P(N|(n,p))\]
+\[=\frac{P((1,0)|P)P((n,p)|P)P(P)}{P((n,p)|P)P(P)+P((n,p)|N)P(N)} + \frac{P((1,0)|N)P((n,p)|N)P(N)}{P((n,p)|P)P(P)+P((n,p)|N)P(N)}\]
 
 Note that we could have used an HMM with $(n,p)$ as observations 
 and nutritious and poisonous to determine these probabilities. 
@@ -150,7 +156,7 @@ the priors, which are location-dependent. This is generally not a time issue,
 at least given the default parameters, 
 as everything is polynomial in $H$: location is $O(H^3)$ and space is $O(H^2)$. 
 
-\fbox{TODO: is this equivalent to if we used an HMM? if so, we're in luck.}
+%\fbox{TODO: is this equivalent to if we used an HMM? if so, we're in luck.}
 
 \subsection{MDP simplification}
 Running the MDP empirically showed that we never request an
@@ -161,7 +167,8 @@ relative to differences in expected energy gain, and furthermore that
 given that reward for eating a nutritious plant is twice the
 punishment for eating a poisonous plant, it is almost never the case
 even if $(n,p)$ were not always (0,0), that we would decide not to eat
-until we had $P(N)<1/3$ (explained below).
+until we had $P(N)$ small enough that the expected change in energy
+was negative.
 
 On different parameters, this is not always the case, i.e. if cost of
 observation is low enough and if plant reward and plant penalty are
@@ -184,11 +191,24 @@ seems like a terrible idea, especially given that reward for eating a
 nutritious plant may be very different (as it is in default
 parameters) from the punishment from eating a poisonous plant. It also
 totally does not agree with the results from the MDP. But empirically
-it appears to be better:
+it appears to be better.
 
-\fbox{TODO: CHART PERFORMANCE.}
+Figure~\ref{fig:comparison} shows a comparison between the strategies
+of always eating a plant and eating only when the expected energy gain
+is positive.
 
-\fbox{COMPARE STRATEGIES!}
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=.8\columnwidth]{always_vs_prior.png}
+  \end{center}
+  \caption{One thousand runs were made using the various strategies,
+    the resulting lifespans sorted, and those series plotted together
+    here.}
+  \label{fig:comparison}
+\end{figure}
+
+As you might expect, checking the prior allows the robot to do much
+better.
 
 \section{Final remarks}
 It is surprising that simple strategies work fairly well, and that it
@@ -197,7 +217,7 @@ is often the case that extra information does not end up being useful.
 After finding out about how the worlds were generated, we realized
 that our biggest shortcoming came from making the assumption that the
 distribution of nutritious plants is constant over different runs,
-rather than involving three gaussians randomly placed within a certain
+rather than involving three Gaussians randomly placed within a certain
 area. Had we not made this assumption, we would have implemented a
 moving strategy that was learned on-line rather than off-line.
 
