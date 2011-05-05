@@ -24,6 +24,15 @@ a hidden layer didn't help performance, so we went with a simple
 two-layer neural network. After a few runs of 20 epochs of training,
 we happened to obtain a network with a test performance of $68.3\%$.
 
+We tried various numbers of hidden nodes, but with no discernible
+improvement in performance, as demonstrated in figure~\ref{fig:hidden}.
+
+\begin{figure}
+  \includegraphics[width=.8\columnwidth]{hid.png}
+  \caption{Different numbers of hidden nodes were tested, with five
+    trials each.}
+  \label{fig:hidden}
+\end{figure}
 
 \section{Moving}
 \label{sec:moving}
@@ -91,7 +100,7 @@ section~\ref{sec:moving}. The expected gain is thus
 \begin{align*}
   &R_N P(N|(n,p)) +R_P  P(P|(n,p))\\
   =&\frac{R_NP((n,p)|N) P(N)}{P((n,p)|N)P(N)+P((n,p)|P)P(P)} + \frac{R_PP((n,p)|N)P(N)}{P((n,p)|N)P(N)+P((n,p)|P)P(P)}\\
-  =&\frac{R_Nc_N^n(1-c_N)^p P(N)}{ c_N^n(1-c_N)^p P(N) +  c_P^n(1-c_P)^n P(P)} + \frac{R_P c_P^n(1-c_P)^n P(P) }{ c_N^n(1-c_N)^p P(N)+c_P^n(1-c_P)^n P(P)}c
+  =&\frac{R_Nc_N^n(1-c_N)^p P(N)}{ c_N^n(1-c_N)^p P(N) +  c_P^n(1-c_P)^n P(P)} + \frac{R_P c_P^n(1-c_P)^n P(P) }{ c_N^n(1-c_N)^p P(N)+c_P^n(1-c_P)^n P(P)}
 \end{align*}
 
 Note that we don't include any ${n+p\choose n}$ term since we have one
