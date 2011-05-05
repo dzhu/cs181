@@ -190,25 +190,21 @@ where $R_N,R_P$ are reward/punishment for eating nutritious/poisonous
 plants and $P(N)$, $P(P)$ are the priors on location from
 section~\ref{sec:moving}.
 
-\fbox{TODO: chart performance}
+%\fbox{TODO: chart performance}
 
 \section{Final Strategy}
 We ended up submitting the strategy in which we move as before, but we
 decide to eat and observe by just always observing once and eating if
-it is nutritious and not eating if it is poisonous. This actually
-seems like a terrible idea, especially given that reward for eating a
-nutritious plant may be very different (as it is in default
-parameters) from the punishment from eating a poisonous plant. It also
-totally does not agree with the results from the MDP. But empirically
-it appears to be better.
+the neural net says it is nutritious and not eating if it is
+poisonous. In a few trials that we ran before the tournament, that
+seemed to do better, which is why we submitted it. The results of the
+various strategies are shown in figure~\ref{fig:comparison}.
 
-Figure~\ref{fig:comparison} shows a comparison between the strategies
-of always eating a plant and eating only when the expected energy gain
-is positive.
+The MDP code is also included, as {\tt player/player\_mdp.py}.
 
 \begin{figure}
   \begin{center}
-    \includegraphics[width=.8\columnwidth]{always_vs_prior.png}
+    \includegraphics[width=.9\columnwidth]{comp3.png}
   \end{center}
   \caption{One thousand runs were made using the various strategies,
     the resulting lifespans sorted, and those series plotted together
@@ -216,8 +212,9 @@ is positive.
   \label{fig:comparison}
 \end{figure}
 
-As you might expect, checking the prior allows the robot to do much
-better.
+All of them are pretty similar, though checking with the neural net
+seems to do worse, probably due to the extra cost of getting an image
+not being worth the improvement in eating success.
 
 \section{Final remarks}
 It is surprising that simple strategies work fairly well, and that it
@@ -229,5 +226,8 @@ distribution of nutritious plants is constant over different runs,
 rather than involving three Gaussians randomly placed within a certain
 area. Had we not made this assumption, we would have implemented a
 moving strategy that was learned on-line rather than off-line.
+
+Also, we would like to once again thank the NICE servers and Science
+Center workstations for their contributed computing power.
 
 \end{document}
